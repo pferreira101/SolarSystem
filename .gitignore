@@ -1,0 +1,15 @@
+
+generator/.vs
+.vs
+generator/Release
+*.exe
+*.ipdb
+*.iobj
+*.pdb
+*.vcxproj
+*.filters
+*.user
+*.log
+*.obj
+*.tlog
+*.pch
