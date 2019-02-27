@@ -6,6 +6,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdio.h>
+#include <string>  
 
 using namespace std;
 
@@ -55,22 +56,37 @@ void buildSlice(int stacks, float r, float h, string s, float a, float stepSide,
 	float stepInside = sqrt((hips*hips) - (stepUp*stepUp));
 	float height = 0;
 	for (int i = 0; i < stacks - 1; i++) {
-		s.append(r*cos(a) + "," + height + "," + r*sin(a) + "\n");
-		s.append((r - stepInside)*cos(a) + "," + height + stepUp + "," stepUp, (r - stepInside)*sin(a) + "\n");
-		s.append((r - stepInside)*cos(a + stepSide)+ "," + height + stepUp + "," + (r - stepInside)*sin(a + stepSide) + "\n");
+		s.append(to_string(r*cos(a)) + "," + to_string(height) + "," + to_string(r*sin(a)) + "\n");
+		s.append(to_string((r - stepInside)*cos(a)) + "," + 
+				to_string(height + stepUp) + "," 
+					+ to_string((r - stepInside)*sin(a)) + "\n");
+		s.append(to_string((r - stepInside)*cos(a + stepSide)) + "," 
+				+ to_string(height + stepUp) + "," 
+					+ to_string((r - stepInside)*sin(a + stepSide)) + "\n");
 
-		s.append((r - stepInside)*cos(a + stepSide) + "," + height + stepUp + "," + (r - stepInside)*sin(a + stepSide) + "\n");
-		s.append(r*cos(a + stepSide) + "," + height + "," + r*sin(a + stepSide) + "\n");
-		s.append(r*cos(a) + "," + height + "," + r*sin(a) + "\n");
+		
+		s.append(to_string((r - stepInside)*cos(a + stepSide)) + "," 
+				+ to_string(height + stepUp) + "," 
+					+ to_string((r - stepInside)*sin(a + stepSide)) + "\n");
+		s.append(to_string(r*cos(a + stepSide)) + "," 
+				+ to_string(height) + ","
+					+ to_string(r*sin(a + stepSide)) + "\n");
+		s.append(to_string(r*cos(a)) + "," 
+				+ to_string(height) + "," 
+			+ to_string(r*sin(a)) + "\n");
 		
 		height += stepUp;
 		r -= stepInside;
 
 	}
 
-	s.append(0 + "," + h + "," + 0"\n");
-	s.append(r*cos(a + stepSide) + "," + height + "," + r*sin(a + stepSide) + "\n");
-	s.append(r*cos(a) + "," + height + "," + r*sin(a) + "\n");
+	s.append("0," + to_string(h) + ",0\n");
+	s.append(to_string(r*cos(a + stepSide)) + "," 
+		+ to_string(height) + "," 
+			+ to_string(r*sin(a + stepSide)) + "\n");
+	s.append(to_string(r*cos(a)) + "," 
+		+ to_string(height) + "," 
+			+ to_string(r*sin(a)) + "\n");
 }
 
 void coneHandler(char* r, char* h, char* slices, char* stacks, char* destFile){
@@ -80,12 +96,12 @@ void coneHandler(char* r, char* h, char* slices, char* stacks, char* destFile){
 	int sli = atoi(slices);
 	int sta = atoi(stacks);
 	float a = 0;
-	float step = 2 * M_PI / slices;
+	float step = 2 * M_PI / sli;
 	float hip = sqrt((raio*raio) + (altura*altura));
 	for (int i = 0; i < sli; i++) {
 		s.append("0,0,0\n");
-		s.append(r*cos(a) + "," + 0 + "," + r * sin(a))");\n");
-		s.append(r*cos(a + step) + "," + 0 + "," + r * sin(a + step) +"\n");
+		s.append(to_string(raio*cos(a)) + ",0," + to_string(raio * sin(a)) +"\n");
+		s.append(to_string((raio*cos(a + step))) + ",0," + to_string(raio * sin(a + step)) +"\n");
 		a += step;
 		buildSlice(sta,raio,altura,s,a,step,hip/atoi(stacks));
 	}	
