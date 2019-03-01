@@ -1,12 +1,14 @@
 
 generator/.vs
+generator/plane
+engine/.vs
 .vs
 generator/Release
+engine/Release
 *.exe
 *.ipdb
 *.iobj
 *.pdb
-*.vcxproj
 *.filters
 *.user
 *.log

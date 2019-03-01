@@ -1,13 +1,10 @@
-#include "pch.h"
-#include <iostream>
-#include <string>
+
 #include <fstream>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdio.h>
 #include <string>  
-
 using namespace std;
 
 //definação dos valores da funcao de hash para as figuras aceitaveis (nao podem ser calculados em run time
