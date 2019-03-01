@@ -2,6 +2,12 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <stdio.h>
+#include <string>  
+
 using namespace std;
 
 //definação dos valores da funcao de hash para as figuras aceitaveis (nao podem ser calculados em run time
@@ -108,8 +114,60 @@ void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
 	fileWriter(destFile, s);
 }
 
+void buildSlice(int stacks, float r, float h, string s, float a, float stepSide, float hips) {
+	float stepUp = (float)(h / stacks);
+	float stepInside = sqrt((hips*hips) - (stepUp*stepUp));
+	float height = 0;
+	for (int i = 0; i < stacks - 1; i++) {
+		s.append(to_string(r*cos(a)) + "," + to_string(height) + "," + to_string(r*sin(a)) + "\n");
+		s.append(to_string((r - stepInside)*cos(a)) + "," + 
+				to_string(height + stepUp) + "," 
+					+ to_string((r - stepInside)*sin(a)) + "\n");
+		s.append(to_string((r - stepInside)*cos(a + stepSide)) + "," 
+				+ to_string(height + stepUp) + "," 
+					+ to_string((r - stepInside)*sin(a + stepSide)) + "\n");
+
+		
+		s.append(to_string((r - stepInside)*cos(a + stepSide)) + "," 
+				+ to_string(height + stepUp) + "," 
+					+ to_string((r - stepInside)*sin(a + stepSide)) + "\n");
+		s.append(to_string(r*cos(a + stepSide)) + "," 
+				+ to_string(height) + ","
+					+ to_string(r*sin(a + stepSide)) + "\n");
+		s.append(to_string(r*cos(a)) + "," 
+				+ to_string(height) + "," 
+			+ to_string(r*sin(a)) + "\n");
+		
+		height += stepUp;
+		r -= stepInside;
+
+	}
+
+	s.append("0," + to_string(h) + ",0\n");
+	s.append(to_string(r*cos(a + stepSide)) + "," 
+		+ to_string(height) + "," 
+			+ to_string(r*sin(a + stepSide)) + "\n");
+	s.append(to_string(r*cos(a)) + "," 
+		+ to_string(height) + "," 
+			+ to_string(r*sin(a)) + "\n");
+}
+
 void coneHandler(char* r, char* h, char* slices, char* stacks, char* destFile){
-	string s = string("Guardar cone cujo raio da base é ")+ r +", tem altura "+ h +" com "+ slices +" slices e "+ stacks +" stacks no ficheiro "+ destFile +" \n";
+	string s;// = string("Guardar cone cujo raio da base é ")+ r +", tem altura "+ h +" com "+ slices +" slices e "+ stacks +" stacks no ficheiro "+ destFile +" \n";
+	float raio = atof(r);
+	float altura = atof(h);
+	int sli = atoi(slices);
+	int sta = atoi(stacks);
+	float a = 0;
+	float step = 2 * M_PI / sli;
+	float hip = sqrt((raio*raio) + (altura*altura));
+	for (int i = 0; i < sli; i++) {
+		s.append("0,0,0\n");
+		s.append(to_string(raio*cos(a)) + ",0," + to_string(raio * sin(a)) +"\n");
+		s.append(to_string((raio*cos(a + step))) + ",0," + to_string(raio * sin(a + step)) +"\n");
+		a += step;
+		buildSlice(sta,raio,altura,s,a,step,hip/atoi(stacks));
+	}	
 	fileWriter(destFile, s);
 } 
 
