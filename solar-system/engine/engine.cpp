@@ -11,6 +11,7 @@ using namespace tinyxml2;
 class Point {
 	float x, y, z;
 public:
+
 	void set_values(float a, float b, float c) {
 		x = a;
 		y = b;
@@ -50,7 +51,7 @@ vector<Point> getPoints(const char *name) {
 
 	string delimiter = ",";
 
-	std::vector<Point> points;
+	vector<Point> points;
 	
 
 	while (!file.eof()) { // To get you all the lines.
@@ -102,7 +103,7 @@ void drawModel(Figure f) {
 	return;
 }
 
-std::vector<Figure> figures;
+vector<Figure> figures;
 
 int readXML(const char *filename) {
 	XMLDocument doc;
