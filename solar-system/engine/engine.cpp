@@ -68,6 +68,8 @@ vector<Point> getPoints(const char *name) {
 			point.erase(0, pos + delimiter.length());
 		}
 
+		cout << coord[0] << " " << coord[1] << " " << coord[2];
+
 		Point p;
 		p.set_values(coord[0], coord[1], coord[2]);
 		points.push_back(p);
@@ -135,5 +137,7 @@ int readXML(const char *filename) {
 
 int main(int argc, char** argv) {
 
-	return 0;
+	if (argc == 1) return -1;
+
+	else return readXML(argv[1]);
 }
