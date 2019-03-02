@@ -49,7 +49,8 @@ vector<Point> getPoints(const char *name) {
 	ifstream file;
 	file.open(name);
 
-	string delimiter = ",";
+	string delimiter = ", ";
+	int delim_len = delimiter.length();
 
 	vector<Point> points;
 	
@@ -57,18 +58,21 @@ vector<Point> getPoints(const char *name) {
 	while (!file.eof()) { // To get you all the lines.
 
 		getline(file, point); // Saves the line in STRING.
-		size_t pos = 0;
+
 		string token;
 		float coord[3];
 		int i = 0;
 
-		while ((pos = point.find(delimiter)) != std::string::npos) {
-			token = point.substr(0, pos);
+		int pos_start = 0,pos_end;
+
+		while (i<3) {
+			pos_end = point.find(delimiter, pos_start);
+			token = point.substr(pos_start, pos_end-pos_start);
 			coord[i++] = stof(token);
-			point.erase(0, pos + delimiter.length());
+			pos_start = pos_end + delim_len;
 		}
 
-		cout << coord[0] << " " << coord[1] << " " << coord[2];
+		cout << coord[0] << " " << coord[1] << " " << coord[2] << "\n";
 
 		Point p;
 		p.set_values(coord[0], coord[1], coord[2]);
@@ -115,12 +119,13 @@ int readXML(const char *filename) {
 	XMLNode * scene = doc.FirstChild();
 	if (scene == nullptr) return XML_ERROR_FILE_READ_ERROR;
 
-	XMLElement *models = doc.FirstChildElement("model");
+	XMLElement *models = scene->FirstChildElement("model");
 
 	while (models != nullptr) {
 
 		const char * fileName = nullptr;
 		fileName = models->Attribute("file");
+		cout << fileName << "\n";
 
 		if (fileName == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 		
@@ -139,5 +144,7 @@ int main(int argc, char** argv) {
 
 	if (argc == 1) return -1;
 
-	else return readXML(argv[1]);
+	else {
+		return readXML(argv[1]);
+	}
 }
