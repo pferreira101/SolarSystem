@@ -96,14 +96,16 @@ std::vector<Triangle> getTriangles(std::vector<Point> points) {
 	return triangles;
 }
 
-void drawModel(const char *file) {
+void drawModel(Figure f) {
 	return;
 }
 
-int readXML(const char *filename) {
+std::vector<Figure> readXML(const char *filename) {
 	XMLDocument doc;
 	XMLError error = doc.LoadFile(filename);
 	if (error != XML_SUCCESS) { printf("Error: %i\n", error); return error; }
+
+	std::vector<Figure> figures;
 
 	XMLNode * scene = doc.FirstChild();
 	if (scene == nullptr) return XML_ERROR_FILE_READ_ERROR;
@@ -117,7 +119,9 @@ int readXML(const char *filename) {
 
 		if (fileName == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 		
-		drawModel(fileName);
+		Figure f;
+		f.set_values(getTriangles(getPoints(fileName)));
+		figures.push_back(f);
 
 		models = models->NextSiblingElement("model");
 	}
@@ -125,10 +129,51 @@ int readXML(const char *filename) {
 	return XML_SUCCESS;
 }
 
+void renderScene(void) {
+
+	// clear buffers
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// set the camera
+	glLoadIdentity();
+	gluLookAt(radius * cos(beta)*cos(alfa), radius * sin(beta), radius * cos(beta)*sin(alfa),
+		0, 0, 0,
+		0.0f, 1.0f, 0.0f);
+
+	glPolygonMode(GL_FRONT_AND_BACK, mode);
+
+	//drawModels()
+
+	// End of frame
+	glutSwapBuffers();
+}
 
 int main(int argc, char** argv) {
 
-	readXML(argv[1]);
+	std::vector<Figure> figures = readXML(argv[1]);
+
+	// init GLUT and the window
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+	glutInitWindowPosition(100, 100);
+	glutInitWindowSize(800, 800);
+	glutCreateWindow("CG@DI-UM");
+
+	// Required callback registry 
+	glutDisplayFunc(renderScene);
+	//glutReshapeFunc(changeSize);
+
+	// Callback registration for keyboard processing
+	//glutSpecialFunc(processSpecialKeys);
+
+	//  OpenGL settings
+	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_CULL_FACE);
+
+// enter GLUT's main cycle
+	glutMainLoop();
+
+	return 1;
 
 	return 0;
 }
