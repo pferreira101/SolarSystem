@@ -1,3 +1,10 @@
+/*#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+*/
+
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -7,6 +14,9 @@
 using namespace std;
 using namespace tinyxml2;
 
+/**
+Classe que guarda as coordenadas X, Y, Z de um ponto
+*/
 class Point {
 	float x, y, z;
 public:
@@ -27,6 +37,9 @@ public:
 	}
 };
 
+/**
+Classe que guarda os três pontos de um triângulo
+*/
 class Triangle {
 	Point one, two, three;
 
@@ -46,15 +59,12 @@ public:
 	Point getThree() {
 		return three;
 	}
-	void print(int x) { // testar
-		cout << "T" << x << ": " << getOne().getX() << " " << getOne().getY() << " " << getOne().getZ() << "\n";
-		cout << "T" << x << ": " << getTwo().getX() << " " << getTwo().getY() << " " << getTwo().getZ() << "\n";
-		cout << "T" << x << ": " << getThree().getX() << " " << getThree().getY() << " " << getThree().getZ() << "\n";
-	}
 };
 
 
-
+/**
+Classe que guarda a lista de triângulos que compõe uma figura
+*/
 class Figure {
 	vector<Triangle> triangles;
 public:
@@ -69,7 +79,9 @@ public:
 };
 
 
-
+/**
+Função que, partindo de um ficheiro gerado pelo generator, devolve a lista dos pontos existentes nesse ficheiro.
+*/
 vector<Point> getPoints(const char *name) {
 	string point;
 	ifstream file;
@@ -77,8 +89,6 @@ vector<Point> getPoints(const char *name) {
 
 	string delimiter = ", ";
 	int delim_len = delimiter.length();
-
-	int num = 0; // teste
 
 	vector<Point> points;
 	
@@ -103,48 +113,60 @@ vector<Point> getPoints(const char *name) {
 		Point p;
 		p.set_values(coord[0], coord[1], coord[2]);
 		points.push_back(p);
-		cout << "ponto " << num << ": " << p.getX() << " " << p.getY() << " " << p.getZ() << "\n";
-		num++; // teste
 		
 	}
 	file.close();
 
-	cout << num << " pontos\n"; // teste
 	return points;
 }
 
+/**
+Função que constrói uma lista de triângulos consoante a lista de pontos que recebe como parâmetro
+*/
 vector<Triangle> getTriangles(vector<Point> points) {	
 	vector<Triangle> triangles;
 	Point pts[3];
 	int i = 0;
-	int k = 0; // teste : numero do triangulo
 
-	for (vector<Point>::iterator it = points.begin(); it != points.end(); ++it) {
+	for (vector<Point>::const_iterator it = points.begin(); it != points.end(); ++it) {
 
-		if (i == 3) { // dividir em triangulos
+		if (i == 3) i = 0;
+		
+		pts[i] = (*it);
+
+		if (i == 2) { // ver se é o 3o ponto e formar triangulo
 			Triangle t;
 			t.set_values(pts[0], pts[1], pts[2]);
 			triangles.push_back(t);
-			i = 0;
-			t.print(k); // teste
-			k++; // teste
 		}
-		pts[i] = (*it);
+
 		i++;
 	}
 
 	return triangles;
 }
 
+/**
+Função que desenha um figura recebida como parâmetro
+*/
+/*void drawModel(Figure f) {
+	vector<Triangle> triangles;
+	triangles = f.get_values();
+	glBegin(GL_TRIANGLES);
+	for (vector<Triangle>::iterator it = triangles.begin(); it != triangles.end(); ++it) {
+		Triangle t = *it;
+		glVertex3d(t.getOne().getX(), t.getOne().getY(), t.getOne().getZ());
+		glVertex3d(t.getTwo().getX(), t.getTwo().getY(), t.getTwo().getZ());
+		glVertex3d(t.getThree().getX(), t.getThree().getY(), t.getThree().getZ());
+	}
+	glEnd();
+}*/
 
-
-void drawModel(Figure f) {
-	return;
-}
-
-vector<Figure> figures;
-
+/**
+Função que interpreta um cenário gráfico em XML
+*/
 int readXML(const char *filename) {
+
 	XMLDocument doc;
 	XMLError error = doc.LoadFile(filename);
 	if (error != XML_SUCCESS) { printf("Error: %i\n", error); return error; }
@@ -158,16 +180,17 @@ int readXML(const char *filename) {
 
 		const char * fileName = nullptr;
 		fileName = models->Attribute("file");
-		cout << fileName << "\n";
 
 		if (fileName == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 		
 		Figure f;
 		f.set_values(getTriangles(getPoints(fileName)));
-		figures.push_back(f);
+		
+		drawModel(f);
 
 		models = models->NextSiblingElement("model");
 	}
+
 
 	return XML_SUCCESS;
 }
