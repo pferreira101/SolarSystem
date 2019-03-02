@@ -3,7 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include "tinyxml2.h"
-#include<string>
+#include <string>
+#include <vector>
 using namespace std;
 using namespace tinyxml2;
 
@@ -20,7 +21,8 @@ void Point::set_values(int a, int b, int c) {
 }
 
 class Triangle {
-	Point one, Point two, Point three;
+	Point one, two, three;
+
 public:
 	void set_values(Point, Point, Point);
 };
@@ -32,16 +34,16 @@ void Triangle::set_values(Point x, Point y, Point z) {
 }
 
 class Figure {
-	std::vector<Triangle> triangles;
+	vector<Triangle> triangles;
 public:
-	void set_values(std::vector<Triangle>);
+	void set_values(vector<Triangle>);
 };
 
-void Figure::set_values(std::vector<Triangle> ts) {
+void Figure::set_values(vector<Triangle> ts) {
 	triangles = ts;
 }
 
-std::vector<Point> getPoints(const char *name) {
+vector<Point> getPoints(const char *name) {
 	string point;
 	ifstream file;
 	file.open(name);
@@ -76,16 +78,15 @@ std::vector<Point> getPoints(const char *name) {
 	return points;
 }
 
-std::vector<Triangle> getTriangles(std::vector<Point> points) {
-	
-	std::vector<Triangle> triangles;
-	Point[3] pts;
+vector<Triangle> getTriangles(std::vector<Point> points) {	
+	vector<Triangle> triangles;
+	Point pts[3];
 	int i = 0;
 
-	for (std::vector<Point>::iterator it = points.begin(); it != points.end(); ++it) {
-		(if i == 3) {
+	for (vector<Point>::iterator it = points.begin(); it != points.end(); ++it) {
+		if (i == 3) {
 			Triangle t;
-			t.set_values(Point[0], Point[1], Point[2]);
+			t.set_values(pts[0], pts[1], pts[2]);
 			triangles.push_back(t);
 			i = 0;
 		}
