@@ -9,8 +9,6 @@ engine/Release
 *.ipdb
 *.iobj
 *.pdb
-*.filters
-*.user
 *.log
 *.obj
 *.tlog
