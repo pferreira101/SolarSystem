@@ -35,12 +35,12 @@ int fileWriter(string file, string content) {
 
 void planeHandler(int size, char* destFile){
 
-	string s = to_string(size/2) + ", 0," + to_string(-size/2) + "\n" +
-			   to_string(-size/2) + ", 0," + to_string(-size/2) + "\n" + 
-			   to_string(size/2) + ", 0," + to_string(size/2) + "\n" + 
-			   to_string(-size/2) + ", 0," + to_string(-size/2) + "\n" +
-			   to_string(-size/2) + ", 0," + to_string(size/2) + "\n" +
-			   to_string(size/2) + ", 0," + to_string(size/2);
+	string s = to_string(size/2) + ", 0, " + to_string(-size/2) + "\n" +
+			   to_string(-size/2) + ", 0, " + to_string(-size/2) + "\n" + 
+			   to_string(size/2) + ", 0, " + to_string(size/2) + "\n" + 
+			   to_string(-size/2) + ", 0, " + to_string(-size/2) + "\n" +
+			   to_string(-size/2) + ", 0, " + to_string(size/2) + "\n" +
+			   to_string(size/2) + ", 0, " + to_string(size/2);
 
 	fileWriter(destFile, s);
 }
@@ -54,11 +54,11 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 	float height = 0;
 
 	// base
-	s += "0, 0, " + z_str + ",\n" +
-		 x_str + ", 0, 0,\n" +
-		 x_str + ", 0, " + z_str + "\n" +		 
+	s += "0, 0, " + z_str + "\n" +
+		 x_str + ", 0, 0\n" +
+		 x_str + ", 0, " + z_str +"\n" +		 
 		 "0, 0, " + z_str + "\n" + 
-		 "0, 0, 0,\n" +
+		 "0, 0, 0\n" +
 		 x_str + ", 0, 0\n";
 
 	// faces
