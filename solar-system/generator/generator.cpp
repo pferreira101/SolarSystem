@@ -24,22 +24,23 @@ int hashF(char* s){
 
 
 int fileWriter(string file, string content) {
-  ofstream myfile;
-  myfile.open(file);
-  myfile << content;
-  myfile.close();
-  return 0;
+	ofstream myfile;
+	myfile.open(file);
+	myfile << content;
+	myfile.close();
+	return 0;
 }
+
+
 
 void planeHandler(int size, char* destFile){
 
-	//string s = string("Guardar quadrado com lado ") + std::to_string(size) + ", no ficheiro " + destFile + "\n";
-	string s = "<" + to_string(size/2) + ", 0," + to_string(-size/2) + ",\n" +
-					 to_string(-size/2) + ", 0," + to_string(-size/2) + ",\n" + 
-					 to_string(size/2) + ", 0," + to_string(size/2) + ">\n" + 
-			   "<" + to_string(-size/2) + ", 0," + to_string(-size/2) + ",\n" +
-					 to_string(-size/2) + ", 0," + to_string(size/2) + ",\n" +
-					 to_string(size/2) + ", 0," + to_string(size/2) + ">";
+	string s = to_string(size/2) + ", 0," + to_string(-size/2) + "\n" +
+			   to_string(-size/2) + ", 0," + to_string(-size/2) + "\n" + 
+			   to_string(size/2) + ", 0," + to_string(size/2) + "\n" + 
+			   to_string(-size/2) + ", 0," + to_string(-size/2) + "\n" +
+			   to_string(-size/2) + ", 0," + to_string(size/2) + "\n" +
+			   to_string(size/2) + ", 0," + to_string(size/2);
 
 	fileWriter(destFile, s);
 }
@@ -53,12 +54,12 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 	float height = 0;
 
 	// base
-	s += "<0, 0, " + z_str + ",\n" +
+	s += "0, 0, " + z_str + ",\n" +
 		 x_str + ", 0, 0,\n" +
-		 x_str + ", 0, " + z_str + ">\n" +		 
-		"<0, 0, " + z_str + ",\n" + 
-		"0, 0, 0,\n" +
-		x_str + ", 0, 0>\n";
+		 x_str + ", 0, " + z_str + "\n" +		 
+		 "0, 0, " + z_str + "\n" + 
+		 "0, 0, 0,\n" +
+		 x_str + ", 0, 0\n";
 
 	// faces
 	for (int i = 0; i < d; i++, height += div) {
@@ -66,42 +67,45 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 		string h2_str = to_string(height + div);
 
 		// frontal
-		s += "<triangle>\n\t<point X=0 Y=" + h_str + " Z=" + z_str + "\>\n" +
-			"\t<point X=" + x_str + " Y=" + h_str + " Z=" + z_str + "\>\n" +
-			"\t<point X=" + x_str + " Y=" + h2_str + " Z=" + z_str + "\>\n" + "</triangle>\n" +
-			"<triangle>\n\t<point X=" + x_str + " Y=" + h2_str + " Z=" + z_str + "\>\n" +
-			"\t<point X=0 Y=" + h2_str + " Z=" + z_str + "\>\n" +
-			"\t<point X=0 Y=" + h_str + " Z=" + z_str + "\>\n" + "</triangle>\n";
-			
+		s += "0, " + h_str + ", " + z_str + "\n" +
+			 x_str + ", " + h_str + ", " + z_str + "\n" +
+			 x_str + ", " + h2_str + ", " + z_str + "\n" +
+			 x_str + ", " + h2_str + ", " + z_str + "\n" +
+			"0, " + h2_str + ", " + z_str + "\n" +
+			"0, " + h_str + ", " + z_str + "\n";	
 
 		// lateral visivel
-		s += "<" + x_str + ", " + h_str + ", " + z_str + ",\n" +
-			x_str + ", " + h_str + ", 0,\n" +
-			x_str + ", " + h2_str + ", 0>\n" +
-			"<" + x_str + ", " + h2_str + ", 0,\n" +
-			x_str + ", " + h2_str + ", " + z_str + ",\n" +
-			x_str + ", " + h_str + ", " + z_str + ">\n";
+		s += x_str + ", " + h_str + ", " + z_str + "\n" +
+			 x_str + ", " + h_str + ", 0\n" +
+			 x_str + ", " + h2_str + ", 0\n" +
+			 x_str + ", " + h2_str + ", 0\n" +
+			 x_str + ", " + h2_str + ", " + z_str + "\n" +
+			 x_str + ", " + h_str + ", " + z_str + "\n";
 
 		// lateral invisivel
+		s += "0, " + h_str + ", " + z_str + "\n" +
+			 "0, " + h2_str + ", 0\n" +
+			 "0, " + h_str + ", 0\n" +
+			 "0, " + h2_str + ", " + z_str + "\n" +
+			 "0, " + h2_str + ", 0\n" + 
+			 "0, " + h_str + ", " + z_str + "\n";
 
 		// traseira
+		s += "0, " + h2_str + ", 0\n" +
+			 x_str + ", " + h2_str + ", 0\n" +
+			 x_str + ", " + h_str + ", 0\n" +
+			 "0, " + h2_str + ", 0\n" +
+			 x_str + ", " + h_str + ", 0\n" +
+			 "0, " + h_str + ", 0\n";
 	}
 
 	// topo
-	s += "<0, " + y_str + ", " + z_str + ",\n" +
-		x_str + ", " + y_str + ", " + z_str + ",\n" +
-		x_str + ", " + y_str + ", 0>\n" +
-		"<0, " + y_str + ", " + z_str + ",\n" +
-		x_str + ", " + y_str + ", 0,\n" +
-		"0, " + y_str + ", 0>\n";
-	/*
-	if (d == 0) {
-		s = string("Guardar caixa com x ") + x + ", y " + y + " e z " + z + " no ficheiro " + destFile + " \n";
-	} 
-	else {
-		s = string("Guardar caixa com x ") + x + ", y " + y + ", z " + z + " e " + d + " dimensoes  no ficheiro " + destFile + " \n";
-	}
-	*/
+	s += "0, " + y_str + ", " + z_str + "\n" +
+		 x_str + ", " + y_str + ", " + z_str + "\n" +
+		 x_str + ", " + y_str + ", 0\n" +
+		 "0, " + y_str + ", " + z_str + "\n" +
+		 x_str + ", " + y_str + ", 0\n" +
+		 "0, " + y_str + ", 0";
 
 	fileWriter(destFile, s);
 }

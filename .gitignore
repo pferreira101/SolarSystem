@@ -14,3 +14,4 @@ engine/Release
 *.tlog
 *.pch
 *.idb
+*.3d
