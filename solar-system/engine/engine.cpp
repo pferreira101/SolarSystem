@@ -9,39 +9,42 @@ using namespace std;
 using namespace tinyxml2;
 
 class Point {
-	int x, y, z;
+	float x, y, z;
 public:
-	void set_values(int, int, int);
+
+	void set_values(float a, float b, float c) {
+		x = a;
+		y = b;
+		z = c;
+	}
 };
 
-void Point::set_values(int a, int b, int c) {
-	x = a;
-	y = b;
-	z = c;
-}
+
 
 class Triangle {
 	Point one, two, three;
 
 public:
-	void set_values(Point, Point, Point);
+
+	void set_values(Point x, Point y, Point z) {
+		one = x;
+		two = y;
+		three = z;
+	}
 };
 
-void Triangle::set_values(Point x, Point y, Point z) {
-	one = x;
-	two = y;
-	three = z;
-}
+
 
 class Figure {
 	vector<Triangle> triangles;
 public:
-	void set_values(vector<Triangle>);
+
+	void set_values(vector<Triangle> ts) {
+		triangles = ts;
+	}
 };
 
-void Figure::set_values(vector<Triangle> ts) {
-	triangles = ts;
-}
+
 
 vector<Point> getPoints(const char *name) {
 	string point;
@@ -53,13 +56,11 @@ vector<Point> getPoints(const char *name) {
 	std::vector<Point> points;
 	
 
-	while (!file.eof) // To get you all the lines.
-	{
+	while (!file.eof()) { // To get you all the lines.
 		getline(file, point); // Saves the line in STRING.
-
 		size_t pos = 0;
 		string token;
-		int coord[3];
+		float coord[3];
 		int i = 0;
 
 		while ((pos = point.find(delimiter)) != std::string::npos) {
@@ -69,7 +70,7 @@ vector<Point> getPoints(const char *name) {
 		}
 
 		Point p;
-		p.set_values(p[0], p[1], p[2]);
+		p.set_values(coord[0], coord[1], coord[2]);
 		points.push_back(p);
 		
 	}
@@ -78,7 +79,7 @@ vector<Point> getPoints(const char *name) {
 	return points;
 }
 
-vector<Triangle> getTriangles(std::vector<Point> points) {	
+vector<Triangle> getTriangles(vector<Point> points) {	
 	vector<Triangle> triangles;
 	Point pts[3];
 	int i = 0;
@@ -96,6 +97,7 @@ vector<Triangle> getTriangles(std::vector<Point> points) {
 
 	return triangles;
 }
+
 
 void drawModel(const char *file) {
 	return;
