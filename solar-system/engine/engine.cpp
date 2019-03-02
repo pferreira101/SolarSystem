@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -17,6 +16,15 @@ public:
 		y = b;
 		z = c;
 	}
+	float getX() {
+		return x;
+	}
+	float getY() {
+		return y;
+	}
+	float getZ() {
+		return z;
+	}
 };
 
 class Triangle {
@@ -29,6 +37,20 @@ public:
 		two = y;
 		three = z;
 	}
+	Point getOne() {
+		return one;
+	}
+	Point getTwo() {
+		return two;
+	}
+	Point getThree() {
+		return three;
+	}
+	void print(int x) { // testar
+		cout << "T" << x << ": " << getOne().getX() << " " << getOne().getY() << " " << getOne().getZ() << "\n";
+		cout << "T" << x << ": " << getTwo().getX() << " " << getTwo().getY() << " " << getTwo().getZ() << "\n";
+		cout << "T" << x << ": " << getThree().getX() << " " << getThree().getY() << " " << getThree().getZ() << "\n";
+	}
 };
 
 
@@ -39,6 +61,10 @@ public:
 
 	void set_values(vector<Triangle> ts) {
 		triangles = ts;
+	}
+
+	vector<Triangle> get_values() {
+		return triangles;
 	}
 };
 
@@ -51,6 +77,8 @@ vector<Point> getPoints(const char *name) {
 
 	string delimiter = ", ";
 	int delim_len = delimiter.length();
+
+	int num = 0; // teste
 
 	vector<Point> points;
 	
@@ -72,15 +100,16 @@ vector<Point> getPoints(const char *name) {
 			pos_start = pos_end + delim_len;
 		}
 
-		cout << coord[0] << " " << coord[1] << " " << coord[2] << "\n";
-
 		Point p;
 		p.set_values(coord[0], coord[1], coord[2]);
 		points.push_back(p);
+		cout << "ponto " << num << ": " << p.getX() << " " << p.getY() << " " << p.getZ() << "\n";
+		num++; // teste
 		
 	}
 	file.close();
 
+	cout << num << " pontos\n"; // teste
 	return points;
 }
 
@@ -88,15 +117,19 @@ vector<Triangle> getTriangles(vector<Point> points) {
 	vector<Triangle> triangles;
 	Point pts[3];
 	int i = 0;
+	int k = 0; // teste : numero do triangulo
 
 	for (vector<Point>::iterator it = points.begin(); it != points.end(); ++it) {
-		if (i == 3) {
+
+		if (i == 3) { // dividir em triangulos
 			Triangle t;
 			t.set_values(pts[0], pts[1], pts[2]);
 			triangles.push_back(t);
 			i = 0;
+			t.print(k); // teste
+			k++; // teste
 		}
-		pts[i] = *it;
+		pts[i] = (*it);
 		i++;
 	}
 
