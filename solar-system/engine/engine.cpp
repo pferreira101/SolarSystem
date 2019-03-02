@@ -9,12 +9,12 @@ using namespace std;
 using namespace tinyxml2;
 
 class Point {
-	int x, y, z;
+	float x, y, z;
 public:
-	void set_values(int, int, int);
+	void set_values(float, float, float);
 };
 
-void Point::set_values(int a, int b, int c) {
+void Point::set_values(float a, float b, float c) {
 	x = a;
 	y = b;
 	z = c;
@@ -53,13 +53,13 @@ vector<Point> getPoints(const char *name) {
 	std::vector<Point> points;
 	
 
-	while (!file.eof) // To get you all the lines.
+	while (!file.eof()) // To get you all the lines.
 	{
 		getline(file, point); // Saves the line in STRING.
 
 		size_t pos = 0;
 		string token;
-		int coord[3];
+		float coord[3];
 		int i = 0;
 
 		while ((pos = point.find(delimiter)) != std::string::npos) {
@@ -69,7 +69,7 @@ vector<Point> getPoints(const char *name) {
 		}
 
 		Point p;
-		p.set_values(p[0], p[1], p[2]);
+		p.set_values(coord[0], coord[1], coord[2]);
 		points.push_back(p);
 		
 	}
@@ -101,12 +101,12 @@ void drawModel(Figure f) {
 	return;
 }
 
-std::vector<Figure> readXML(const char *filename) {
+std::vector<Figure> figures;
+
+int readXML(const char *filename) {
 	XMLDocument doc;
 	XMLError error = doc.LoadFile(filename);
 	if (error != XML_SUCCESS) { printf("Error: %i\n", error); return error; }
-
-	std::vector<Figure> figures;
 
 	XMLNode * scene = doc.FirstChild();
 	if (scene == nullptr) return XML_ERROR_FILE_READ_ERROR;
@@ -130,51 +130,8 @@ std::vector<Figure> readXML(const char *filename) {
 	return XML_SUCCESS;
 }
 
-void renderScene(void) {
-
-	// clear buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// set the camera
-	glLoadIdentity();
-	gluLookAt(radius * cos(beta)*cos(alfa), radius * sin(beta), radius * cos(beta)*sin(alfa),
-		0, 0, 0,
-		0.0f, 1.0f, 0.0f);
-
-	glPolygonMode(GL_FRONT_AND_BACK, mode);
-
-	//drawModels()
-
-	// End of frame
-	glutSwapBuffers();
-}
 
 int main(int argc, char** argv) {
-
-	std::vector<Figure> figures = readXML(argv[1]);
-
-	// init GLUT and the window
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(100, 100);
-	glutInitWindowSize(800, 800);
-	glutCreateWindow("CG@DI-UM");
-
-	// Required callback registry 
-	glutDisplayFunc(renderScene);
-	//glutReshapeFunc(changeSize);
-
-	// Callback registration for keyboard processing
-	//glutSpecialFunc(processSpecialKeys);
-
-	//  OpenGL settings
-	glEnable(GL_DEPTH_TEST);
-	// glEnable(GL_CULL_FACE);
-
-// enter GLUT's main cycle
-	glutMainLoop();
-
-	return 1;
 
 	return 0;
 }
