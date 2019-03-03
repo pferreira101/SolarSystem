@@ -78,6 +78,7 @@ public:
 	}
 };
 
+vector<Figure> figures;
 
 /**
 Função que, partindo de um ficheiro gerado pelo generator, devolve a lista dos pontos existentes nesse ficheiro.
@@ -160,6 +161,70 @@ Função que desenha um figura recebida como parâmetro
 		glVertex3d(t.getThree().getX(), t.getThree().getY(), t.getThree().getZ());
 	}
 	glEnd();
+}
+
+void renderScene(void) {
+
+	// clear buffers
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// set the camera
+	glLoadIdentity();
+	gluLookAt(5.0, 5.0, 5.0,
+		0, 0, 0,
+		0.0f, 1.0f, 0.0f);
+
+	glPolygonMode(GL_FRONT_AND_BACK, mode);
+
+	for (vector<Figure>::iterator it = figures.begin(); it != figures.end(); ++it) {
+		Figure f = *it;
+		drawModel(f);
+	}
+
+	// End of frame
+	glutSwapBuffers();
+}
+
+/*void changeSize(int w, int h) {
+	// Prevent a divide by zero, when window is too short
+	// (you cant make a window with zero width).
+	if (h == 0)
+		h = 1;
+	// compute window's aspect ratio 
+	float ratio = w * 1.0 / h;
+	// Set the projection matrix as current
+	glMatrixMode(GL_PROJECTION);
+	// Load Identity Matrix
+	glLoadIdentity();
+	// Set the viewport to be the entire window
+	glViewport(0, 0, w, h);
+	// Set perspective
+	gluPerspective(45.0f, ratio, 1.0f, 1000.0f);
+	// return to the model view matrix mode
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void beginGraphics() {
+	// init GLUT and the window
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+	glutInitWindowPosition(100, 100);
+	glutInitWindowSize(800, 800);
+	glutCreateWindow("solar-system");
+
+	// Required callback registry 
+	glutDisplayFunc(renderScene);
+	glutReshapeFunc(changeSize);
+
+	// Callback registration for keyboard processing
+	//glutSpecialFunc(processSpecialKeys);
+
+	//  OpenGL settings
+	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_CULL_FACE);
+
+// enter GLUT's main cycle
+	glutMainLoop();
 }*/
 
 /**
@@ -185,12 +250,12 @@ int readXML(const char *filename) {
 		
 		Figure f;
 		f.set_values(getTriangles(getPoints(fileName)));
-		
-		drawModel(f);
+		figures.push_back(f);
 
 		models = models->NextSiblingElement("model");
 	}
 
+	//beginGraphics();
 
 	return XML_SUCCESS;
 }
