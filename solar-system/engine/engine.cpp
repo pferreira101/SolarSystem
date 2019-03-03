@@ -74,6 +74,9 @@ public:
 	}
 };
 
+/**
+Variável global com a lista de figuras a desenhar
+*/
 vector<Figure> figures;
 
 /**
@@ -280,28 +283,31 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	readXML(argv[1]);
+	if (readXML(argv[1]) == XML_SUCCESS) {
 
-	// init GLUT and the window
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(100, 100);
-	glutInitWindowSize(800, 800);
-	glutCreateWindow("solar-system");
+		// init GLUT and the window
+		glutInit(&argc, argv);
+		glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+		glutInitWindowPosition(100, 100);
+		glutInitWindowSize(800, 800);
+		glutCreateWindow("solar-system");
 
-	// Required callback registry 
-	glutDisplayFunc(renderScene);
-	glutReshapeFunc(changeSize);
+		// Required callback registry 
+		glutDisplayFunc(renderScene);
+		glutReshapeFunc(changeSize);
 
-	// Callback registration for keyboard processing
-	glutKeyboardFunc(processCamera);
+		// Callback registration for keyboard processing
+		glutKeyboardFunc(processCamera);
 
-	//  OpenGL settings
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+		//  OpenGL settings
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
 
-	// enter GLUT's main cycle
-	glutMainLoop();
+		// enter GLUT's main cycle
+		glutMainLoop();
 
-	return 1;
+		return 1;
+	}
+
+	else return 0;
 }
