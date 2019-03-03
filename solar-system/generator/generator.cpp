@@ -110,60 +110,50 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 	fileWriter(destFile, s);
 }
 
-void buildSliceSphere(float r, int stacks, float a, float stepSide, string s) {
-	float b = -M_PI / 2;
-	float step = M_PI / stacks;
-	float rInside = 0;
-	float stepInside = r / (stacks / 2);
-
-	rInside += stepInside;
-	b += step;
-	for (int i = 1; i < stacks - 1; i++) {
-		string x = to_string(rInside*cos(a));
-		string x2 = to_string((rInside + stepInside)*cos(a));
-		string x3 = to_string((rInside + stepInside)*cos(a + stepSide));
-		string x4 = to_string(rInside*cos(a + stepSide));
-		string y = to_string(r*sin(b));
-		string y2 = to_string(r*sin(b + step));
-		string z = to_string(rInside*sin(a));
-		string z2 = to_string((rInside + stepInside)*sin(a));
-		string z3 = to_string((rInside + stepInside)*sin(a + stepSide));
-		string z4 = to_string(rInside*sin(a + stepSide));
-
-
-
-
-		s.append(x + "," + y + "," + z);
-		s.append(x2 + "," + y2 + "," + z2);
-		s.append(x3 + "," + y2 + "," + z3);
-
-
-
-		s.append(x + "," + y + "," + z);
-		s.append(x3 + "," + y2 + "," + z3);
-		s.append(x4 + "," + y + "," + z4);
-
-
-		rInside += stepInside;
-		if (rInside >= r) {
-			stepInside = -stepInside;
-		}
-		b += step;
-	}
-}
 
 void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
 	string s; // = string("Guardar esfera com raio ") + r + ", " + slices + " slices e " + stacks + " stacks no ficheiro " + destFile + "\n";
 	float raio = atof(r);
 	int sli = atoi(slices);
 	int sta = atoi(stacks);
-	float a = 0;
-	float step = 2 * M_PI / sli;
-	for (int i = 0; i < sli; i++) {
-		buildSliceSphere(raio,sta,a,step, s);
-		a += step;
-	}
 	
+	float a = 0;
+	float stepSide = 2 * M_PI / sli;
+	float stepUp = M_PI / sta;
+	float b = 0;
+
+
+	for (int i = 0; i < sli; i++) {
+		//buildSliceSphere(radius, stacks, a, step);
+		a = i * stepSide;
+		for (int j = 0; j < sta; j++) {
+			b = j * stepUp;
+
+			string x = to_string(raio*sin(b)*sin(a));
+			string x2 = to_string(raio*sin(b + stepUp)*sin(a));
+			string x3 = to_string(raio*sin(b + stepUp)*sin(a + stepSide));
+			string x4 = to_string(raio*sin(b)*sin(a + stepSide));
+			string y = to_string(raio*cos(b));
+			string y2 = to_string(raio*cos(b + stepUp));
+			string z = to_string(raio*sin(b)*cos(a));
+			string z2 = to_string(raio*sin(b + stepUp)*cos(a));
+			string z3 = to_string(raio*sin(b + stepUp)*cos(a + stepSide));
+			string z4 = to_string(raio*sin(b)*cos(a + stepSide));
+
+			s.append(x + "," + y + "," + z + "\n");
+			s.append(x2 + "," + y2 + "," + z2 + "\n");
+			s.append(x3 + "," + y2 + "," + z3 + "\n");
+
+			s.append(x + "," + y + "," + z + "\n");
+			s.append(x3 + "," + y2 + "," + z3 + "\n");
+			s.append(x4 + "," + y2 + "," + z4 + "\n");
+
+		
+
+		}
+
+	}
+
 	fileWriter(destFile, s);
 }
 
