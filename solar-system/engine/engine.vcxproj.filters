@@ -13,24 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Include">
-      <UniqueIdentifier>{3b50c604-e634-4d3e-b7d5-4f7e3c13c0f2}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
-      <Filter>Include</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="tinyxml2.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="..\include\tinyxml2.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="glut.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="..\include\glut.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

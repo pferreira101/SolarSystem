@@ -162,12 +162,11 @@
     <ClCompile Include="tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="glut.h" />
-    <ClInclude Include="tinyxml2.h" />
+    <ClInclude Include="..\include\glut.h" />
+    <ClInclude Include="..\include\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="glut32.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
       <FileType>Document</FileType>
     </CopyFileToFolders>
   </ItemGroup>
