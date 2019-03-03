@@ -229,8 +229,34 @@ void changeSize(int w, int h) {
 }
 
 
+void drawCoordinates() {
+
+	glBegin(GL_LINES);
+		// x
+		glColor3f(1.0, 0.0, 0.0); // red x	
+		glVertex3f(-4.0, 0.0f, 0.0f);
+		glVertex3f(4.0, 0.0f, 0.0f);
+
+
+		// y 
+		glColor3f(0.0, 1.0, 0.0); // green y
+		glBegin(GL_LINES);
+		glVertex3f(0.0, -4.0f, 0.0f);
+		glVertex3f(0.0, 4.0f, 0.0f);
+
+
+		// z 
+		glColor3f(0.0, 0.0, 1.0); // blue z
+		glVertex3f(0.0, 0.0f, -4.0f);
+		glVertex3f(0.0, 0.0f, 4.0f);
+
+	glEnd();
+}
+
+
 void renderScene(void) {
 
+	glClearColor(20.0f, 20.0f, 20.0f, 1);
 	// clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -240,10 +266,14 @@ void renderScene(void) {
 			  0.0, 0.0, 0.0,
 			  0.0f, 1.0f, 0.0f);
 
+	glColor3b(0, 5, 20);
+	
 	for (vector<Figure>::iterator it = figures.begin(); it != figures.end(); ++it) {
 		Figure f = *it;
 		drawModel(f);
 	}
+
+	drawCoordinates();
 
 	// End of frame
 	glutSwapBuffers();
