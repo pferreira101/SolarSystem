@@ -196,6 +196,10 @@ int readXML(const char *filename) {
 
 
 // GLUT ------------------------------------------------------------------------------------
+float alpha = 0;
+float beta = 0.5;
+float radius = 8;
+
 
 void changeSize(int w, int h) {
 
@@ -229,9 +233,9 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-	gluLookAt(5.0, 5.0, 5.0,
-		0, 0, 0,
-		0.0f, 1.0f, 0.0f);
+	gluLookAt(radius*cos(beta)*cos(alpha), radius*sin(beta), radius*cos(beta)*sin(alpha),
+			  0.0, 0.0, 0.0,
+			  0.0f, 1.0f, 0.0f);
 
 	for (vector<Figure>::iterator it = figures.begin(); it != figures.end(); ++it) {
 		Figure f = *it;
@@ -243,10 +247,40 @@ void renderScene(void) {
 }
 
 
+void processCamera(unsigned char key, int x, int y) {
+
+	switch (key) {
+	case 'A' | 'a':
+		alpha += 0.1;
+		break;
+	case 'D' | 'd':
+		alpha -= 0.1;
+		break;
+	case 'W' | 'w':
+		if (beta < 1.5) beta += 0.1;
+		break;
+	case 'S' | 's':
+		if (beta > 0.1) beta -= 0.1;
+		break;
+	case 'Q' | 'q':
+		radius += 0.1;
+		break;
+	case 'E' | 'e':
+		radius -= 0.1;
+		break;
+	}
+
+	glutPostRedisplay();
+}
 
 int main(int argc, char **argv) {
 
+	if (argc == 1) {
+		printf("Por favor insira todos os parâmetros necessários. \n");
+		return -1;
+	}
 
+	readXML(argv[1]);
 
 	// init GLUT and the window
 	glutInit(&argc, argv);
@@ -259,8 +293,8 @@ int main(int argc, char **argv) {
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
 
-
-	// put here the registration of the keyboard callbacks
+	// Callback registration for keyboard processing
+	glutKeyboardFunc(processCamera);
 
 	//  OpenGL settings
 	glEnable(GL_DEPTH_TEST);
