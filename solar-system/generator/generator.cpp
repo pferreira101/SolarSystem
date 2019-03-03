@@ -110,20 +110,45 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 	fileWriter(destFile, s);
 }
 
-void buildUperSlice(float r, int stacks, float a, float stepSide, string s) {
-	float b = 0;
-	float step = (M_PI / 2)/stacks;
-	for (int i = 0; i < stacks; i++) {
-		string x = to_string(r*cos(a));
-		string x2 = to_string(r*cos(a+stepSide));
-		string y = to_string(r*cos(b));
-		string y2 = to_string(r*cos(b+step));
-		string z = to_string(r*cos(a));
-		
-		s.append(x + "," + y + "," + z);
-		s.append(x2 + "," + y2 + "," +  )
+void buildSliceSphere(float r, int stacks, float a, float stepSide, string s) {
+	float b = -M_PI / 2;
+	float step = M_PI / stacks;
+	float rInside = 0;
+	float stepInside = r / (stacks / 2);
 
-		b += stacks;
+	rInside += stepInside;
+	b += step;
+	for (int i = 1; i < stacks - 1; i++) {
+		string x = to_string(rInside*cos(a));
+		string x2 = to_string((rInside + stepInside)*cos(a));
+		string x3 = to_string((rInside + stepInside)*cos(a + stepSide));
+		string x4 = to_string(rInside*cos(a + stepSide));
+		string y = to_string(r*sin(b));
+		string y2 = to_string(r*sin(b + step));
+		string z = to_string(rInside*sin(a));
+		string z2 = to_string((rInside + stepInside)*sin(a));
+		string z3 = to_string((rInside + stepInside)*sin(a + stepSide));
+		string z4 = to_string(rInside*sin(a + stepSide));
+
+
+
+
+		s.append(x + "," + y + "," + z);
+		s.append(x2 + "," + y2 + "," + z2);
+		s.append(x3 + "," + y2 + "," + z3);
+
+
+
+		s.append(x + "," + y + "," + z);
+		s.append(x3 + "," + y2 + "," + z3);
+		s.append(x4 + "," + y + "," + z4);
+
+
+		rInside += stepInside;
+		if (rInside >= r) {
+			stepInside = -stepInside;
+		}
+		b += step;
 	}
 }
 
@@ -135,8 +160,7 @@ void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
 	float a = 0;
 	float step = 2 * M_PI / sli;
 	for (int i = 0; i < sli; i++) {
-		buildUperSlice(raio,sta,a,step, s);
-		buildLowerSlice(raio, sta, a, step, s);
+		buildSliceSphere(raio,sta,a,step, s);
 		a += step;
 	}
 	
