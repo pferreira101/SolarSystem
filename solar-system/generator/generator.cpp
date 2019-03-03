@@ -50,7 +50,7 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 	string x_str = to_string(x);
 	string y_str = to_string(y);
 	string z_str = to_string(z);
-	float div = y / d;
+	float div = (float) y / d;
 	float height = 0;
 
 	// base
