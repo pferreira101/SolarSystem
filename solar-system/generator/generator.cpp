@@ -35,12 +35,12 @@ int fileWriter(string file, string content) {
 
 void planeHandler(int size, char* destFile){
 
-	string s = to_string(size/2) + ", 0, " + to_string(-size/2) + "\n" +
-			   to_string(-size/2) + ", 0, " + to_string(-size/2) + "\n" + 
-			   to_string(size/2) + ", 0, " + to_string(size/2) + "\n" + 
-			   to_string(-size/2) + ", 0, " + to_string(-size/2) + "\n" +
-			   to_string(-size/2) + ", 0, " + to_string(size/2) + "\n" +
-			   to_string(size/2) + ", 0, " + to_string(size/2);
+	string s = to_string(size/2) + ",0," + to_string(-size/2) + "\n" +
+			   to_string(-size/2) + ",0," + to_string(-size/2) + "\n" + 
+			   to_string(size/2) + ",0," + to_string(size/2) + "\n" + 
+			   to_string(-size/2) + ",0," + to_string(-size/2) + "\n" +
+			   to_string(-size/2) + ",0," + to_string(size/2) + "\n" +
+			   to_string(size/2) + ",0," + to_string(size/2);
 
 	fileWriter(destFile, s);
 }
@@ -54,12 +54,12 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 	float height = 0;
 
 	// base
-	s += "0, 0, " + z_str + "\n" +
-		 x_str + ", 0, 0\n" +
-		 x_str + ", 0, " + z_str +"\n" +		 
-		 "0, 0, " + z_str + "\n" + 
-		 "0, 0, 0\n" +
-		 x_str + ", 0, 0\n";
+	s += "0,0," + z_str + "\n" +
+		 x_str + ",0,0\n" +
+		 x_str + ",0," + z_str +"\n" +		 
+		 "0,0," + z_str + "\n" + 
+		 "0,0,0\n" +
+		 x_str + ",0,0\n";
 
 	// faces
 	for (int i = 0; i < d; i++, height += div) {
@@ -67,52 +67,52 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 		string h2_str = to_string(height + div);
 
 		// frontal
-		s += "0, " + h_str + ", " + z_str + "\n" +
-			 x_str + ", " + h_str + ", " + z_str + "\n" +
-			 x_str + ", " + h2_str + ", " + z_str + "\n" +
-			 x_str + ", " + h2_str + ", " + z_str + "\n" +
-			"0, " + h2_str + ", " + z_str + "\n" +
-			"0, " + h_str + ", " + z_str + "\n";	
+		s += "0," + h_str + "," + z_str + "\n" +
+			 x_str + "," + h_str + "," + z_str + "\n" +
+			 x_str + "," + h2_str + "," + z_str + "\n" +
+			 x_str + "," + h2_str + "," + z_str + "\n" +
+			"0," + h2_str + "," + z_str + "\n" +
+			"0," + h_str + "," + z_str + "\n";	
 
 		// lateral visivel
-		s += x_str + ", " + h_str + ", " + z_str + "\n" +
-			 x_str + ", " + h_str + ", 0\n" +
-			 x_str + ", " + h2_str + ", 0\n" +
-			 x_str + ", " + h2_str + ", 0\n" +
-			 x_str + ", " + h2_str + ", " + z_str + "\n" +
-			 x_str + ", " + h_str + ", " + z_str + "\n";
+		s += x_str + "," + h_str + "," + z_str + "\n" +
+			 x_str + "," + h_str + ",0\n" +
+			 x_str + "," + h2_str + ",0\n" +
+			 x_str + "," + h2_str + ",0\n" +
+			 x_str + "," + h2_str + "," + z_str + "\n" +
+			 x_str + "," + h_str + "," + z_str + "\n";
 
 		// lateral invisivel
-		s += "0, " + h_str + ", " + z_str + "\n" +
-			 "0, " + h2_str + ", 0\n" +
-			 "0, " + h_str + ", 0\n" +
-			 "0, " + h2_str + ", " + z_str + "\n" +
-			 "0, " + h2_str + ", 0\n" + 
-			 "0, " + h_str + ", " + z_str + "\n";
+		s += "0," + h_str + "," + z_str + "\n" +
+			 "0," + h2_str + ",0\n" +
+			 "0," + h_str + ",0\n" +
+			 "0," + h2_str + "," + z_str + "\n" +
+			 "0," + h2_str + ",0\n" + 
+			 "0," + h_str + "," + z_str + "\n";
 
 		// traseira
-		s += "0, " + h2_str + ", 0\n" +
-			 x_str + ", " + h2_str + ", 0\n" +
-			 x_str + ", " + h_str + ", 0\n" +
-			 "0, " + h2_str + ", 0\n" +
-			 x_str + ", " + h_str + ", 0\n" +
-			 "0, " + h_str + ", 0\n";
+		s += "0," + h2_str + ",0\n" +
+			 x_str + "," + h2_str + ",0\n" +
+			 x_str + "," + h_str + ",0\n" +
+			 "0," + h2_str + ",0\n" +
+			 x_str + "," + h_str + ",0\n" +
+			 "0," + h_str + ",0\n";
 	}
 
 	// topo
-	s += "0, " + y_str + ", " + z_str + "\n" +
-		 x_str + ", " + y_str + ", " + z_str + "\n" +
-		 x_str + ", " + y_str + ", 0\n" +
-		 "0, " + y_str + ", " + z_str + "\n" +
-		 x_str + ", " + y_str + ", 0\n" +
-		 "0, " + y_str + ", 0";
+	s += "0," + y_str + "," + z_str + "\n" +
+		 x_str + "," + y_str + "," + z_str + "\n" +
+		 x_str + "," + y_str + ",0\n" +
+		 "0," + y_str + "," + z_str + "\n" +
+		 x_str + "," + y_str + ",0\n" +
+		 "0," + y_str + ",0";
 
 	fileWriter(destFile, s);
 }
 
 
 void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
-	string s = ""; // = string("Guardar esfera com raio ") + r + ", " + slices + " slices e " + stacks + " stacks no ficheiro " + destFile + "\n";
+	string s = ""; // = string("Guardar esfera com raio ") + r + "," + slices + " slices e " + stacks + " stacks no ficheiro " + destFile + "\n";
 	float raio = atof(r);
 	int sli = atoi(slices);
 	int sta = atoi(stacks);

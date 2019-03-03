@@ -87,7 +87,7 @@ vector<Point> getPoints(const char *name) {
 	ifstream file;
 	file.open(name);
 
-	string delimiter = ", ";
+	string delimiter = ",";
 	int delim_len = delimiter.length();
 
 	vector<Point> points;
