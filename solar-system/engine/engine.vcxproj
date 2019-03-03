@@ -165,6 +165,12 @@
     <ClInclude Include="glut.h" />
     <ClInclude Include="tinyxml2.h" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="glut32.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
