@@ -112,7 +112,7 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 
 
 void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
-	string s; // = string("Guardar esfera com raio ") + r + ", " + slices + " slices e " + stacks + " stacks no ficheiro " + destFile + "\n";
+	string s = ""; // = string("Guardar esfera com raio ") + r + ", " + slices + " slices e " + stacks + " stacks no ficheiro " + destFile + "\n";
 	float raio = atof(r);
 	int sli = atoi(slices);
 	int sta = atoi(stacks);
@@ -124,7 +124,6 @@ void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
 
 
 	for (int i = 0; i < sli; i++) {
-		//buildSliceSphere(radius, stacks, a, step);
 		a = i * stepSide;
 		for (int j = 0; j < sta; j++) {
 			b = j * stepUp;
