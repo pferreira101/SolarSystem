@@ -110,8 +110,36 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 	fileWriter(destFile, s);
 }
 
+void buildUperSlice(float r, int stacks, float a, float stepSide, string s) {
+	float b = 0;
+	float step = (M_PI / 2)/stacks;
+	for (int i = 0; i < stacks; i++) {
+		string x = to_string(r*cos(a));
+		string x2 = to_string(r*cos(a+stepSide));
+		string y = to_string(r*cos(b));
+		string y2 = to_string(r*cos(b+step));
+		string z = to_string(r*cos(a));
+		
+		s.append(x + "," + y + "," + z);
+		s.append(x2 + "," + y2 + "," +  )
+
+		b += stacks;
+	}
+}
+
 void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
-	string s = string("Guardar esfera com raio ")+ r +", "+ slices +" slices e "+ stacks +" stacks no ficheiro "+ destFile +"\n";
+	string s; // = string("Guardar esfera com raio ") + r + ", " + slices + " slices e " + stacks + " stacks no ficheiro " + destFile + "\n";
+	float raio = atof(r);
+	int sli = atoi(slices);
+	int sta = atoi(stacks);
+	float a = 0;
+	float step = 2 * M_PI / sli;
+	for (int i = 0; i < sli; i++) {
+		buildUperSlice(raio,sta,a,step, s);
+		buildLowerSlice(raio, sta, a, step, s);
+		a += step;
+	}
+	
 	fileWriter(destFile, s);
 }
 
@@ -120,24 +148,25 @@ void buildSlice(int stacks, float r, float h, string s, float a, float stepSide,
 	float stepInside = sqrt((hips*hips) - (stepUp*stepUp));
 	float height = 0;
 	for (int i = 0; i < stacks - 1; i++) {
-		s.append(to_string(r*cos(a)) + "," + to_string(height) + "," + to_string(r*sin(a)) + "\n");
-		s.append(to_string((r - stepInside)*cos(a)) + "," + 
-				to_string(height + stepUp) + "," 
-					+ to_string((r - stepInside)*sin(a)) + "\n");
-		s.append(to_string((r - stepInside)*cos(a + stepSide)) + "," 
-				+ to_string(height + stepUp) + "," 
-					+ to_string((r - stepInside)*sin(a + stepSide)) + "\n");
+		string x = to_string(r*cos(a));
+		string x2 = to_string((r - stepInside)*cos(a));
+		string x3 = to_string((r - stepInside)*cos(a + stepSide));
+		string x4 = to_string(r*cos(a + stepSide));
+		string y = to_string(height);
+		string y2 = to_string(height + stepUp);
+		string z = to_string(r*sin(a));
+		string z2 = to_string((r - stepInside)*sin(a));
+		string z3 = to_string((r - stepInside)*sin(a + stepSide));
+		string z4 = to_string(r*sin(a + stepSide));
+
+		s.append(x + "," + y + "," + z + "\n");
+		s.append(x2 + "," + y2 + "," + z2 + "\n");
+		s.append(x3 + "," + y2 + "," + z3 + "\n");
 
 		
-		s.append(to_string((r - stepInside)*cos(a + stepSide)) + "," 
-				+ to_string(height + stepUp) + "," 
-					+ to_string((r - stepInside)*sin(a + stepSide)) + "\n");
-		s.append(to_string(r*cos(a + stepSide)) + "," 
-				+ to_string(height) + ","
-					+ to_string(r*sin(a + stepSide)) + "\n");
-		s.append(to_string(r*cos(a)) + "," 
-				+ to_string(height) + "," 
-			+ to_string(r*sin(a)) + "\n");
+		s.append(x3 + "," + y2 + "," + z3 + "\n");
+		s.append(x4 + "," + y + ","+ z4 + "\n");
+		s.append(x + "," + y + "," + z + "\n");
 		
 		height += stepUp;
 		r -= stepInside;
@@ -163,9 +192,14 @@ void coneHandler(char* r, char* h, char* slices, char* stacks, char* destFile){
 	float step = 2 * M_PI / sli;
 	float hip = sqrt((raio*raio) + (altura*altura));
 	for (int i = 0; i < sli; i++) {
+		string x = to_string(raio*cos(a));
+		string x2 = to_string((raio*cos(a + step)));
+		string z = to_string(raio * sin(a));
+		string z2 = to_string(raio * sin(a + step));
+		
 		s.append("0,0,0\n");
-		s.append(to_string(raio*cos(a)) + ",0," + to_string(raio * sin(a)) +"\n");
-		s.append(to_string((raio*cos(a + step))) + ",0," + to_string(raio * sin(a + step)) +"\n");
+		s.append(x + ",0," + z +"\n");
+		s.append(x2 + ",0," + z2 +"\n");
 		a += step;
 		buildSlice(sta,raio,altura,s,a,step,hip/atoi(stacks));
 	}	
