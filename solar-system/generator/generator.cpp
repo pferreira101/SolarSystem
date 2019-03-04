@@ -271,7 +271,7 @@ int main(int argc, char** argv){
     }
 
     if(error_flag) printf("Por favor insira todos os parâmetros necessários. \n");
-
+    printf("Ok\n");
 	return 1;
 
 }

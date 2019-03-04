@@ -1,11 +1,20 @@
-
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include "glut.h"
+#endif
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include "tinyxml2.h"
 #include <string>
 #include <vector>
-#include "glut.h"
+#include <math.h>
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 
 using namespace std;
 using namespace tinyxml2;
@@ -341,3 +350,5 @@ int main(int argc, char **argv) {
 
 	else return 0;
 }
+
+#pragma GCC diagnostic pop
