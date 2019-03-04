@@ -16,3 +16,5 @@ engine/Release
 *.idb
 *.3d
 solar-system/Release/sample.xml
+solar-system/.DS_Store
+solar-systemxcode/
