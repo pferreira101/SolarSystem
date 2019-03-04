@@ -15,3 +15,4 @@ engine/Release
 *.pch
 *.idb
 *.3d
+solar-system/Release/sample.xml

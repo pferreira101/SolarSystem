@@ -50,8 +50,8 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 	string x_str = to_string(x);
 	string y_str = to_string(y);
 	string z_str = to_string(z);
-	float div = (float) y / d;
-	float height = 0;
+	double div = (double) y / d;
+	double height = 0;
 
 	// base
 	s += "0,0," + z_str + "\n" +
@@ -113,14 +113,14 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 
 void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
 	string s = ""; // = string("Guardar esfera com raio ") + r + "," + slices + " slices e " + stacks + " stacks no ficheiro " + destFile + "\n";
-	float raio = atof(r);
+	double raio = atof(r);
 	int sli = atoi(slices);
 	int sta = atoi(stacks);
 	
-	float a = 0;
-	float stepSide = 2 * M_PI / sli;
-	float stepUp = M_PI / sta;
-	float b = 0;
+	double a = 0;
+	double stepSide = 2 * M_PI / sli;
+	double stepUp = M_PI / sta;
+	double b = 0;
 
 
 	for (int i = 0; i < sli; i++) {
@@ -156,10 +156,10 @@ void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
 	fileWriter(destFile, s);
 }
 
-void buildSlice(int stacks, float r, float h, string s, float a, float stepSide, float hips) {
-	float stepUp = (float)(h / stacks);
-	float stepInside = sqrt((hips*hips) - (stepUp*stepUp));
-	float height = 0;
+void buildSlice(int stacks, double r, double h, string s, double a, double stepSide, double hips) {
+	double stepUp = (double)(h / stacks);
+	double stepInside = sqrt((hips*hips) - (stepUp*stepUp));
+	double height = 0;
 	for (int i = 0; i < stacks - 1; i++) {
 		string x = to_string(r*cos(a));
 		string x2 = to_string((r - stepInside)*cos(a));
@@ -197,13 +197,13 @@ void buildSlice(int stacks, float r, float h, string s, float a, float stepSide,
 
 void coneHandler(char* r, char* h, char* slices, char* stacks, char* destFile){
 	string s;// = string("Guardar cone cujo raio da base é ")+ r +", tem altura "+ h +" com "+ slices +" slices e "+ stacks +" stacks no ficheiro "+ destFile +" \n";
-	float raio = atof(r);
-	float altura = atof(h);
+	double raio = atof(r);
+	double altura = atof(h);
 	int sli = atoi(slices);
 	int sta = atoi(stacks);
-	float a = 0;
-	float step = 2 * M_PI / sli;
-	float hip = sqrt((raio*raio) + (altura*altura));
+	double a = 0;
+	double step = 2 * M_PI / sli;
+	double hip = sqrt((raio*raio) + (altura*altura));
 	for (int i = 0; i < sli; i++) {
 		string x = to_string(raio*cos(a));
 		string x2 = to_string((raio*cos(a + step)));
