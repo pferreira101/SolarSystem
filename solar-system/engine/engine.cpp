@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -350,5 +351,6 @@ int main(int argc, char **argv) {
 
 	else return 0;
 }
+
 
 #pragma GCC diagnostic pop
