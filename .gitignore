@@ -3,6 +3,9 @@ generator/.vs
 generator/plane
 engine/.vs
 .vs
+solar-system/Release/sample.xml
+solar-system/.DS_Store
+solar-systemxcode/
 generator/Release
 engine/Release
 *.exe
@@ -15,6 +18,4 @@ engine/Release
 *.pch
 *.idb
 *.3d
-solar-system/Release/sample.xml
-solar-system/.DS_Store
-solar-systemxcode/
+
