@@ -139,14 +139,19 @@ void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
 			string z3 = to_string(raio*sin(b + stepUp)*cos(a + stepSide));
 			string z4 = to_string(raio*sin(b)*cos(a + stepSide));
 
+		
 			s.append(x + "," + y + "," + z + "\n");
 			s.append(x2 + "," + y2 + "," + z2 + "\n");
 			s.append(x3 + "," + y2 + "," + z3 + "\n");
 
 			s.append(x + "," + y + "," + z + "\n");
 			s.append(x3 + "," + y2 + "," + z3 + "\n");
-			s.append(x4 + "," + y2 + "," + z4 + "\n");
-
+			if (i == sli - 1 && j == sta - 1) {
+				s.append(x4 + "," + y+ "," + z4);
+			}
+			else {
+				s.append(x4 + "," + y + "," + z4 + "\n");
+			}
 		
 
 		}
@@ -156,7 +161,7 @@ void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
 	fileWriter(destFile, s);
 }
 
-void buildSlice(int stacks, double r, double h, string s, double a, double stepSide, double hips) {
+string buildSlice(int stacks, double r, double h, string s, double a, double stepSide, double hips) {
 	double stepUp = (double)(h / stacks);
 	double stepInside = sqrt((hips*hips) - (stepUp*stepUp));
 	double height = 0;
@@ -193,6 +198,8 @@ void buildSlice(int stacks, double r, double h, string s, double a, double stepS
 	s.append(to_string(r*cos(a)) + "," 
 		+ to_string(height) + "," 
 			+ to_string(r*sin(a)) + "\n");
+
+	return s;
 }
 
 void coneHandler(char* r, char* h, char* slices, char* stacks, char* destFile){
@@ -209,12 +216,16 @@ void coneHandler(char* r, char* h, char* slices, char* stacks, char* destFile){
 		string x2 = to_string((raio*cos(a + step)));
 		string z = to_string(raio * sin(a));
 		string z2 = to_string(raio * sin(a + step));
-		
+		a += step;
+		s = buildSlice(sta, raio, altura, s, a, step, hip / atoi(stacks));
 		s.append("0,0,0\n");
 		s.append(x + ",0," + z +"\n");
-		s.append(x2 + ",0," + z2 +"\n");
-		a += step;
-		buildSlice(sta,raio,altura,s,a,step,hip/atoi(stacks));
+		if (i == sli - 1) {
+			s.append(x2 + ",0," + z2);
+		}
+		else {
+			s.append(x2 + ",0," + z2 + "\n");
+		}
 	}	
 	fileWriter(destFile, s);
 } 
