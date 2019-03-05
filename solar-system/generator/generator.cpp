@@ -1,11 +1,13 @@
+#include "asprintf.h"
 #include <fstream>
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 
-using namespace std;
 #define _USE_MATH_DEFINES
+#include <math.h>
+
+using namespace std;
 
 /**
  Definação dos valores da funcao de hash para as figuras aceitaveis
@@ -42,11 +44,11 @@ int fileWriter(string file, string content) {
 Função responsável por calcular os pontos dos dois triângulos que compêm
 uma figura do tipo 'plane'
 */
-void planeHandler(float size, char* destFile){
-    float x1 = size/2;
-    float x2 = -1*x1;
-    float z1 = size/2;
-    float z2 = -1*z1;
+void planeHandler(double size, char* destFile){
+    double x1 = size/2;
+    double x2 = -1*x1;
+    double z1 = size/2;
+    double z2 = -1*z1;
     char* p;
     asprintf(&p,
             "%f,0,%f\n"
@@ -70,16 +72,16 @@ void planeHandler(float size, char* destFile){
  Função responsável por calcular os pontos dos triângulos que compêm
  uma figura do tipo 'box', centrada na origem
  */
-void boxHandler(float x, float y, float z, int d, char* destFile){
+void boxHandler(double x, double y, double z, int d, char* destFile){
 	string s;
 	string x_str = to_string(x);
 	string y_str = to_string(y);
 	string z_str = to_string(z);
 	double div = (double) y / d;
 	double height = -y/2;
-    float x1 = x/2;
-    float y1 = y/2;
-    float z1 = z/2;
+    double x1 = x/2;
+    double y1 = y/2;
+    double z1 = z/2;
     
     //calcular pontos da base e do topo (diferem no valor y)
     for(int i=0;i<2;i++){
