@@ -1,5 +1,6 @@
 #include "asprintf.h"
 #include <fstream>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -49,23 +50,22 @@ void planeHandler(double size, char* destFile){
     double x2 = -1*x1;
     double z1 = size/2;
     double z2 = -1*z1;
-    char* p;
-    asprintf(&p,
-            "%f,0,%f\n"
-            "%f,0,%f\n"
-            "%f,0,%f\n"
-            "%f,0,%f\n"
-            "%f,0,%f\n"
-            "%f,0,%f",
-            x1,z2,
-            x2,z2,
-            x1,z1,
-            x2,z2,
-            x2,z1,
-            x1,z1);
 
-	fileWriter(destFile, p);
-    free(p);
+    string s = "";
+    
+    string p1 = to_string(x1) + ",0," + to_string(z2) + "\n";
+    string p2 = to_string(x2) + ",0," + to_string(z2) + "\n";
+    string p3 = to_string(x1) + ",0," + to_string(z1) + "\n";
+    string p4 = to_string(x2) + ",0," + to_string(z1) + "\n";
+    
+    s.append(p1);
+    s.append(p2);
+    s.append(p3);
+    s.append(p2);
+    s.append(p4);
+    s.append(p3);
+    
+	fileWriter(destFile, s);
 }
 
 /**
@@ -73,10 +73,7 @@ void planeHandler(double size, char* destFile){
  uma figura do tipo 'box', centrada na origem
  */
 void boxHandler(double x, double y, double z, int d, char* destFile){
-	string s;
-	string x_str = to_string(x);
-	string y_str = to_string(y);
-	string z_str = to_string(z);
+	string s="";
 	double div = (double) y / d;
 	double height = -y/2;
     double x1 = x/2;
@@ -89,23 +86,17 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
             y1*=-1; //simetrico de y para desenhar face oposta
             x1*=-1; //simetrico de x por causa do vetor normal
         }
+        string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
+        string p2 = to_string(x1) + "," + to_string(y1) + "," + to_string(-z1) + "\n";
+        string p3 = to_string(-x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
+        string p4 = to_string(-x1) + "," + to_string(y1) + "," + to_string(-z1) + "\n";
         
-        char* base;
-        asprintf(&base,
-                 "%f,%f,%f\n"
-                 "%f,%f,%f\n"
-                 "%f,%f,%f\n"
-                 "%f,%f,%f\n"
-                 "%f,%f,%f\n"
-                 "%f,%f,%f\n",
-                 x1,y1,z1,
-                 x1,y1,-z1,
-                 -x1,y1,-z1,
-                 -x1,y1,-z1,
-                 -x1,y1,z1,
-                 x1,y1,z1);
-        s.append(base);
-        free(base);
+        s.append(p1);
+        s.append(p2);
+        s.append(p3);
+        s.append(p3);
+        s.append(p2);
+        s.append(p4);
     }
     y1*=-1; //recuperar valores originais
     x1*=-1;
@@ -120,22 +111,17 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
                 x1*=-1; //simetrico de x por causa do vetor normal
             }
             
-            char* face;
-            asprintf(&face,
-                     "%f,%f,%f\n"
-                     "%f,%f,%f\n"
-                     "%f,%f,%f\n"
-                     "%f,%f,%f\n"
-                     "%f,%f,%f\n"
-                     "%f,%f,%f\n",
-                     x1,height,z1,
-                     -x1,y2,z1,
-                     -x1,height,z1,
-                     x1,height,z1,
-                     x1,y2,z1,
-                     -x1,y2,z1);
-            s.append(face);
-            free(face);
+            string p1 = to_string(x1) + "," + to_string(height) + "," + to_string(z1) + "\n";
+            string p2 = to_string(-x1) + "," + to_string(y2) + "," + to_string(z1) + "\n";
+            string p3 = to_string(-x1) + "," + to_string(height) + "," + to_string(z1) + "\n";
+            string p4 = to_string(x1) + "," + to_string(y2) + "," + to_string(z1) + "\n";
+            
+            s.append(p1);
+            s.append(p2);
+            s.append(p3);
+            s.append(p1);
+            s.append(p4);
+            s.append(p2);
         }
         z1*=-1; // recuperar valores originais
         x1*=-1;
@@ -146,22 +132,17 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
                 x1*=-1; //simetrico de x para desenhar face oposta
             }
             
-            char* base;
-            asprintf(&base,
-                     "%f,%f,%f\n"
-                     "%f,%f,%f\n"
-                     "%f,%f,%f\n"
-                     "%f,%f,%f\n"
-                     "%f,%f,%f\n"
-                     "%f,%f,%f\n",
-                     x1,height,z1,
-                     x1,height,-z1,
-                     x1,y2,z1,
-                     x1,height,-z1,
-                     x1,y2,-z1,
-                     x1,y2,z1);
-            s.append(base);
-            free(base);
+            string p1 = to_string(x1) + "," + to_string(height) + "," + to_string(z1) + "\n";
+            string p2 = to_string(x1) + "," + to_string(height) + "," + to_string(-z1) + "\n";
+            string p3 = to_string(x1) + "," + to_string(y2) + "," + to_string(z1) + "\n";
+            string p4 = to_string(x1) + "," + to_string(y2) + "," + to_string(-z1) + "\n";
+            
+            s.append(p1);
+            s.append(p2);
+            s.append(p3);
+            s.append(p2);
+            s.append(p4);
+            s.append(p3);
         }
     }
 
@@ -169,122 +150,123 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
 	fileWriter(destFile, s);
 }
 
-
-void sphereHandler(char* r, char* slices, char* stacks, char* destFile){
-	string s = ""; // = string("Guardar esfera com raio ") + r + "," + slices + " slices e " + stacks + " stacks no ficheiro " + destFile + "\n";
-	double raio = atof(r);
-	int sli = atoi(slices);
-	int sta = atoi(stacks);
-	
+/**
+ Função responsável por os pontos dos triângulos que compêm uma figura do tipo 'sphere', centrada
+ na origem
+ */
+void sphereHandler(double raio, int slices, int stacks, char* destFile){
+	string s = "";
 	double a = 0;
-	double stepSide = 2 * M_PI / sli;
-	double stepUp = M_PI / sta;
+	double stepSide = 2 * M_PI / slices;
+	double stepUp = M_PI / stacks;
 	double b = 0;
 
-
-	for (int i = 0; i < sli; i++) {
+	for (int i = 0; i < slices; i++){
 		a = i * stepSide;
-		for (int j = 0; j < sta; j++) {
+		for (int j = 0; j < stacks; j++){
 			b = j * stepUp;
-
-			string x = to_string(raio*sin(b)*sin(a));
-			string x2 = to_string(raio*sin(b + stepUp)*sin(a));
-			string x3 = to_string(raio*sin(b + stepUp)*sin(a + stepSide));
-			string x4 = to_string(raio*sin(b)*sin(a + stepSide));
-			string y = to_string(raio*cos(b));
-			string y2 = to_string(raio*cos(b + stepUp));
-			string z = to_string(raio*sin(b)*cos(a));
-			string z2 = to_string(raio*sin(b + stepUp)*cos(a));
-			string z3 = to_string(raio*sin(b + stepUp)*cos(a + stepSide));
-			string z4 = to_string(raio*sin(b)*cos(a + stepSide));
-
+            
+            double x1 = raio*sin(b)*sin(a);
+            double x2 = raio*sin(b + stepUp)*sin(a);
+            double x3 = raio*sin(b + stepUp)*sin(a + stepSide);
+            double x4 = raio*sin(b)*sin(a + stepSide);
+            double y1 = raio*cos(b);
+            double y2 = raio*cos(b + stepUp);
+            double z1 = raio*sin(b)*cos(a);
+            double z2 = raio*sin(b + stepUp)*cos(a);
+            double z3 = raio*sin(b + stepUp)*cos(a + stepSide);
+            double z4 = raio*sin(b)*cos(a + stepSide);
+            
+            string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
+            string p2 = to_string(x2) + "," + to_string(y2) + "," + to_string(z2) + "\n";
+            string p3 = to_string(x3) + "," + to_string(y2) + "," + to_string(z3) + "\n";
+            string p4 = to_string(x4) + "," + to_string(y1) + "," + to_string(z4) + "\n";
 		
-			s.append(x + "," + y + "," + z + "\n");
-			s.append(x2 + "," + y2 + "," + z2 + "\n");
-			s.append(x3 + "," + y2 + "," + z3 + "\n");
+			s.append(p1);
+			s.append(p2);
+			s.append(p3);
 
-			s.append(x + "," + y + "," + z + "\n");
-			s.append(x3 + "," + y2 + "," + z3 + "\n");
-			if (i == sli - 1 && j == sta - 1) {
-				s.append(x4 + "," + y+ "," + z4);
-			}
-			else {
-				s.append(x4 + "," + y + "," + z4 + "\n");
-			}
-		
-
+			s.append(p1);
+			s.append(p3);
+            s.append(p4);
 		}
-
 	}
 
 	fileWriter(destFile, s);
 }
 
+/**
+ Função auxiliar ao desenho de uma figura do tipo 'cone'. Calcula os pontos
+ dos triângulos que compêm uma slice do cone.
+ */
 string buildSlice(int stacks, double r, double h, string s, double a, double stepSide, double hips) {
 	double stepUp = (double)(h / stacks);
 	double stepInside = sqrt((hips*hips) - (stepUp*stepUp));
 	double height = 0;
+    string p1;
+    string p2;
+    string p3;
+    string p4;
+    
 	for (int i = 0; i < stacks - 1; i++) {
-		string x = to_string(r*cos(a));
-		string x2 = to_string((r - stepInside)*cos(a));
-		string x3 = to_string((r - stepInside)*cos(a + stepSide));
-		string x4 = to_string(r*cos(a + stepSide));
-		string y = to_string(height);
-		string y2 = to_string(height + stepUp);
-		string z = to_string(r*sin(a));
-		string z2 = to_string((r - stepInside)*sin(a));
-		string z3 = to_string((r - stepInside)*sin(a + stepSide));
-		string z4 = to_string(r*sin(a + stepSide));
-
-		s.append(x + "," + y + "," + z + "\n");
-		s.append(x2 + "," + y2 + "," + z2 + "\n");
-		s.append(x3 + "," + y2 + "," + z3 + "\n");
-
-		
-		s.append(x3 + "," + y2 + "," + z3 + "\n");
-		s.append(x4 + "," + y + ","+ z4 + "\n");
-		s.append(x + "," + y + "," + z + "\n");
-		
+        double x1 = r*cos(a);
+        double x2 = (r - stepInside)*cos(a);
+        double x3 = (r - stepInside)*cos(a + stepSide);
+        double x4 = r*cos(a + stepSide);
+        double y1 = height;
+        double y2 = height + stepUp;
+        double z1 = r*sin(a);
+        double z2 = (r - stepInside)*sin(a);
+        double z3 = (r - stepInside)*sin(a + stepSide);
+        double z4 = r*sin(a + stepSide);
+        
+        p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
+        p2 = to_string(x2) + "," + to_string(y2) + "," + to_string(z2) + "\n";
+        p3 = to_string(x3) + "," + to_string(y2) + "," + to_string(z3) + "\n";
+        p4 = to_string(x4) + "," + to_string(y1) + "," + to_string(z4) + "\n";
+        
+        s.append(p1);
+        s.append(p2);
+        s.append(p3);
+        
+        s.append(p3);
+        s.append(p4);
+        s.append(p1);
+        
 		height += stepUp;
 		r -= stepInside;
 
 	}
 
+    // "cobertura" do cone
 	s.append("0," + to_string(h) + ",0\n");
-	s.append(to_string(r*cos(a + stepSide)) + "," 
-		+ to_string(height) + "," 
-			+ to_string(r*sin(a + stepSide)) + "\n");
-	s.append(to_string(r*cos(a)) + "," 
-		+ to_string(height) + "," 
-			+ to_string(r*sin(a)) + "\n");
-
+    s.append(p3);
+    s.append(p2);
+    
 	return s;
 }
-
-void coneHandler(char* r, char* h, char* slices, char* stacks, char* destFile){
-	string s;// = string("Guardar cone cujo raio da base é ")+ r +", tem altura "+ h +" com "+ slices +" slices e "+ stacks +" stacks no ficheiro "+ destFile +" \n";
-	double raio = atof(r);
-	double altura = atof(h);
-	int sli = atoi(slices);
-	int sta = atoi(stacks);
+/**
+ Função responsável por calcular os pontos que formarão uma figura do tipo 'cone'.
+ */
+void coneHandler(double raio, double altura, int slices, int stacks, char* destFile){
+	string s;
 	double a = 0;
-	double step = 2 * M_PI / sli;
+	double step = 2 * M_PI / slices;
 	double hip = sqrt((raio*raio) + (altura*altura));
-	for (int i = 0; i < sli; i++) {
-		string x = to_string(raio*cos(a));
+    
+	for (int i = 0; i < slices; i++) {
+		string x1 = to_string(raio*cos(a));
 		string x2 = to_string((raio*cos(a + step)));
-		string z = to_string(raio * sin(a));
+		string z1 = to_string(raio * sin(a));
 		string z2 = to_string(raio * sin(a + step));
+        
 		a += step;
-		s = buildSlice(sta, raio, altura, s, a, step, hip / atoi(stacks));
-		s.append("0,0,0\n");
-		s.append(x + ",0," + z +"\n");
-		if (i == sli - 1) {
-			s.append(x2 + ",0," + z2);
-		}
-		else {
-			s.append(x2 + ",0," + z2 + "\n");
-		}
+		s = buildSlice(stacks, raio, altura, s, a, step, hip / stacks);
+		
+        // desenhar a base do cone
+        s.append("0,0,0\n");
+		s.append(x1 + ",0," + z1 +"\n");
+        s.append(x2 + ",0," + z2 + "\n");
 	}	
 	fileWriter(destFile, s);
 } 
@@ -315,12 +297,12 @@ int main(int argc, char** argv){
         	break;
 
     	case SPHERE:
-       	 	if(argc == 6) sphereHandler(argv[2], argv[3], argv[4], argv[5]);	
+       	 	if(argc == 6) sphereHandler(atof(argv[2]), atoi(argv[3]), atoi(argv[4]), argv[5]);
        	 	else error_flag = 1;
         	break;
 
         case CONE:
-       	 	if(argc == 7) coneHandler(argv[2], argv[3], argv[4], argv[5], argv[6]);
+       	 	if(argc == 7) coneHandler(atof(argv[2]), atof(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6]);
        	 	else error_flag = 1;
         	break;
 

@@ -99,7 +99,6 @@ vector<Point> getPoints(const char *name) {
 
 	string delimiter = ",";
 	int delim_len = delimiter.length();
-    printf("sdasdas %d\n",delim_len);
 	vector<Point> points;
 	
 
