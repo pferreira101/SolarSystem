@@ -42,7 +42,7 @@ int fileWriter(string file, string content) {
 }
 
 /**
-Função responsável por calcular os pontos dos dois triângulos que compêm
+Função responsável por calcular os pontos dos dois triângulos que compõem
 uma figura do tipo 'plane'
 */
 void planeHandler(double size, char* destFile){
@@ -69,7 +69,7 @@ void planeHandler(double size, char* destFile){
 }
 
 /**
- Função responsável por calcular os pontos dos triângulos que compêm
+ Função responsável por calcular os pontos dos triângulos que compõem
  uma figura do tipo 'box', centrada na origem
  */
 void boxHandler(double x, double y, double z, int d, char* destFile){
@@ -151,7 +151,7 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
 }
 
 /**
- Função responsável por os pontos dos triângulos que compêm uma figura do tipo 'sphere', centrada
+ Função responsável por os pontos dos triângulos que compõem uma figura do tipo 'sphere', centrada
  na origem
  */
 void sphereHandler(double raio, int slices, int stacks, char* destFile){
@@ -197,7 +197,7 @@ void sphereHandler(double raio, int slices, int stacks, char* destFile){
 
 /**
  Função auxiliar ao desenho de uma figura do tipo 'cone'. Calcula os pontos
- dos triângulos que compêm uma slice do cone.
+ dos triângulos que compõem uma slice do cone.
  */
 string buildSlice(int stacks, double r, double h, string s, double a, double stepSide, double hips) {
 	double stepUp = (double)(h / stacks);
@@ -246,7 +246,7 @@ string buildSlice(int stacks, double r, double h, string s, double a, double ste
 	return s;
 }
 /**
- Função responsável por calcular os pontos que formarão uma figura do tipo 'cone'.
+ Função responsável por calcular os pontos que formam uma figura do tipo 'cone'.
  */
 void coneHandler(double raio, double altura, int slices, int stacks, char* destFile){
 	string s;

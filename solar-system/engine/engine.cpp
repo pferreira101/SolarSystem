@@ -27,24 +27,24 @@ class Point {
 	float x, y, z;
 public:
 
-	void set_values(float a, float b, float c) {
+	void set_values(double a, double b, double c) {
 		x = a;
 		y = b;
 		z = c;
 	}
-	float getX() {
+	double getX() {
 		return x;
 	}
-	float getY() {
+	double getY() {
 		return y;
 	}
-	float getZ() {
+	double getZ() {
 		return z;
 	}
 };
 
 /**
-Classe que guarda os trÍs pontos de um tri‚ngulo
+Classe que guarda os três pontos de um triângulo
 */
 class Triangle {
 	Point one, two, three;
@@ -69,7 +69,7 @@ public:
 
 
 /**
-Classe que guarda a lista de tri‚ngulos que compıe uma figura
+Classe que guarda a lista de triângulos que compõem uma figura
 */
 class Figure {
 	vector<Triangle> triangles;
@@ -79,18 +79,18 @@ public:
 		triangles = ts;
 	}
 
-	vector<Triangle> get_values() {
+	vector<Triangle> get_triangles() {
 		return triangles;
 	}
 };
 
 /**
-Vari·vel global com a lista de figuras a desenhar
+Variável global com a lista de figuras a desenhar
 */
 vector<Figure> figures;
 
 /**
-FunÁ„o que, partindo de um ficheiro gerado pelo generator, devolve a lista dos pontos existentes nesse ficheiro.
+Função que, partindo de um ficheiro gerado pelo programa 'generator', devolve a lista dos pontos existentes nesse ficheiro.
 */
 vector<Point> getPoints(const char *name) {
 	string point;
@@ -102,10 +102,10 @@ vector<Point> getPoints(const char *name) {
 	vector<Point> points;
 	
 
-	while (!file.eof()) { // To get you all the lines.
+	while (!file.eof()) { // ler ficheiro completo
 
-		getline(file, point); // Saves the line in STRING.
-        if(!point.compare("")) break; // ultima linha do ficheiro é vazia
+		getline(file, point); // ler uma linha
+        if(!point.compare("")) break; // ultima linha do ficheiro é vazia, não deve ser processada
 		
         string token;
 		float coord[3];
@@ -122,7 +122,7 @@ vector<Point> getPoints(const char *name) {
 
 		Point p;
 		p.set_values(coord[0], coord[1], coord[2]);
-		points.push_back(p);
+		points.push_back(p);//adicona novo elemento no fim do vector
 		
 	}
 	file.close();
@@ -131,7 +131,7 @@ vector<Point> getPoints(const char *name) {
 }
 
 /**
-FunÁ„o que constrÛi uma lista de tri‚ngulos consoante a lista de pontos que recebe como par‚metro
+Função que constrÛi uma lista de triângulos consoante a lista de pontos que recebe como parâmetro
 */
 vector<Triangle> getTriangles(vector<Point> points) {	
 	vector<Triangle> triangles;
@@ -144,7 +144,7 @@ vector<Triangle> getTriangles(vector<Point> points) {
 		
 		pts[i] = (*it);
 
-		if (i == 2) { // ver se È o 3o ponto e formar triangulo
+		if (i == 2) { // ver se é o 3o ponto e formar triangulo
 			Triangle t;
 			t.set_values(pts[0], pts[1], pts[2]);
 			triangles.push_back(t);
@@ -157,12 +157,14 @@ vector<Triangle> getTriangles(vector<Point> points) {
 }
 
 /**
-FunÁ„o que desenha um figura recebida como par‚metro
+Função que desenha um figura recebida como parâmetro
+ @returns valor máximo usado no eixo dos Zs
 */
-void drawModel(Figure f) {
+double drawModel(Figure f) {
+    double max=0;
     int color=0;
-	vector<Triangle> triangles;
-	triangles = f.get_values();
+	vector<Triangle> triangles = f.get_triangles();
+    
 	glBegin(GL_TRIANGLES);
 	for (vector<Triangle>::iterator it = triangles.begin(); it != triangles.end(); ++it) {
 		Triangle t = *it;
@@ -175,15 +177,26 @@ void drawModel(Figure f) {
 		glVertex3d(t.getOne().getX(), t.getOne().getY(), t.getOne().getZ());
 		glVertex3d(t.getTwo().getX(), t.getTwo().getY(), t.getTwo().getZ());
 		glVertex3d(t.getThree().getX(), t.getThree().getY(), t.getThree().getZ());
+        
+        //remover quando nao for preciso posiciar camera
+        if(max < t.getOne().getZ())
+            max = t.getOne().getZ();
+        if(max < t.getTwo().getZ())
+            max = t.getTwo().getZ();
+        if(max < t.getThree().getZ())
+            max = t.getThree().getZ();
+        
         color = abs(color-1);
 	}
 	glEnd();
+    
+    return max;
 }
 
 
 
 /**
-FunÁ„o que interpreta um cen·rio gr·fico em XML
+Função que interpreta um cenário gráfico em XML
 */
 int readXML(const char *filename) {
 
@@ -219,7 +232,7 @@ int readXML(const char *filename) {
 // GLUT ------------------------------------------------------------------------------------
 float alpha = 0;
 float beta = 0.5;
-float radius = 8;
+float radius;
 
 
 void changeSize(int w, int h) {
@@ -252,26 +265,26 @@ void drawCoordinates() {
 	glBegin(GL_LINES);
 		// x
 		glColor3f(1.0, 0.0, 0.0); // red x	
-		glVertex3f(-4.0, 0.0f, 0.0f);
-		glVertex3f(4.0, 0.0f, 0.0f);
+		glVertex3f(-40.0, 0.0f, 0.0f);
+		glVertex3f(40.0, 0.0f, 0.0f);
 
 
 		// y 
 		glColor3f(0.0, 1.0, 0.0); // green y
 		glBegin(GL_LINES);
-		glVertex3f(0.0, -4.0f, 0.0f);
-		glVertex3f(0.0, 4.0f, 0.0f);
+		glVertex3f(0.0, -40.0f, 0.0f);
+		glVertex3f(0.0, 40.0f, 0.0f);
 
 
 		// z 
 		glColor3f(0.0, 0.0, 1.0); // blue z
-		glVertex3f(0.0, 0.0f, -4.0f);
-		glVertex3f(0.0, 0.0f, 4.0f);
+		glVertex3f(0.0, 0.0f, -40.0f);
+		glVertex3f(0.0, 0.0f, 40.0f);
 
 	glEnd();
 }
 
-
+int inicio=1;
 void renderScene(void) {
 
 	glClearColor(20.0f, 20.0f, 20.0f, 1);
@@ -280,16 +293,19 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-	gluLookAt(radius*cos(beta)*cos(alpha), radius*sin(beta), radius*cos(beta)*sin(alpha),
-			  0.0, 0.0, 0.0,
-			  0.0f, 1.0f, 0.0f);
+    gluLookAt(radius*cos(beta)*cos(alpha), radius*sin(beta), radius*cos(beta)*sin(alpha),
+              0.0, 0.0, 0.0,
+              0.0f, 1.0f, 0.0f);
 
 	glColor3b(0, 5, 20);
 	
+    double maxZ=0;
 	for (vector<Figure>::iterator it = figures.begin(); it != figures.end(); ++it) {
 		Figure f = *it;
-		drawModel(f);
+		int mZ = drawModel(f);
+        if(mZ>maxZ) maxZ = mZ;
 	}
+    if(inicio) {radius = 4*maxZ; inicio=0; glutPostRedisplay();} // posicionar a camera para ver melhor a figura
 
 	drawCoordinates();
 
@@ -327,7 +343,7 @@ void processCamera(unsigned char key, int x, int y) {
 int main(int argc, char **argv) {
 
 	if (argc == 1) {
-		printf("Por favor insira todos os par‚metros necess·rios. \n");
+		printf("Por favor insira todos os parâmetros necessários. \n");
 		return -1;
 	}
 
