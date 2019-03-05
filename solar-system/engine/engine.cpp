@@ -106,8 +106,9 @@ vector<Point> getPoints(const char *name) {
 	while (!file.eof()) { // To get you all the lines.
 
 		getline(file, point); // Saves the line in STRING.
-
-		string token;
+        if(!point.compare("")) break; // ultima linha do ficheiro Ž vazia
+		
+        string token;
 		float coord[3];
 		int i = 0;
 

@@ -76,65 +76,17 @@ void boxHandler(float x, float y, float z, int d, char* destFile){
 	string y_str = to_string(y);
 	string z_str = to_string(z);
 	double div = (double) y / d;
-	double height = 0;
+	double height = -y/2;
     float x1 = x/2;
     float y1 = y/2;
     float z1 = z/2;
     
-
-    
-
-    // topo
-    /*
-             s += "0," + y_str + "," + z_str + "\n" +
-             x_str + "," + y_str + "," + z_str + "\n" +
-             x_str + "," + y_str + ",0\n" +
-             "0," + y_str + "," + z_str + "\n" +
-             x_str + "," + y_str + ",0\n" +
-             "0," + y_str + ",0";
-    */
-    /*
-	// faces
-	for (int i = 0; i < d; i++, height += div) {
-		string h_str = to_string(height);
-		string h2_str = to_string(height + div);
-
-		// frontal
-		s += "0," + h_str + "," + z_str + "\n" +
-			 x_str + "," + h_str + "," + z_str + "\n" +
-			 x_str + "," + h2_str + "," + z_str + "\n" +
-			 x_str + "," + h2_str + "," + z_str + "\n" +
-			"0," + h2_str + "," + z_str + "\n" +
-			"0," + h_str + "," + z_str + "\n";	
-
-		// lateral visivel
-		s += x_str + "," + h_str + "," + z_str + "\n" +
-			 x_str + "," + h_str + ",0\n" +
-			 x_str + "," + h2_str + ",0\n" +
-			 x_str + "," + h2_str + ",0\n" +
-			 x_str + "," + h2_str + "," + z_str + "\n" +
-			 x_str + "," + h_str + "," + z_str + "\n";
-
-		// lateral invisivel
-		s += "0," + h_str + "," + z_str + "\n" +
-			 "0," + h2_str + ",0\n" +
-			 "0," + h_str + ",0\n" +
-			 "0," + h2_str + "," + z_str + "\n" +
-			 "0," + h2_str + ",0\n" + 
-			 "0," + h_str + "," + z_str + "\n";
-
-		// traseira
-		s += "0," + h2_str + ",0\n" +
-			 x_str + "," + h2_str + ",0\n" +
-			 x_str + "," + h_str + ",0\n" +
-			 "0," + h2_str + ",0\n" +
-			 x_str + "," + h_str + ",0\n" +
-			 "0," + h_str + ",0\n";
-	}
-    */
     //calcular pontos da base e do topo (diferem no valor y)
     for(int i=0;i<2;i++){
-        if(i==1) {y1*=-1;x1*=-1;}//inverte y e x para desenhar face oposta
+        if(i==1) {
+            y1*=-1; //simetrico de y para desenhar face oposta
+            x1*=-1; //simetrico de x por causa do vetor normal
+        }
         
         char* base;
         asprintf(&base,
@@ -143,7 +95,7 @@ void boxHandler(float x, float y, float z, int d, char* destFile){
                  "%f,%f,%f\n"
                  "%f,%f,%f\n"
                  "%f,%f,%f\n"
-                 "%f,%f,%f",
+                 "%f,%f,%f\n",
                  x1,y1,z1,
                  x1,y1,-z1,
                  -x1,y1,-z1,
@@ -151,11 +103,65 @@ void boxHandler(float x, float y, float z, int d, char* destFile){
                  -x1,y1,z1,
                  x1,y1,z1);
         s.append(base);
-        if(i==0)s.append("\n");
         free(base);
     }
     y1*=-1; //recuperar valores originais
     x1*=-1;
+    
+    
+    for (int i = 0; i < d; i++, height += div) { // desenhar os varios segmentos da caixa
+        double y2 = height+div;
+        
+        for(int j=0; j<2; j++){ // desenhar faces paralelas ao eixo do x (diferem no valor z)
+            if(j==1) {
+                z1*=-1; //simetrico de z para desenhar face oposta
+                x1*=-1; //simetrico de x por causa do vetor normal
+            }
+            
+            char* face;
+            asprintf(&face,
+                     "%f,%f,%f\n"
+                     "%f,%f,%f\n"
+                     "%f,%f,%f\n"
+                     "%f,%f,%f\n"
+                     "%f,%f,%f\n"
+                     "%f,%f,%f\n",
+                     x1,height,z1,
+                     -x1,y2,z1,
+                     -x1,height,z1,
+                     x1,height,z1,
+                     x1,y2,z1,
+                     -x1,y2,z1);
+            s.append(face);
+            free(face);
+        }
+        z1*=-1; // recuperar valores originais
+        x1*=-1;
+        
+        for(int j=0; j<2; j++){ // desenhar faces paralelas ao eixo do z (diferem no valor x)
+            if(j==1) {
+                z1*=-1; //simetrico de z por causa do vetor normal
+                x1*=-1; //simetrico de x para desenhar face oposta
+            }
+            
+            char* base;
+            asprintf(&base,
+                     "%f,%f,%f\n"
+                     "%f,%f,%f\n"
+                     "%f,%f,%f\n"
+                     "%f,%f,%f\n"
+                     "%f,%f,%f\n"
+                     "%f,%f,%f\n",
+                     x1,height,z1,
+                     x1,height,-z1,
+                     x1,y2,z1,
+                     x1,height,-z1,
+                     x1,y2,-z1,
+                     x1,y2,z1);
+            s.append(base);
+            free(base);
+        }
+    }
 
     
 	fileWriter(destFile, s);
