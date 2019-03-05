@@ -1,19 +1,24 @@
-
 #include <fstream>
-
-#define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdio.h>
-#include <string>  
-using namespace std;
+#include <stdlib.h>
+#include <string>
 
-//definação dos valores da funcao de hash para as figuras aceitaveis (nao podem ser calculados em run time
-// para se puderem usar no switch
+using namespace std;
+#define _USE_MATH_DEFINES
+
+/**
+ Definação dos valores da funcao de hash para as figuras aceitaveis
+ - não podem ser calculados em run time para se puderem usar no switch
+ */
 #define PLANE 5488
 #define BOX 3161
 #define SPHERE 7234
 #define CONE 4000
 
+/**
+ Função auxiliar para calcular o valor do argv[1] a usar
+ */
 int hashF(char* s){
 	int r=0;
 	for(int i=0; s[i]; i++){
@@ -22,7 +27,9 @@ int hashF(char* s){
 	return r;
 }
 
-
+/**
+ Função para realizar escritas no ficheiro passado como argumento
+ */
 int fileWriter(string file, string content) {
 	ofstream myfile;
 	myfile.open(file);
@@ -31,36 +38,62 @@ int fileWriter(string file, string content) {
 	return 0;
 }
 
+/**
+Função responsável por calcular os pontos dos dois triângulos que compêm
+uma figura do tipo 'plane'
+*/
+void planeHandler(float size, char* destFile){
+    float x1 = size/2;
+    float x2 = -1*x1;
+    float z1 = size/2;
+    float z2 = -1*z1;
+    char* p;
+    asprintf(&p,
+            "%f,0,%f\n"
+            "%f,0,%f\n"
+            "%f,0,%f\n"
+            "%f,0,%f\n"
+            "%f,0,%f\n"
+            "%f,0,%f",
+            x1,z2,
+            x2,z2,
+            x1,z1,
+            x2,z2,
+            x2,z1,
+            x1,z1);
 
-
-void planeHandler(int size, char* destFile){
-
-	string s = to_string(size/2) + ",0," + to_string(-size/2) + "\n" +
-			   to_string(-size/2) + ",0," + to_string(-size/2) + "\n" + 
-			   to_string(size/2) + ",0," + to_string(size/2) + "\n" + 
-			   to_string(-size/2) + ",0," + to_string(-size/2) + "\n" +
-			   to_string(-size/2) + ",0," + to_string(size/2) + "\n" +
-			   to_string(size/2) + ",0," + to_string(size/2);
-
-	fileWriter(destFile, s);
+	fileWriter(destFile, p);
+    free(p);
 }
 
-void boxHandler(int x, int y, int z, int d, char* destFile){
+/**
+ Função responsável por calcular os pontos dos triângulos que compêm
+ uma figura do tipo 'box', centrada na origem
+ */
+void boxHandler(float x, float y, float z, int d, char* destFile){
 	string s;
 	string x_str = to_string(x);
 	string y_str = to_string(y);
 	string z_str = to_string(z);
 	double div = (double) y / d;
 	double height = 0;
+    float x1 = x/2;
+    float y1 = y/2;
+    float z1 = z/2;
+    
 
-	// base
-	s += "0,0," + z_str + "\n" +
-		 x_str + ",0,0\n" +
-		 x_str + ",0," + z_str +"\n" +		 
-		 "0,0," + z_str + "\n" + 
-		 "0,0,0\n" +
-		 x_str + ",0,0\n";
+    
 
+    // topo
+    /*
+             s += "0," + y_str + "," + z_str + "\n" +
+             x_str + "," + y_str + "," + z_str + "\n" +
+             x_str + "," + y_str + ",0\n" +
+             "0," + y_str + "," + z_str + "\n" +
+             x_str + "," + y_str + ",0\n" +
+             "0," + y_str + ",0";
+    */
+    /*
 	// faces
 	for (int i = 0; i < d; i++, height += div) {
 		string h_str = to_string(height);
@@ -98,15 +131,33 @@ void boxHandler(int x, int y, int z, int d, char* destFile){
 			 x_str + "," + h_str + ",0\n" +
 			 "0," + h_str + ",0\n";
 	}
+    */
+    //calcular pontos da base e do topo (diferem no valor y)
+    for(int i=0;i<2;i++){
+        if(i==1) {y1*=-1;x1*=-1;}//inverte y e x para desenhar face oposta
+        
+        char* base;
+        asprintf(&base,
+                 "%f,%f,%f\n"
+                 "%f,%f,%f\n"
+                 "%f,%f,%f\n"
+                 "%f,%f,%f\n"
+                 "%f,%f,%f\n"
+                 "%f,%f,%f",
+                 x1,y1,z1,
+                 x1,y1,-z1,
+                 -x1,y1,-z1,
+                 -x1,y1,-z1,
+                 -x1,y1,z1,
+                 x1,y1,z1);
+        s.append(base);
+        if(i==0)s.append("\n");
+        free(base);
+    }
+    y1*=-1; //recuperar valores originais
+    x1*=-1;
 
-	// topo
-	s += "0," + y_str + "," + z_str + "\n" +
-		 x_str + "," + y_str + "," + z_str + "\n" +
-		 x_str + "," + y_str + ",0\n" +
-		 "0," + y_str + "," + z_str + "\n" +
-		 x_str + "," + y_str + ",0\n" +
-		 "0," + y_str + ",0";
-
+    
 	fileWriter(destFile, s);
 }
 
@@ -237,7 +288,7 @@ int main(int argc, char** argv){
 
 	switch (hashF(argv[1])){
     	case PLANE:
-        	if(argc == 4) planeHandler(atoi(argv[2]), argv[3]);
+        	if(argc == 4) planeHandler(atof(argv[2]), argv[3]);
         	else error_flag = 1;
         	break;
 
@@ -250,7 +301,7 @@ int main(int argc, char** argv){
 					dim = atoi(argv[5]); 
 					fdest = argv[6];
 				}
-				boxHandler(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), dim, fdest);
+				boxHandler(atof(argv[2]), atof(argv[3]), atof(argv[4]), dim, fdest);
         	}
         	else error_flag = 1;
         	break;
@@ -269,6 +320,8 @@ int main(int argc, char** argv){
        		printf("Por favor, insira um sólido válido. \n");
         	break;
     }
+    
+
 
     if(error_flag) printf("Por favor insira todos os parâmetros necessários. \n");
     printf("Ok\n");

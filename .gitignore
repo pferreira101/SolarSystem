@@ -8,6 +8,9 @@ solar-system/.DS_Store
 solar-systemxcode/
 generator/Release
 engine/Release
+solar-system/Release/.DS_Store
+solar-system/Release/sample2.xml
+.DS_Store
 *.exe
 *.ipdb
 *.iobj

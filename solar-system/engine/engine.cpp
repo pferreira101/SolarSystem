@@ -99,7 +99,7 @@ vector<Point> getPoints(const char *name) {
 
 	string delimiter = ",";
 	int delim_len = delimiter.length();
-
+    printf("sdasdas %d\n",delim_len);
 	vector<Point> points;
 	
 
@@ -111,11 +111,11 @@ vector<Point> getPoints(const char *name) {
 		float coord[3];
 		int i = 0;
 
-		int pos_start = 0,pos_end;
+		int pos_start = 0, pos_end;
 
 		while (i<3) {
 			pos_end = point.find(delimiter, pos_start);
-			token = point.substr(pos_start, pos_end-pos_start);
+            token = point.substr(pos_start, pos_end-pos_start);
 			coord[i++] = stof(token);
 			pos_start = pos_end + delim_len;
 		}
@@ -160,14 +160,22 @@ vector<Triangle> getTriangles(vector<Point> points) {
 Função que desenha um figura recebida como parâmetro
 */
 void drawModel(Figure f) {
+    int color=0;
 	vector<Triangle> triangles;
 	triangles = f.get_values();
 	glBegin(GL_TRIANGLES);
 	for (vector<Triangle>::iterator it = triangles.begin(); it != triangles.end(); ++it) {
 		Triangle t = *it;
+        
+        if(color==0)
+            glColor3f(0.49,0.51,0.53);
+        else
+            glColor3f(0.2,0.2,0.2);
+        
 		glVertex3d(t.getOne().getX(), t.getOne().getY(), t.getOne().getZ());
 		glVertex3d(t.getTwo().getX(), t.getTwo().getY(), t.getTwo().getZ());
 		glVertex3d(t.getThree().getX(), t.getThree().getY(), t.getThree().getZ());
+        color = abs(color-1);
 	}
 	glEnd();
 }
@@ -303,7 +311,7 @@ void processCamera(unsigned char key, int x, int y) {
 		if (beta < 1.5) beta += 0.1;
 		break;
 	case 'S' | 's':
-		if (beta > 0.1) beta -= 0.1;
+		if (beta > -1.5) beta -= 0.1;
 		break;
 	case 'Q' | 'q':
 		radius += 0.1;
