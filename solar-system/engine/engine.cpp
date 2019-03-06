@@ -158,10 +158,8 @@ vector<Triangle> getTriangles(vector<Point> points) {
 
 /**
 Função que desenha um figura recebida como parâmetro
- @returns valor máximo usado no eixo dos Zs
 */
-double drawModel(Figure f) {
-    double max=0;
+void drawModel(Figure f) {
     int color=0;
 	vector<Triangle> triangles = f.get_triangles();
     
@@ -178,19 +176,10 @@ double drawModel(Figure f) {
 		glVertex3d(t.getTwo().getX(), t.getTwo().getY(), t.getTwo().getZ());
 		glVertex3d(t.getThree().getX(), t.getThree().getY(), t.getThree().getZ());
         
-        //remover quando nao for preciso posiciar camera
-        if(max < t.getOne().getZ())
-            max = t.getOne().getZ();
-        if(max < t.getTwo().getZ())
-            max = t.getTwo().getZ();
-        if(max < t.getThree().getZ())
-            max = t.getThree().getZ();
         
         color = abs(color-1);
 	}
 	glEnd();
-    
-    return max;
 }
 
 
@@ -230,11 +219,6 @@ int readXML(const char *filename) {
 
 
 // GLUT ------------------------------------------------------------------------------------
-float alpha = 0;
-float beta = 0.5;
-float radius;
-
-
 void changeSize(int w, int h) {
 
 	// Prevent a divide by zero, when window is too short
@@ -284,7 +268,9 @@ void drawCoordinates() {
 	glEnd();
 }
 
-int inicio=1;
+float alpha = M_PI/3.4;
+float beta = M_PI/6;
+float radius=10;
 void renderScene(void) {
 
 	glClearColor(20.0f, 20.0f, 20.0f, 1);
@@ -299,13 +285,11 @@ void renderScene(void) {
 
 	glColor3b(0, 5, 20);
 	
-    double maxZ=0;
 	for (vector<Figure>::iterator it = figures.begin(); it != figures.end(); ++it) {
 		Figure f = *it;
-		int mZ = drawModel(f);
-        if(mZ>maxZ) maxZ = mZ;
+		drawModel(f);
 	}
-    if(inicio) {radius = 4*maxZ; inicio=0; glutPostRedisplay();} // posicionar a camera para ver melhor a figura
+
 
 	drawCoordinates();
 

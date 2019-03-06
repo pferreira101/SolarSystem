@@ -53,17 +53,17 @@ void planeHandler(double size, char* destFile){
 
     string s = "";
     
-    string p1 = to_string(x1) + ",0," + to_string(z2) + "\n";
-    string p2 = to_string(x2) + ",0," + to_string(z2) + "\n";
+    string p1 = to_string(x2) + ",0," + to_string(z2) + "\n";
+    string p2 = to_string(x2) + ",0," + to_string(z1) + "\n";
     string p3 = to_string(x1) + ",0," + to_string(z1) + "\n";
-    string p4 = to_string(x2) + ",0," + to_string(z1) + "\n";
+    string p4 = to_string(x1) + ",0," + to_string(z2) + "\n";
     
     s.append(p1);
     s.append(p2);
     s.append(p3);
-    s.append(p2);
-    s.append(p4);
+    s.append(p1);
     s.append(p3);
+    s.append(p4);
     
 	fileWriter(destFile, s);
 }
@@ -111,17 +111,17 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
                 x1*=-1; //simetrico de x por causa do vetor normal
             }
             
-            string p1 = to_string(x1) + "," + to_string(height) + "," + to_string(z1) + "\n";
-            string p2 = to_string(-x1) + "," + to_string(y2) + "," + to_string(z1) + "\n";
-            string p3 = to_string(-x1) + "," + to_string(height) + "," + to_string(z1) + "\n";
-            string p4 = to_string(x1) + "," + to_string(y2) + "," + to_string(z1) + "\n";
+            string p1 = to_string(x1) + "," + to_string(height) + "," + to_string(z1) + "\n"; // A
+            string p2 = to_string(-x1) + "," + to_string(y2) + "," + to_string(z1) + "\n"; // H
+            string p3 = to_string(-x1) + "," + to_string(height) + "," + to_string(z1) + "\n"; // D
+            string p4 = to_string(x1) + "," + to_string(y2) + "," + to_string(z1) + "\n"; // E
             
             s.append(p1);
-            s.append(p2);
+            s.append(p4);
             s.append(p3);
-            s.append(p1);
             s.append(p4);
             s.append(p2);
+            s.append(p3);
         }
         z1*=-1; // recuperar valores originais
         x1*=-1;
@@ -132,15 +132,15 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
                 x1*=-1; //simetrico de x para desenhar face oposta
             }
             
-            string p1 = to_string(x1) + "," + to_string(height) + "," + to_string(z1) + "\n";
-            string p2 = to_string(x1) + "," + to_string(height) + "," + to_string(-z1) + "\n";
-            string p3 = to_string(x1) + "," + to_string(y2) + "," + to_string(z1) + "\n";
-            string p4 = to_string(x1) + "," + to_string(y2) + "," + to_string(-z1) + "\n";
+            string p1 = to_string(x1) + "," + to_string(height) + "," + to_string(z1) + "\n"; // H - C
+            string p2 = to_string(x1) + "," + to_string(height) + "," + to_string(-z1) + "\n"; // D - G
+            string p3 = to_string(x1) + "," + to_string(y2) + "," + to_string(z1) + "\n"; // E - B
+            string p4 = to_string(x1) + "," + to_string(y2) + "," + to_string(-z1) + "\n"; // A - F
             
             s.append(p1);
             s.append(p2);
-            s.append(p3);
-            s.append(p2);
+            s.append(p4);
+            s.append(p1);
             s.append(p4);
             s.append(p3);
         }
