@@ -74,36 +74,44 @@ void planeHandler(double size, char* destFile){
  */
 void boxHandler(double x, double y, double z, int d, char* destFile){
 	string s="";
-	double div = (double) y / d;
+	double divY = (double) y / d;
+    double divZ = (double) z / d;
 	double height = -y/2;
+    double width = z/2;
     double x1 = x/2;
     double y1 = y/2;
     double z1 = z/2;
     
     //calcular pontos da base e do topo (diferem no valor y)
-    for(int i=0;i<2;i++){
-        if(i==1) {
-            y1*=-1; //simetrico de y para desenhar face oposta
-            x1*=-1; //simetrico de x por causa do vetor normal
-        }
-        string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
-        string p2 = to_string(x1) + "," + to_string(y1) + "," + to_string(-z1) + "\n";
-        string p3 = to_string(-x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
-        string p4 = to_string(-x1) + "," + to_string(y1) + "," + to_string(-z1) + "\n";
+    for (int i = 0; i < d; i++, width -= divZ) {
+        double z2 = width-divZ;
         
-        s.append(p1);
-        s.append(p2);
-        s.append(p3);
-        s.append(p3);
-        s.append(p2);
-        s.append(p4);
+        for(int j=0;j<2;j++){
+            if(j==1) {
+                y1*=-1; //simetrico de y para desenhar face oposta
+                x1*=-1; //simetrico de x por causa do vetor normal
+            }
+            string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(width) + "\n";
+            string p2 = to_string(x1) + "," + to_string(y1) + "," + to_string(z2) + "\n";
+            string p3 = to_string(-x1) + "," + to_string(y1) + "," + to_string(width) + "\n";
+            string p4 = to_string(-x1) + "," + to_string(y1) + "," + to_string(z2) + "\n";
+        
+            s.append(p1);
+            s.append(p2);
+            s.append(p3);
+            s.append(p3);
+            s.append(p2);
+            s.append(p4);
+        }
+    
+        y1*=-1; //recuperar valores originais
+        x1*=-1;
     }
-    y1*=-1; //recuperar valores originais
-    x1*=-1;
+
     
     
-    for (int i = 0; i < d; i++, height += div) { // desenhar os varios segmentos da caixa
-        double y2 = height+div;
+    for (int i = 0; i < d; i++, height += divY) { // desenhar os varios segmentos da caixa
+        double y2 = height+divY;
         
         for(int j=0; j<2; j++){ // desenhar faces paralelas ao eixo do x (diferem no valor z)
             if(j==1) {
@@ -143,7 +151,10 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
             s.append(p1);
             s.append(p4);
             s.append(p3);
+            
         }
+        z1*=-1; // recuperar valores originais
+        x1*=-1;
     }
 
     
