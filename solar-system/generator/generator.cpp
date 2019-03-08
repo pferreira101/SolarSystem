@@ -76,88 +76,115 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
 	string s="";
 	double divY = (double) y / d;
     double divZ = (double) z / d;
-	double height = -y/2;
-    double width = z/2;
-    double x1 = x/2;
-    double y1 = y/2;
-    double z1 = z/2;
-    
-    //calcular pontos da base e do topo (diferem no valor y)
-    for (int i = 0; i < d; i++, width -= divZ) {
-        double z2 = width-divZ;
-        
-        for(int j=0;j<2;j++){
-            if(j==1) {
-                y1*=-1; //simetrico de y para desenhar face oposta
-                x1*=-1; //simetrico de x por causa do vetor normal
-            }
-            string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(width) + "\n";
-            string p2 = to_string(x1) + "," + to_string(y1) + "," + to_string(z2) + "\n";
-            string p3 = to_string(-x1) + "," + to_string(y1) + "," + to_string(width) + "\n";
-            string p4 = to_string(-x1) + "," + to_string(y1) + "," + to_string(z2) + "\n";
-        
-            s.append(p1);
-            s.append(p2);
-            s.append(p3);
-            s.append(p3);
-            s.append(p2);
-            s.append(p4);
-        }
-    
-        y1*=-1; //recuperar valores originais
-        x1*=-1;
-    }
+    double divX = (double) x / d;
+    double x1, y1, z1, x2, y2, z2;
 
     
+    //pontos da base e do topo (diferem no valor y) (faces paralelas ao plano xOz)
+    x1=x/2;
+    y1=y/2;
+    z1=z/2;
+    for(int i=0; i<d; i++, x1 -= divX){
+        x2 = x1-divX;
+        for (int j = 0; j < d; j++, z1 -= divZ) {
+            z2 = z1-divZ;
+            for(int k=0;k<2;k++){
+                if(k==1) {
+                    y1*=-1; //simetrico de y para desenhar face oposta
+                    x1*=-1; //simetrico de x por causa do vetor normal
+                    x2*=-1;
+                }
+                string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
+                string p2 = to_string(x1) + "," + to_string(y1) + "," + to_string(z2) + "\n";
+                string p3 = to_string(x2) + "," + to_string(y1) + "," + to_string(z1) + "\n";
+                string p4 = to_string(x2) + "," + to_string(y1) + "," + to_string(z2) + "\n";
+                
+                s.append(p1);
+                s.append(p2);
+                s.append(p3);
+                s.append(p3);
+                s.append(p2);
+                s.append(p4);
+            }
     
-    for (int i = 0; i < d; i++, height += divY) { // desenhar os varios segmentos da caixa
-        double y2 = height+divY;
-        
-        for(int j=0; j<2; j++){ // desenhar faces paralelas ao eixo do x (diferem no valor z)
-            if(j==1) {
-                z1*=-1; //simetrico de z para desenhar face oposta
-                x1*=-1; //simetrico de x por causa do vetor normal
-            }
-            
-            string p1 = to_string(x1) + "," + to_string(height) + "," + to_string(z1) + "\n"; // A
-            string p2 = to_string(-x1) + "," + to_string(y2) + "," + to_string(z1) + "\n"; // H
-            string p3 = to_string(-x1) + "," + to_string(height) + "," + to_string(z1) + "\n"; // D
-            string p4 = to_string(x1) + "," + to_string(y2) + "," + to_string(z1) + "\n"; // E
-            
-            s.append(p1);
-            s.append(p4);
-            s.append(p3);
-            s.append(p4);
-            s.append(p2);
-            s.append(p3);
-        }
-        z1*=-1; // recuperar valores originais
-        x1*=-1;
-        
-        for(int j=0; j<2; j++){ // desenhar faces paralelas ao eixo do z (diferem no valor x)
-            if(j==1) {
-                z1*=-1; //simetrico de z por causa do vetor normal
-                x1*=-1; //simetrico de x para desenhar face oposta
-            }
-            
-            string p1 = to_string(x1) + "," + to_string(height) + "," + to_string(z1) + "\n"; // H - C
-            string p2 = to_string(x1) + "," + to_string(height) + "," + to_string(-z1) + "\n"; // D - G
-            string p3 = to_string(x1) + "," + to_string(y2) + "," + to_string(z1) + "\n"; // E - B
-            string p4 = to_string(x1) + "," + to_string(y2) + "," + to_string(-z1) + "\n"; // A - F
-            
-            s.append(p1);
-            s.append(p2);
-            s.append(p4);
-            s.append(p1);
-            s.append(p4);
-            s.append(p3);
+            y1*=-1; //recuperar valores originais
+            x1*=-1;
+            x2*=-1;
             
         }
-        z1*=-1; // recuperar valores originais
-        x1*=-1;
+        z1 = z/2;
     }
 
+  
+    //pontos das faces paralelas ao plano xOy (diferem no valor z)
+    x1 = x/2;
+    z1 = z/2;
+    y1 = -y/2; // vai ser feito desenho bottom up
+    for(int i=0; i<d; i++, x1-=divX){
+        x2 = x1-divX;
+        for (int j = 0; j < d; j++, y1 += divY) {
+            y2 = y1+divY;
+            for(int k=0; k<2; k++){
+                if(k==1) {
+                    z1*=-1; //simetrico de z para desenhar face oposta
+                    x1*=-1; //simetrico de x por causa do vetor normal
+                    x2*=-1;
+                }
+            
+                string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n"; // A
+                string p2 = to_string(x2) + "," + to_string(y2) + "," + to_string(z1) + "\n"; // H
+                string p3 = to_string(x2) + "," + to_string(y1) + "," + to_string(z1) + "\n"; // D
+                string p4 = to_string(x1) + "," + to_string(y2) + "," + to_string(z1) + "\n"; // E
+            
+                s.append(p1);
+                s.append(p4);
+                s.append(p3);
+                s.append(p4);
+                s.append(p2);
+                s.append(p3);
+            }
+            z1*=-1; // recuperar valores originais
+            x1*=-1;
+            x2*=-1;
+        }
+        y1 = -y/2; // volta a começar a desenhar por baixo
+    }
     
+    x1 = x/2;
+    z1 = z/2;
+    y1 = -y/2;
+    // desenhar faces paralelas ao plano yOz (diferem no valor x)
+    for(int i = 0; i < d; i++, z1-=divZ){
+        z2 = z1-divZ;
+        for (int j = 0; j < d; j++, y1 += divY) {
+            y2 = y1+divY;
+            for(int k=0; k<2; k++){
+                if(k==1) {
+                    x1*=-1; //simetrico de x para desenhar face oposta
+                    z1*=-1; //simetrico de z por causa do vetor normal
+                    z2*=-1;
+                }
+            
+                string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n"; // H - C
+                string p2 = to_string(x1) + "," + to_string(y1) + "," + to_string(z2) + "\n"; // D - G
+                string p3 = to_string(x1) + "," + to_string(y2) + "," + to_string(z1) + "\n"; // E - B
+                string p4 = to_string(x1) + "," + to_string(y2) + "," + to_string(z2) + "\n"; // A - F
+            
+                s.append(p1);
+                s.append(p2);
+                s.append(p4);
+                s.append(p1);
+                s.append(p4);
+                s.append(p3);
+            
+            }
+            z1*=-1; // recuperar valores originais
+            z2*=-1;
+            x1*=-1;
+        }
+        y1 = -y/2;
+    }
+
 	fileWriter(destFile, s);
 }
 
