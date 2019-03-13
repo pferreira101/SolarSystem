@@ -98,7 +98,27 @@ public:
 		z = z;
 	}
 
-	void sum_translate(double x, double y, double z) {
+	void sumTranslate(double x, double y, double z) {
+		x += x;
+		y += y;
+		z += z;
+	}
+};
+
+class Rotate {
+	double angle, x, y, z;
+
+public:
+
+	void set_values(double angle, double x, double y, double z) {
+		angle = angle;
+		x = x;
+		y = y;
+		z = z;
+	}
+
+	void sumRotate(double angle, double x, double y, double z) {
+		angle += angle;
 		x += x;
 		y += y;
 		z += z;
@@ -222,6 +242,8 @@ int readXML(const char *filename) {
 
 	while (groups != nullptr) {
 		Translate t; t.set_values(0, 0, 0);
+		Rotate r; r.set_values(0, 0, 0, 0);
+
 
 		XMLElement *translate = groups->FirstChildElement("translate");
 
@@ -233,7 +255,21 @@ int readXML(const char *filename) {
 			if ((n = translate->Attribute("Y")) != nullptr) y = atoi(n);
 			if ((n = translate->Attribute("Z")) != nullptr) z = atoi(n);
 
-			t.sum_translate(x, y, z);
+			t.sumTranslate(x, y, z);
+		}
+
+		XMLElement *rotate = groups->FirstChildElement("rotate");
+
+		if (rotate != nullptr) {
+			double angle, x, y, z;
+			const char* n;
+
+			if ((n = translate->Attribute("angle")) != nullptr) x = atoi(n);
+			if ((n = translate->Attribute("axisX")) != nullptr) x = atoi(n);
+			if ((n = translate->Attribute("axisY")) != nullptr) y = atoi(n);
+			if ((n = translate->Attribute("axisZ")) != nullptr) z = atoi(n);
+
+			r.sumRotate(angle, x, y, z);
 		}
 
 		XMLElement *models = groups->FirstChildElement("models");
