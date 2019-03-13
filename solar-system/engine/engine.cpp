@@ -198,21 +198,34 @@ int readXML(const char *filename) {
 	XMLNode * scene = doc.FirstChild();
 	if (scene == nullptr) return XML_ERROR_FILE_READ_ERROR;
 
-	XMLElement *models = scene->FirstChildElement("model");
+	XMLElement *groups = scene->FirstChildElement("group");
 
-	while (models != nullptr) {
+	while (groups != nullptr) {
+		XMLElement *models = groups->FirstChildElement("models");
 
-		const char * fileName = nullptr;
-		fileName = models->Attribute("file");
+		while (models != nullptr) {
+			XMLElement *model = models->FirstChildElement("model");
 
-		if (fileName == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-		
-		Figure f;
-		f.set_values(getTriangles(getPoints(fileName)));
-		figures.push_back(f);
+			while (model != nullptr) {
+				const char * fileName = nullptr;
+				fileName = model->Attribute("file");
 
-		models = models->NextSiblingElement("model");
+				if (fileName == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
+
+				Figure f;
+				f.set_values(getTriangles(getPoints(fileName)));
+				figures.push_back(f);
+
+				model = model->NextSiblingElement("model");
+			}
+			
+			models = models->NextSiblingElement("models");
+		}
+
+		groups = groups->NextSiblingElement("group");
 	}
+
+
 
 
 	return XML_SUCCESS;
@@ -272,7 +285,7 @@ void drawCoordinates() {
 
 float alpha = M_PI/3.4;
 float beta = M_PI/6;
-float radius=10;
+float radius = 10;
 void renderScene(void) {
 
 	glClearColor(20.0f, 20.0f, 20.0f, 1);
