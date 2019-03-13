@@ -1,7 +1,10 @@
 <scene>
     <group>
-        <models>
+        <translate X="4" Y="4" />
+        <rotate angle="0.45" axisX="1" axisY="0" axisZ="0" />
+        <models>        
             <model file="plane.3d" />
+            <model file="sphere.3d" />
         </models>
     </group>
 </scene>

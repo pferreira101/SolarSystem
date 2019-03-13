@@ -86,6 +86,26 @@ public:
 	}
 };
 
+
+class Translate {
+	double x, y, z;
+
+public:
+
+	void set_values(double x, double y, double z) {
+		x = x;
+		y = y;
+		z = z;
+	}
+
+	void sum_translate(double x, double y, double z) {
+		x += x;
+		y += y;
+		z += z;
+	}
+};
+
+
 /**
 Vari‡vel global com a lista de figuras a desenhar
 */
@@ -195,13 +215,29 @@ int readXML(const char *filename) {
 	XMLError error = doc.LoadFile(filename);
 	if (error != XML_SUCCESS) { printf("Error: %i\n", error); return error; }
 
-	XMLNode * scene = doc.FirstChild();
+	XMLNode *scene = doc.FirstChild();
 	if (scene == nullptr) return XML_ERROR_FILE_READ_ERROR;
 
 	XMLElement *groups = scene->FirstChildElement("group");
 
 	while (groups != nullptr) {
+		Translate t; t.set_values(0, 0, 0);
+
+		XMLElement *translate = groups->FirstChildElement("translate");
+
+		if (translate != nullptr) {
+			double x, y, z;
+			const char* n;
+
+			if ((n = translate->Attribute("X")) != nullptr) x = atoi(n);
+			if ((n = translate->Attribute("Y")) != nullptr) y = atoi(n);
+			if ((n = translate->Attribute("Z")) != nullptr) z = atoi(n);
+
+			t.sum_translate(x, y, z);
+		}
+
 		XMLElement *models = groups->FirstChildElement("models");
+
 
 		while (models != nullptr) {
 			XMLElement *model = models->FirstChildElement("model");
