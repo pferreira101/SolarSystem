@@ -92,16 +92,28 @@ class Translate {
 
 public:
 
-	void set_values(double x, double y, double z) {
-		x = x;
-		y = y;
-		z = z;
+	void set_values(double xx, double yy, double zz) {
+		x = xx;
+		y = yy;
+		z = zz;
 	}
 
-	void sumTranslate(double x, double y, double z) {
-		x += x;
-		y += y;
-		z += z;
+	void sumTranslate(double xx, double yy, double zz) {
+		x += xx;
+		y += yy;
+		z += zz;
+	}
+
+	double getX() {
+		return x;
+	}
+
+	double getY() {
+		return y;
+	}
+
+	double getZ() {
+		return z;
 	}
 };
 
@@ -110,18 +122,59 @@ class Rotate {
 
 public:
 
-	void set_values(double angle, double x, double y, double z) {
-		angle = angle;
-		x = x;
-		y = y;
-		z = z;
+	void set_values(double a, double xx, double yy, double zz) {
+		angle = a;
+		x = xx;
+		y = yy;
+		z = zz;
 	}
 
-	void sumRotate(double angle, double x, double y, double z) {
+	void sumRotate(double a, double xx, double yy, double zz) {
 		angle += angle;
-		x += x;
-		y += y;
-		z += z;
+		x += xx;
+		y += yy;
+		z += zz;
+	}
+
+	double getAngle() {
+		return angle;
+	}
+
+	double getX() {
+		return x;
+	}
+
+	double getY() {
+		return y;
+	}
+
+	double getZ() {
+		return z;
+	}
+};
+
+class Group {
+	vector<Figure> figures;
+	Translate translate;
+	Rotate rotate;
+
+public:
+	void set_values(vector<Figure> fig, Translate t, Rotate r) {
+		figures = fig;
+		translate = t;
+		rotate = r;
+	}
+
+	vector<Figure> getFigures() {
+		return figures;
+	}
+
+	Translate getTranslate() {
+		return translate;
+	}
+
+	Rotate getRotate() {
+		return rotate;
 	}
 };
 
@@ -130,6 +183,7 @@ public:
 Vari‡vel global com a lista de figuras a desenhar
 */
 vector<Figure> figures;
+vector<Group> groups;
 
 /**
 Fun‹o que, partindo de um ficheiro gerado pelo programa 'generator', devolve a lista dos pontos existentes nesse ficheiro.
@@ -238,30 +292,32 @@ int readXML(const char *filename) {
 	XMLNode *scene = doc.FirstChild();
 	if (scene == nullptr) return XML_ERROR_FILE_READ_ERROR;
 
-	XMLElement *groups = scene->FirstChildElement("group");
+	XMLElement *groups_xml = scene->FirstChildElement("group");
 
-	while (groups != nullptr) {
+	while (groups_xml != nullptr) {
 		Translate t; t.set_values(0, 0, 0);
 		Rotate r; r.set_values(0, 0, 0, 0);
 
 
-		XMLElement *translate = groups->FirstChildElement("translate");
+		XMLElement *translate = groups_xml->FirstChildElement("translate");
 
 		if (translate != nullptr) {
-			double x, y, z;
+			double x = 0, y = 0, z = 0;
 			const char* n;
 
 			if ((n = translate->Attribute("X")) != nullptr) x = atoi(n);
 			if ((n = translate->Attribute("Y")) != nullptr) y = atoi(n);
 			if ((n = translate->Attribute("Z")) != nullptr) z = atoi(n);
+			
+			printf("%f-%f-%f", x, y, z);
 
 			t.sumTranslate(x, y, z);
 		}
 
-		XMLElement *rotate = groups->FirstChildElement("rotate");
+		XMLElement *rotate = groups_xml->FirstChildElement("rotate");
 
 		if (rotate != nullptr) {
-			double angle, x, y, z;
+			double angle = 0, x = 0, y = 0, z = 0;
 			const char* n;
 
 			if ((n = translate->Attribute("angle")) != nullptr) x = atoi(n);
@@ -272,11 +328,12 @@ int readXML(const char *filename) {
 			r.sumRotate(angle, x, y, z);
 		}
 
-		XMLElement *models = groups->FirstChildElement("models");
+		XMLElement *models = groups_xml->FirstChildElement("models");
 
 
 		while (models != nullptr) {
 			XMLElement *model = models->FirstChildElement("model");
+			vector<Figure> fig;
 
 			while (model != nullptr) {
 				const char * fileName = nullptr;
@@ -286,19 +343,19 @@ int readXML(const char *filename) {
 
 				Figure f;
 				f.set_values(getTriangles(getPoints(fileName)));
-				figures.push_back(f);
+				fig.push_back(f);
 
 				model = model->NextSiblingElement("model");
 			}
 			
+			Group group; group.set_values(fig, t, r);
+			groups.push_back(group);
+
 			models = models->NextSiblingElement("models");
 		}
 
-		groups = groups->NextSiblingElement("group");
+		groups_xml = groups_xml->NextSiblingElement("group");
 	}
-
-
-
 
 	return XML_SUCCESS;
 }
@@ -358,6 +415,7 @@ void drawCoordinates() {
 float alpha = M_PI/3.4;
 float beta = M_PI/6;
 float radius = 10;
+
 void renderScene(void) {
 
 	glClearColor(20.0f, 20.0f, 20.0f, 1);
@@ -372,9 +430,23 @@ void renderScene(void) {
 
 	glColor3b(0, 5, 20);
 	
-	for (vector<Figure>::iterator it = figures.begin(); it != figures.end(); ++it) {
-		Figure f = *it;
-		drawModel(f);
+
+
+	for (vector<Group>::iterator it = groups.begin(); it != groups.end(); ++it) {
+		Group g = *it;
+		Translate t = g.getTranslate();
+		Rotate r = g.getRotate();
+		vector<Figure> figs = g.getFigures();
+
+		glPushMatrix();
+
+		glTranslatef(t.getX(), t.getY(), t.getZ());
+
+		for (vector<Figure>::iterator it = figs.begin(); it != figs.end(); ++it) {
+			Figure f = *it;
+			drawModel(f);
+		}
+		glPopMatrix();
 	}
 
 

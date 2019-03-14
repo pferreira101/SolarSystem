@@ -7,4 +7,9 @@
             <model file="sphere.3d" />
         </models>
     </group>
+    <group>
+        <models>        
+            <model file="plane.3d" />
+        </models>
+    </group>
 </scene>
