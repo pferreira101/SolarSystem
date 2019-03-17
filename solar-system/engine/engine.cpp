@@ -22,6 +22,21 @@
 using namespace std;
 using namespace tinyxml2;
 
+#define TRANSLATE 10284
+#define ROTATE 7301
+#define SCALE 5401
+#define MODELS 7257 
+/**
+ Função auxiliar para calcular o valor da operaçao a usar
+ */
+int hashF(char* s) {
+	int r = 0;
+	for (int i = 0; s[i]; i++) {
+		r += (s[i] * (10 ^ i));
+	}
+	return r;
+}
+
 /**
 Classe que guarda as coordenadas X, Y, Z de um ponto
 */
@@ -86,11 +101,19 @@ public:
 	}
 };
 
-
-class Translate {
-	double x, y, z;
-
+/* Classe  operation é a superclasse das operaçoes, server para construir um vector com tranlates e rotates,
+neste momento possui todo o codigo de ambas as subclasses porque nao estou a conseguir dar cast direito*/
+class Operation {
+	string op;
+	double angle, x, y, z;
 public:
+	void set_op(string s) {
+		op = s;
+	}
+
+	string get_op() {
+		return op;
+	}
 
 	void set_values(double xx, double yy, double zz) {
 		x = xx;
@@ -115,13 +138,6 @@ public:
 	double getZ() {
 		return z;
 	}
-};
-
-class Rotate {
-	double angle, x, y, z;
-
-public:
-
 	void set_values(double a, double xx, double yy, double zz) {
 		angle = a;
 		x = xx;
@@ -129,8 +145,15 @@ public:
 		z = zz;
 	}
 
+	void setRotate(double a, double xx, double yy, double zz) {
+		angle = a;
+		x = xx;
+		y = yy;
+		z = zz;
+	}
+
 	void sumRotate(double a, double xx, double yy, double zz) {
-		angle += angle;
+		angle += a;
 		x += xx;
 		y += yy;
 		z += zz;
@@ -139,43 +162,38 @@ public:
 	double getAngle() {
 		return angle;
 	}
+};
 
-	double getX() {
-		return x;
-	}
+class Translate : public Operation {
+	
 
-	double getY() {
-		return y;
-	}
+public:
 
-	double getZ() {
-		return z;
-	}
+	
+};
+
+class Rotate : public Operation {
+	
 };
 
 class Group {
 	vector<Figure> figures;
-	Translate translate;
-	Rotate rotate;
+	vector<Operation> operations;
 
 public:
-	void set_values(vector<Figure> fig, Translate t, Rotate r) {
+	void set_values(vector<Figure> fig, vector<Operation> ops) {
 		figures = fig;
-		translate = t;
-		rotate = r;
+		operations = ops;
 	}
 
 	vector<Figure> getFigures() {
 		return figures;
 	}
 
-	Translate getTranslate() {
-		return translate;
+	vector<Operation> getOperations() {
+		return operations;
 	}
 
-	Rotate getRotate() {
-		return rotate;
-	}
 };
 
 
@@ -297,9 +315,51 @@ int readXML(const char *filename) {
 	while (groups_xml != nullptr) {
 		Translate t; t.set_values(0, 0, 0);
 		Rotate r; r.set_values(0, 0, 0, 0);
+		vector<Operation> ops;
+		XMLElement* child;
+		int flag = 0;
+		for (child = groups_xml->FirstChildElement(); child != NULL && flag == 0; child = child->NextSiblingElement())
+		{
+			Translate t; t.set_values(0, 0, 0);
+			Rotate r; r.set_values(0, 0, 0, 0);
+			Operation o;
+			double x = 0, y = 0, z = 0;
+			const char* n;
+			double angle = 0;
+			switch (hashF((char*)child->Value()))
+			{
+				case TRANSLATE: 
 
+					if ((n = child->Attribute("X")) != nullptr) x = atof(n);
+					if ((n = child->Attribute("Y")) != nullptr) y = atof(n);
+					if ((n = child->Attribute("Z")) != nullptr) z = atof(n);
 
-		XMLElement *translate = groups_xml->FirstChildElement("translate");
+					t.set_values(x, y, z);
+					printf("%f-%f-%f\n", t.getX(), t.getY(), t.getZ());
+					t.set_op("translate");
+					ops.push_back(t);
+				break;
+				case ROTATE:
+					
+					if ((n = child->Attribute("angle")) != nullptr) angle = atof(n);
+					if ((n = child->Attribute("axisX")) != nullptr) x = atof(n);
+					if ((n = child->Attribute("axisY")) != nullptr) y = atof(n);
+					if ((n = child->Attribute("axisZ")) != nullptr) z = atof(n);
+
+					r.setRotate(angle, x, y, z);
+					printf("%f-%f-%f-%f\n", r.getAngle(), r.getX(), r.getY(), r.getZ());
+					r.set_op("rotate");
+					ops.push_back(r);
+					break;
+				case MODELS:
+					flag = 1;
+					break;
+				default:
+					break;
+			}
+		}
+
+		/*XMLElement *translate = groups_xml->FirstChildElement("translate");
 
 		if (translate != nullptr) {
 			double x = 0, y = 0, z = 0;
@@ -326,7 +386,7 @@ int readXML(const char *filename) {
 			if ((n = translate->Attribute("axisZ")) != nullptr) z = atoi(n);
 
 			r.sumRotate(angle, x, y, z);
-		}
+		}*/
 
 		XMLElement *models = groups_xml->FirstChildElement("models");
 
@@ -348,7 +408,7 @@ int readXML(const char *filename) {
 				model = model->NextSiblingElement("model");
 			}
 			
-			Group group; group.set_values(fig, t, r);
+			Group group; group.set_values(fig, ops);
 			groups.push_back(group);
 
 			models = models->NextSiblingElement("models");
@@ -434,13 +494,26 @@ void renderScene(void) {
 
 	for (vector<Group>::iterator it = groups.begin(); it != groups.end(); ++it) {
 		Group g = *it;
-		Translate t = g.getTranslate();
-		Rotate r = g.getRotate();
+		vector<Operation> ops = g.getOperations();
 		vector<Figure> figs = g.getFigures();
 
 		glPushMatrix();
 
-		glTranslatef(t.getX(), t.getY(), t.getZ());
+		for (vector<Operation>::iterator it = ops.begin(); it != ops.end(); ++it) {
+			Operation o = *it;
+			if (o.get_op().compare("rotate")==0) {
+				Rotate r = static_cast<Rotate&>(o);
+				printf("fez rotate (%f,%f,%f,%f) - %s\n", r.getAngle(), r.getX(), r.getY(), r.getZ(), o.get_op().c_str());
+				glRotatef(r.getAngle(), r.getX(), r.getY(), r.getZ());
+
+			}
+			if (o.get_op().compare("translate") == 0) {
+				Translate t = reinterpret_cast<Translate&>(o);
+				printf("fez translate (%f,%f,%f) - %s\n", t.getX(), t.getY(), t.getZ(), o.get_op().c_str());
+				glTranslatef(t.getX(), t.getY(), t.getZ());
+
+			}
+		}
 
 		for (vector<Figure>::iterator it = figs.begin(); it != figs.end(); ++it) {
 			Figure f = *it;
