@@ -105,85 +105,71 @@ public:
 /* Classe  operation é a superclasse das operaçoes, server para construir um vector com tranlates e rotates,
 neste momento possui todo o codigo de ambas as subclasses porque nao estou a conseguir dar cast direito*/
 class Operation {
-	string op;
-	double angle, x, y, z;
 public:
-	void set_op(string s) {
-		op = s;
-	}
-
-	string get_op() {
-		return op;
-	}
-
-	void set_values(double xx, double yy, double zz) {
-		x = xx;
-		y = yy;
-		z = zz;
-	}
-
-	void sumTranslate(double xx, double yy, double zz) {
-		x += xx;
-		y += yy;
-		z += zz;
-	}
-
-	double getX() {
-		return x;
-	}
-
-	double getY() {
-		return y;
-	}
-
-	double getZ() {
-		return z;
-	}
-	void set_values(double a, double xx, double yy, double zz) {
-		angle = a;
-		x = xx;
-		y = yy;
-		z = zz;
-	}
-
-	void setRotate(double a, double xx, double yy, double zz) {
-		angle = a;
-		x = xx;
-		y = yy;
-		z = zz;
-	}
-
-	void sumRotate(double a, double xx, double yy, double zz) {
-		angle += a;
-		x += xx;
-		y += yy;
-		z += zz;
-	}
-
-	double getAngle() {
-		return angle;
-	}
+    virtual void transformacao() = 0; // forma de tornar abstrato
 };
 
-class Translate : public Operation {
-	
 
-public:
+class Translate : public Operation {
+    float x, y, z;
+    
+    public:
+        Translate(double xx, double yy, double zz) {
+            x = xx;
+            y = yy;
+            z = zz;
+        }
+    
+        void transformacao(){
+            printf("a fazer translate\n");
+
+            glTranslatef(x, y, z);
+        }
 
 	
 };
 
 class Rotate : public Operation {
-	
+	float angle, x, y, z;
+    
+    public:
+        Rotate(double a, double xx, double yy, double zz) {
+            angle = a;
+            x = xx;
+            y = yy;
+            z = zz;
+        }
+    
+        void transformacao(){
+            printf("a fazer rotate\n");
+            glRotatef(angle, x, y, z);
+        }
+};
+
+
+class Scale : public Operation{
+    float x, y, z;
+    
+    public:
+        Scale(float xx, float yy, float zz) {
+            x = xx;
+            y = yy;
+            z = zz;
+        }
+    
+        void transformacao(){
+            
+            glScalef(x,y,z);
+        }
 };
 
 class Group {
 	vector<Figure> figures;
-	vector<Operation> operations;
+	vector<Operation*> operations; // vetor de apontadores por causa de polimorfismo
 	vector<Group> subGroups;
 
 public:
-	void set_values(vector<Figure> fig, vector<Operation> ops, vector<Group> g) {
+	void set_values(vector<Figure> fig, vector<Operation*> ops, vector<Group> g) {
 		figures = fig;
 		operations = ops;
 		subGroups = g;
@@ -193,7 +179,7 @@ public:
 		return figures;
 	}
 
-	vector<Operation> getOperations() {
+	vector<Operation*> getOperations() {
 		return operations;
 	}
 
@@ -324,46 +310,46 @@ int readModels(XMLElement * models, vector<Figure>* fig) {
 	return XML_NO_TEXT_NODE;
 }
 
-int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation>*ops, vector<Group> *subGroups) {
+int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation*>*ops, vector<Group> *subGroups) {
 	XMLElement* child;
 	int flag = 0;
 	for (child = element->FirstChildElement(); child != NULL && flag == 0; child = child->NextSiblingElement())
 	{
-		Translate t; t.set_values(0, 0, 0);
-		Rotate r; r.set_values(0, 0, 0, 0);
-		Operation o;
 		vector<Figure> aux;
-		vector<Operation> aux2;
+		vector<Operation*> aux2;
 		vector<Group> aux3;
 		Group g;
-		double x = 0, y = 0, z = 0;
+
+        
+		float x = 0, y = 0, z = 0;
 		const char* n;
 		double angle = 0;
 		switch (hashF((char*)child->Value()))
 		{
 		case TRANSLATE:
+            child->QueryFloatAttribute("X", &x);
+            child->QueryFloatAttribute("Y", &y);
+            child->QueryFloatAttribute("Z", &z);
 
-			if ((n = child->Attribute("X")) != nullptr) x = atof(n);
-			if ((n = child->Attribute("Y")) != nullptr) y = atof(n);
-			if ((n = child->Attribute("Z")) != nullptr) z = atof(n);
-
-			t.set_values(x, y, z);
-			t.set_op("translate");
-			(*ops).push_back(t);
+			(*ops).push_back(new Translate(x,y,z));
 			printf("tamanho do ops: %d\n", (*ops).size());
 			break;
 		case ROTATE:
-
 			if ((n = child->Attribute("angle")) != nullptr) angle = atof(n);
 			if ((n = child->Attribute("axisX")) != nullptr) x = atof(n);
 			if ((n = child->Attribute("axisY")) != nullptr) y = atof(n);
 			if ((n = child->Attribute("axisZ")) != nullptr) z = atof(n);
 
-			r.setRotate(angle, x, y, z);
-			r.set_op("rotate");
-			(*ops).push_back(r);
+			(*ops).push_back(new Rotate(angle, x, y, z));
 			printf("tamanho do ops: %d\n", (*ops).size());
 			break;
+        case SCALE:
+            child->QueryFloatAttribute("X", &x);
+            child->QueryFloatAttribute("Y", &y);
+            child->QueryFloatAttribute("Z", &z);
+            
+            (*ops).push_back(new Scale(x, y, z));
+            break;
 		case MODELS:
 			readModels(child, fig);
 			break;
@@ -396,13 +382,10 @@ int readXML(const char *filename) {
 	XMLElement *groups_xml = scene->FirstChildElement("group");
 
 	while (groups_xml != nullptr) {
-		Translate t; t.set_values(0, 0, 0);
-		Rotate r; r.set_values(0, 0, 0, 0);
-		vector<Operation> ops;
+		vector<Operation*> ops;
 		vector<Figure> fig;
 		vector<Group> subGroups;
 		readGroup(groups_xml, &fig, &ops, &subGroups);
-		
 		
 		Group group; group.set_values(fig, ops,subGroups);
 		printf("tamanho do ops: %d\n",ops.size());
@@ -470,25 +453,13 @@ float alpha = M_PI/3.4;
 float beta = M_PI/6;
 float radius = 10;
 
-void renderGroup(vector<Figure> figs, vector<Operation> ops, vector<Group> subGroups) {
+void renderGroup(vector<Figure> figs, vector<Operation*> ops, vector<Group> subGroups) {
 	printf("renderizar grupo\n");
 	printf("%d\n", ops.size());
 	glPushMatrix();
 
-	for (vector<Operation>::iterator it = ops.begin(); it != ops.end(); ++it) {
-		Operation o = *it;
-		if (o.get_op().compare("rotate") == 0) {
-			Rotate r = static_cast<Rotate&>(o);
-			printf("fez rotate (%f,%f,%f,%f) - %s\n", r.getAngle(), r.getX(), r.getY(), r.getZ(), o.get_op().c_str());
-			glRotatef(r.getAngle(), r.getX(), r.getY(), r.getZ());
-
-		}
-		if (o.get_op().compare("translate") == 0) {
-			Translate t = reinterpret_cast<Translate&>(o);
-			printf("fez translate (%f,%f,%f) - %s\n", t.getX(), t.getY(), t.getZ(), o.get_op().c_str());
-			glTranslatef(t.getX(), t.getY(), t.getZ());
-
-		}
+    for (Operation* o : ops) {
+        o->transformacao();
 	}
 
 	for (vector<Figure>::iterator it = figs.begin(); it != figs.end(); ++it) {
@@ -498,7 +469,7 @@ void renderGroup(vector<Figure> figs, vector<Operation> ops, vector<Group> subGr
 
 	for (vector<Group>::iterator it = subGroups.begin(); it != subGroups.end(); ++it) {
 		Group g = *it;
-		vector<Operation> aux1 = g.getOperations();
+		vector<Operation*> aux1 = g.getOperations();
 		vector<Figure> aux = g.getFigures();
 		vector<Group> aux2 = g.getSubGroups();
 		renderGroup(aux, aux1, aux2);
@@ -524,7 +495,7 @@ void renderScene(void) {
 
 	for (vector<Group>::iterator it = groups.begin(); it != groups.end(); ++it) {
 		Group g = *it;
-		vector<Operation> ops = g.getOperations();
+		vector<Operation*> ops = g.getOperations();
 		vector<Figure> figs = g.getFigures();
 		vector<Group> subGroups = g.getSubGroups();
 		renderGroup(figs, ops, subGroups);
