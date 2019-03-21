@@ -1,15 +1,14 @@
 <scene>
     <group>
-        <translate X="4" Y="4" />
-        <rotate angle="0.45" axisX="1" axisY="0" axisZ="0" />
-        <models>        
-            <model file="plane.3d" />
-            <model file="sphere.3d" />
-        </models>
-    </group>
-    <group>
+    	<translate X = "5" Y="0" Z = "1" />
         <models>        
             <model file="plane.3d" />
         </models>
+        <group>
+	    	<translate X = "-5" Y="0" Z = "-1" />
+	        <models>        
+	            <model file="cone.3d"/>
+	        </models>
+    	</group>
     </group>
 </scene>
