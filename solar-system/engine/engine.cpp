@@ -320,7 +320,7 @@ int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation*>*ops, 
 		Group g;
 
         
-		float x = 1, y = 1, z = 1; // Inicializar a 1 por do scale. Caso nao consiga ler Y, Y=0 e tem que ser 1
+		float x = 1, y = 1, z = 1; // Inicializar a 1 por do scale. Caso nao consiga ler Y, Y=0 e tem que ser 1. Daí usar QueryFloatSttribute tambem
 		const char* n;
 		double angle = 0;
 		switch (hashF((char*)child->Value()))
@@ -330,7 +330,6 @@ int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation*>*ops, 
 			y = child->FloatAttribute("Y");
 			z = child->FloatAttribute("Z");
 
-			printf("%f - %f - %f\n", x, y, z);
 			(*ops).push_back(new Translate(x,y,z));
 			break;
 		case ROTATE:
@@ -338,7 +337,6 @@ int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation*>*ops, 
 			x = child->FloatAttribute("axisX");
 			y = child->FloatAttribute("axisY");
 			z = child->FloatAttribute("axisZ");
-			printf("%f - %f - %f - %f\n", angle, x, y, z);
 
 			(*ops).push_back(new Rotate(angle, x, y, z));
 			break;
@@ -346,8 +344,8 @@ int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation*>*ops, 
             child->QueryFloatAttribute("X", &x);
             child->QueryFloatAttribute("Y", &y);
             child->QueryFloatAttribute("Z", &z);
-			printf("%f - %f - %f\n", x, y, z);
-            (*ops).push_back(new Scale(x, y, z));
+
+			(*ops).push_back(new Scale(x, y, z));
             break;
 		case MODELS:
 			readModels(child, fig);
@@ -356,6 +354,7 @@ int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation*>*ops, 
 			readGroup(child, &aux, &aux2, &aux3);
 			g.set_values(aux,aux2,aux3);
 			(*subGroups).push_back(g);
+			break;
 		default:
 			break;
 		}
