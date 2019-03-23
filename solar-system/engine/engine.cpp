@@ -121,7 +121,6 @@ class Translate : public Operation {
         }
     
         void transformacao(){
-            printf("a fazer translate\n");
 
             glTranslatef(x, y, z);
         }
@@ -141,7 +140,7 @@ class Rotate : public Operation {
         }
     
         void transformacao(){
-            printf("a fazer rotate\n");
+
             glRotatef(angle, x, y, z);
         }
 };
@@ -158,7 +157,7 @@ class Scale : public Operation{
         }
     
         void transformacao(){
-            
+
             glScalef(x,y,z);
         }
 };
@@ -321,33 +320,33 @@ int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation*>*ops, 
 		Group g;
 
         
-		float x = 0, y = 0, z = 0;
+		float x = 1, y = 1, z = 1; // Inicializar a 1 por do scale. Caso nao consiga ler Y, Y=0 e tem que ser 1
 		const char* n;
 		double angle = 0;
 		switch (hashF((char*)child->Value()))
 		{
 		case TRANSLATE:
-            child->QueryFloatAttribute("X", &x);
-            child->QueryFloatAttribute("Y", &y);
-            child->QueryFloatAttribute("Z", &z);
+			x = child->FloatAttribute("X");
+			y = child->FloatAttribute("Y");
+			z = child->FloatAttribute("Z");
 
+			printf("%f - %f - %f\n", x, y, z);
 			(*ops).push_back(new Translate(x,y,z));
-			printf("tamanho do ops: %d\n", (*ops).size());
 			break;
 		case ROTATE:
-			if ((n = child->Attribute("angle")) != nullptr) angle = atof(n);
-			if ((n = child->Attribute("axisX")) != nullptr) x = atof(n);
-			if ((n = child->Attribute("axisY")) != nullptr) y = atof(n);
-			if ((n = child->Attribute("axisZ")) != nullptr) z = atof(n);
+			angle = child->FloatAttribute("angle");
+			x = child->FloatAttribute("axisX");
+			y = child->FloatAttribute("axisY");
+			z = child->FloatAttribute("axisZ");
+			printf("%f - %f - %f - %f\n", angle, x, y, z);
 
 			(*ops).push_back(new Rotate(angle, x, y, z));
-			printf("tamanho do ops: %d\n", (*ops).size());
 			break;
         case SCALE:
             child->QueryFloatAttribute("X", &x);
             child->QueryFloatAttribute("Y", &y);
             child->QueryFloatAttribute("Z", &z);
-            
+			printf("%f - %f - %f\n", x, y, z);
             (*ops).push_back(new Scale(x, y, z));
             break;
 		case MODELS:
@@ -361,7 +360,7 @@ int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation*>*ops, 
 			break;
 		}
 	}
-	printf("tamanho do ops: %d\n", (*ops).size());
+
 	return XML_SUCCESS;
 }
 
@@ -387,8 +386,8 @@ int readXML(const char *filename) {
 		vector<Group> subGroups;
 		readGroup(groups_xml, &fig, &ops, &subGroups);
 		
-		Group group; group.set_values(fig, ops,subGroups);
-		printf("tamanho do ops: %d\n",ops.size());
+		Group group; 
+		group.set_values(fig, ops, subGroups);
 		groups.push_back(group);
 
 		groups_xml = groups_xml->NextSiblingElement("group");
@@ -454,26 +453,24 @@ float beta = M_PI/6;
 float radius = 10;
 
 void renderGroup(vector<Figure> figs, vector<Operation*> ops, vector<Group> subGroups) {
-	printf("renderizar grupo\n");
-	printf("%d\n", ops.size());
+
 	glPushMatrix();
 
     for (Operation* o : ops) {
         o->transformacao();
 	}
-
 	for (vector<Figure>::iterator it = figs.begin(); it != figs.end(); ++it) {
 		Figure f = *it;
 		drawModel(f);
 	}
-
 	for (vector<Group>::iterator it = subGroups.begin(); it != subGroups.end(); ++it) {
 		Group g = *it;
-		vector<Operation*> aux1 = g.getOperations();
-		vector<Figure> aux = g.getFigures();
-		vector<Group> aux2 = g.getSubGroups();
-		renderGroup(aux, aux1, aux2);
+		vector<Operation*> g_ops = g.getOperations();
+		vector<Figure> g_figs = g.getFigures();
+		vector<Group> g_sub_groups = g.getSubGroups();
+		renderGroup(g_figs, g_ops, g_sub_groups);
 	}
+
 	glPopMatrix();
 }
 
@@ -491,8 +488,6 @@ void renderScene(void) {
 
 	glColor3b(0, 5, 20);
 	
-
-
 	for (vector<Group>::iterator it = groups.begin(); it != groups.end(); ++it) {
 		Group g = *it;
 		vector<Operation*> ops = g.getOperations();
@@ -500,7 +495,6 @@ void renderScene(void) {
 		vector<Group> subGroups = g.getSubGroups();
 		renderGroup(figs, ops, subGroups);
 	}
-
 
 	drawCoordinates();
 
