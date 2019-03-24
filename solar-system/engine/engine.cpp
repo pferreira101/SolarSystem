@@ -449,7 +449,7 @@ void drawCoordinates() {
 
 float alpha = M_PI/3.4;
 float beta = M_PI/6;
-float radius = 10;
+float radius = 200;
 
 void renderGroup(vector<Figure> figs, vector<Operation*> ops, vector<Group> subGroups) {
 
@@ -518,10 +518,10 @@ void processCamera(unsigned char key, int x, int y) {
 		if (beta > -1.5) beta -= 0.1;
 		break;
 	case 'Q' | 'q':
-		radius += 0.1;
+		radius += 20;
 		break;
 	case 'E' | 'e':
-		radius -= 0.1;
+		radius -= 20;
 		break;
 	}
 
