@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+﻿cmake_minimum_required(VERSION 3.5)
 
 # Project Name
 PROJECT(cg-projeto CXX)
@@ -31,7 +31,7 @@ if  (WIN32)
 	endif (NOT EXISTS "${TOOLKITS_FOLDER}/glew/GL/glew.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/glew/glew32.lib")	
 	
 	include_directories(${TOOLKITS_FOLDER}/glut ${TOOLKITS_FOLDER}/glew)
-	target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} 
+	target_link_libraries(engine ${OPENGL_LIBRARIES} 
 										  ${TOOLKITS_FOLDER}/glut/glut32.lib 
 										  ${TOOLKITS_FOLDER}/glew/glew32.lib )
 	
@@ -40,7 +40,10 @@ if  (WIN32)
 		file(COPY ${TOOLKITS_FOLDER}/glew/glew32.dll DESTINATION ${CMAKE_BINARY_DIR})
 	endif(EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll" AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll")	
 	
-	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT engine)
+
+	file(COPY ${TOOLKITS_FOLDER}/glew/glew32.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
+  	file(COPY ${TOOLKITS_FOLDER}/glut/glut32.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
 	
 else (WIN32) #Linux and Mac
 
