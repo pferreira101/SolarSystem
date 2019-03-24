@@ -24,6 +24,13 @@
         <models>       
              <model file="sphere.3d" />
         </models>
+        <group>
+            <translate X="0" Y="0" Z="1.28" />
+            <scale X="0.27" Y="0.27" Z="0.27" />
+            <models>       
+                 <model file="sphere.3d" />
+            </models>
+        </group>
     </group>
     <group>
         <translate X="107.16" Y="0" Z="0" />
@@ -31,6 +38,20 @@
         <models>       
              <model file="sphere.3d" />
         </models>
+        <group>
+            <translate X="0" Y="0" Z="1.5" />
+            <scale X="0.2" Y="0.2" Z="0.2" />
+            <models>       
+                 <model file="sphere.3d" />
+            </models>
+        </group>
+        <group>
+            <translate X="0" Y="0" Z="-1.2" />
+            <scale X="0.12" Y="0.12" Z="0.12" />
+            <models>       
+                 <model file="sphere.3d" />
+            </models>
+        </group>
     </group>
     <group>
         <translate X="170.03" Y="0" Z="0" />
