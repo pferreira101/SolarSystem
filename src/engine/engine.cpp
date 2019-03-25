@@ -41,9 +41,7 @@ Função que desenha um figura recebida como parâmetro
 */
 void drawModel(Figure f) {
     int color=0;
-    printf("a renderizar a figura\n");
 	vector<Triangle> triangles = f.get_triangles();
-    printf("figura tem %d triangulos para desenhar\n",triangles.size() );
 	glBegin(GL_TRIANGLES);
 	for (vector<Triangle>::iterator it = triangles.begin(); it != triangles.end(); ++it) {
 		Triangle t = *it;
@@ -122,7 +120,6 @@ float beta = M_PI/6;
 float radius = 200;
 
 void renderGroup(vector<Figure> figs, vector<Operation*> ops, vector<Group> subGroups) {
-	printf("a renderizar o grupo\n");
 	glPushMatrix();
 
     for (Operation* o : ops) {
@@ -205,8 +202,7 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	if (readXML(argv[1], &groups) == XML_SUCCESS) {
-		printf("cena tem %d grupos para desenhar\n",groups.size() );
+	if (readXML(argv[1], &groups) == XML_SUCCESS){
 		// init GLUT and the window
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);

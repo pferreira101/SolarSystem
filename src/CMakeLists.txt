@@ -51,8 +51,9 @@ if(NOT OPENGL_FOUND)
     message(ERROR " OPENGL not found!")
 endif(NOT OPENGL_FOUND)
 
+
 include_directories(./engine/headers ./common)
-add_definitions(-std=c++11 -Wdeprecated-declarations)
+add_definitions(-std=c++11)
 add_executable(engine engine/engine.cpp engine/tinyxml2.cpp common/hash.cpp engine/figureBuild.cpp engine/xmlHandler.cpp)
 add_executable(generator generator/generator.cpp common/hash.cpp)
 

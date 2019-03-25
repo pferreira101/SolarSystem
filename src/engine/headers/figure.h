@@ -42,7 +42,6 @@ public:
 		one = x;
 		two = y;
 		three = z;
-		printf("a criar triangulo\n");
 	}
 	Point getOne() {
 		return one;
@@ -73,8 +72,8 @@ public:
 };
 
 
-Figure getFigure(const char *name);
+Figure getFigure(const string& name);
 vector<Triangle> getTriangles(vector<Point> points);
-vector<Point> getPoints(const char *name);
+vector<Point> getPoints(const string& name);
 
 #endif

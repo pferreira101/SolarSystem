@@ -1,10 +1,16 @@
 #include <xmlHandler.h>
 
+
+string cur_dir;
+
+
 /**
 Fun‹o que interpreta um cen‡rio gr‡fico em XML
 */
-int readXML(const char *filename, vector<Group>* groups){
 
+int readXML(const char *filename, vector<Group>* groups){
+	cur_dir = getDirectory(filename);	
+	std::cout << " path: " << cur_dir <<"\n";
 	XMLDocument doc;
 	XMLError error = doc.LoadFile(filename);
 	if (error != XML_SUCCESS) { printf("Error: %i\n", error); return error; }
@@ -51,7 +57,7 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 			x = child->FloatAttribute("X");
 			y = child->FloatAttribute("Y");
 			z = child->FloatAttribute("Z");
-			printf("deteta translate\n");
+
 			(*ops).push_back(new Translate(x,y,z));
 			break;
 		case ROTATE:
@@ -59,14 +65,14 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 			x = child->FloatAttribute("axisX");
 			y = child->FloatAttribute("axisY");
 			z = child->FloatAttribute("axisZ");
-			printf("deteta rotate\n");
+
 			(*ops).push_back(new Rotate(angle, x, y, z));
 			break;
         case SCALE:
             child->QueryFloatAttribute("X", &x);
             child->QueryFloatAttribute("Y", &y);
             child->QueryFloatAttribute("Z", &z);
-			printf("deteta scale\n");
+
 			(*ops).push_back(new Scale(x, y, z));
             break;
 		case MODELS:
@@ -86,7 +92,7 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 }
 
 
-int readModels(XMLElement* models, vector<Figure>* fig) {
+int readModels(XMLElement* models, vector<Figure>* fig){
 	if (models != nullptr) {
 		XMLElement *model = models->FirstChildElement("model");
 		while (model != nullptr) {
@@ -95,9 +101,11 @@ int readModels(XMLElement* models, vector<Figure>* fig) {
 
 			if (fileName == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
 
-			Figure f = getFigure(fileName);
+			string fname(fileName);
+			string path = cur_dir+fname;
+			Figure f = getFigure(path);
 			(*fig).push_back(f);
-			printf("a adicionar figura\n");
+
 			model = model->NextSiblingElement("model");
 		}
 
@@ -105,4 +113,12 @@ int readModels(XMLElement* models, vector<Figure>* fig) {
 		return XML_SUCCESS;
 	}
 	return XML_NO_TEXT_NODE;
+}
+
+
+
+string getDirectory(const string& name){
+    size_t pos = name.find_last_of("/\\");
+    string path = name.substr(0, pos+1);
+    return ( pos != string::npos)? path : "";
 }
