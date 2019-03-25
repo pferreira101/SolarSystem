@@ -3,31 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <hash.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 
 using namespace std;
 
-/**
- Definação dos valores da funcao de hash para as figuras aceitaveis
- - não podem ser calculados em run time para se puderem usar no switch
- */
-#define PLANE 5488
-#define BOX 3161
-#define SPHERE 7234
-#define CONE 4000
 
-/**
- Função auxiliar para calcular o valor do argv[1] a usar
- */
-int hashF(char* s){
-	int r=0;
-	for(int i=0; s[i]; i++){
-		r += (s[i]*(10^i));
-	}
-	return r;
-}
 
 /**
  Função para realizar escritas no ficheiro passado como argumento

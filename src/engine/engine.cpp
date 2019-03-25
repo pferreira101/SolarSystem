@@ -4,12 +4,21 @@
 #else
 #include "glut.h"
 #endif
+
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include "tinyxml2.h"
+#include <tinyxml2.h>
 #include <string>
 #include <vector>
+#include <group.h>
+#include <operation.h>
+#include <translate.h>
+#include <rotate.h>
+#include <scale.h>
+#include <hash.h>
+#include <figure.h>
+#include <xmlHandler.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -20,173 +29,6 @@
 
 
 using namespace std;
-using namespace tinyxml2;
-
-#define TRANSLATE 10284
-#define ROTATE 7301
-#define SCALE 5401
-#define MODELS 7257 
-#define GROUP 5793
-/**
- FunÁ„o auxiliar para calcular o valor da operaÁao a usar
- */
-int hashF(char* s) {
-	int r = 0;
-	for (int i = 0; s[i]; i++) {
-		r += (s[i] * (10 ^ i));
-	}
-	return r;
-}
-
-/**
-Classe que guarda as coordenadas X, Y, Z de um ponto
-*/
-class Point {
-	float x, y, z;
-public:
-
-	void set_values(double a, double b, double c) {
-		x = a;
-		y = b;
-		z = c;
-	}
-	double getX() {
-		return x;
-	}
-	double getY() {
-		return y;
-	}
-	double getZ() {
-		return z;
-	}
-};
-
-/**
-Classe que guarda os três pontos de um triângulo
-*/
-class Triangle {
-	Point one, two, three;
-
-public:
-
-	void set_values(Point x, Point y, Point z) {
-		one = x;
-		two = y;
-		three = z;
-	}
-	Point getOne() {
-		return one;
-	}
-	Point getTwo() {
-		return two;
-	}
-	Point getThree() {
-		return three;
-	}
-};
-
-
-/**
-Classe que guarda a lista de triângulos que compõem uma figura
-*/
-class Figure {
-	vector<Triangle> triangles;
-public:
-
-	void set_values(vector<Triangle> ts) {
-		triangles = ts;
-	}
-
-	vector<Triangle> get_triangles() {
-		return triangles;
-	}
-};
-
-/* Classe  operation È a superclasse das operaÁoes, server para construir um vector com tranlates e rotates,
-neste momento possui todo o codigo de ambas as subclasses porque nao estou a conseguir dar cast direito*/
-class Operation {
-public:
-    virtual void transformacao() = 0; // forma de tornar abstrato
-};
-
-
-class Translate : public Operation {
-    float x, y, z;
-    
-    public:
-        Translate(double xx, double yy, double zz) {
-            x = xx;
-            y = yy;
-            z = zz;
-        }
-    
-        void transformacao(){
-
-            glTranslatef(x, y, z);
-        }
-
-	
-};
-
-class Rotate : public Operation {
-	float angle, x, y, z;
-    
-    public:
-        Rotate(double a, double xx, double yy, double zz) {
-            angle = a;
-            x = xx;
-            y = yy;
-            z = zz;
-        }
-    
-        void transformacao(){
-
-            glRotatef(angle, x, y, z);
-        }
-};
-
-
-class Scale : public Operation{
-    float x, y, z;
-    
-    public:
-        Scale(float xx, float yy, float zz) {
-            x = xx;
-            y = yy;
-            z = zz;
-        }
-    
-        void transformacao(){
-
-            glScalef(x,y,z);
-        }
-};
-
-class Group {
-	vector<Figure> figures;
-	vector<Operation*> operations; // vetor de apontadores por causa de polimorfismo
-	vector<Group> subGroups;
-
-public:
-	void set_values(vector<Figure> fig, vector<Operation*> ops, vector<Group> g) {
-		figures = fig;
-		operations = ops;
-		subGroups = g;
-	}
-
-	vector<Figure> getFigures() {
-		return figures;
-	}
-
-	vector<Operation*> getOperations() {
-		return operations;
-	}
-
-	vector<Group> getSubGroups() {
-		return subGroups;
-	}
-
-};
 
 
 /**
@@ -195,79 +37,13 @@ Variável global com a lista de figuras a desenhar
 vector<Group> groups;
 
 /**
-Função que, partindo de um ficheiro gerado pelo programa 'generator', devolve a lista dos pontos existentes nesse ficheiro.
-*/
-vector<Point> getPoints(const char *name) {
-	string point;
-	ifstream file;
-	file.open(name);
-
-	string delimiter = ",";
-	int delim_len = delimiter.length();
-	vector<Point> points;
-	
-
-	while (!file.eof()) { // ler ficheiro completo
-
-		getline(file, point); // ler uma linha
-        if(!point.compare("")) break; // ultima linha do ficheiro é vazia, não deve ser processada
-		
-        string token;
-		float coord[3];
-		int i = 0;
-
-		int pos_start = 0, pos_end;
-
-		while (i<3) {
-			pos_end = point.find(delimiter, pos_start);
-            token = point.substr(pos_start, pos_end-pos_start);
-			coord[i++] = stof(token);
-			pos_start = pos_end + delim_len;
-		}
-
-		Point p;
-		p.set_values(coord[0], coord[1], coord[2]);
-		points.push_back(p);//adicona novo elemento no fim do vector
-		
-	}
-	file.close();
-
-	return points;
-}
-
-/**
-Função que constrÛi uma lista de triângulos consoante a lista de pontos que recebe como parâmetro
-*/
-vector<Triangle> getTriangles(vector<Point> points) {	
-	vector<Triangle> triangles;
-	Point pts[3];
-	int i = 0;
-
-	for (vector<Point>::const_iterator it = points.begin(); it != points.end(); ++it) {
-
-		if (i == 3) i = 0;
-		
-		pts[i] = (*it);
-
-		if (i == 2) { // ver se é o 3o ponto e formar triangulo
-			Triangle t;
-			t.set_values(pts[0], pts[1], pts[2]);
-			triangles.push_back(t);
-		}
-
-		i++;
-	}
-
-	return triangles;
-}
-
-/**
 Função que desenha um figura recebida como parâmetro
 */
 void drawModel(Figure f) {
     int color=0;
+    printf("a renderizar a figura\n");
 	vector<Triangle> triangles = f.get_triangles();
-    
+    printf("figura tem %d triangulos para desenhar\n",triangles.size() );
 	glBegin(GL_TRIANGLES);
 	for (vector<Triangle>::iterator it = triangles.begin(); it != triangles.end(); ++it) {
 		Triangle t = *it;
@@ -287,113 +63,7 @@ void drawModel(Figure f) {
 	glEnd();
 }
 
-int readModels(XMLElement * models, vector<Figure>* fig) {
-	if (models != nullptr) {
-		XMLElement *model = models->FirstChildElement("model");
-		while (model != nullptr) {
-			const char * fileName = nullptr;
-			fileName = model->Attribute("file");
 
-			if (fileName == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
-			Figure f;
-			f.set_values(getTriangles(getPoints(fileName)));
-			(*fig).push_back(f);
-
-			model = model->NextSiblingElement("model");
-		}
-
-		models = models->NextSiblingElement("models");
-		return XML_SUCCESS;
-	}
-	return XML_NO_TEXT_NODE;
-}
-
-int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation*>*ops, vector<Group> *subGroups) {
-	XMLElement* child;
-	int flag = 0;
-	for (child = element->FirstChildElement(); child != NULL && flag == 0; child = child->NextSiblingElement())
-	{
-		vector<Figure> aux;
-		vector<Operation*> aux2;
-		vector<Group> aux3;
-		Group g;
-
-        
-		float x = 1, y = 1, z = 1; // Inicializar a 1 por do scale. Caso nao consiga ler Y, Y=0 e tem que ser 1. DaÌ usar QueryFloatSttribute tambem
-		const char* n;
-		double angle = 0;
-		switch (hashF((char*)child->Value()))
-		{
-		case TRANSLATE:
-			x = child->FloatAttribute("X");
-			y = child->FloatAttribute("Y");
-			z = child->FloatAttribute("Z");
-
-			(*ops).push_back(new Translate(x,y,z));
-			break;
-		case ROTATE:
-			angle = child->FloatAttribute("angle");
-			x = child->FloatAttribute("axisX");
-			y = child->FloatAttribute("axisY");
-			z = child->FloatAttribute("axisZ");
-
-			(*ops).push_back(new Rotate(angle, x, y, z));
-			break;
-        case SCALE:
-            child->QueryFloatAttribute("X", &x);
-            child->QueryFloatAttribute("Y", &y);
-            child->QueryFloatAttribute("Z", &z);
-
-			(*ops).push_back(new Scale(x, y, z));
-            break;
-		case MODELS:
-			readModels(child, fig);
-			break;
-		case GROUP:
-			readGroup(child, &aux, &aux2, &aux3);
-			g.set_values(aux,aux2,aux3);
-			(*subGroups).push_back(g);
-			break;
-		default:
-			break;
-		}
-	}
-
-	return XML_SUCCESS;
-}
-
-
-
-/**
-Função que interpreta um cenário gráfico em XML
-*/
-int readXML(const char *filename) {
-
-	XMLDocument doc;
-	XMLError error = doc.LoadFile(filename);
-	if (error != XML_SUCCESS) { printf("Error: %i\n", error); return error; }
-
-	XMLNode *scene = doc.FirstChild();
-	if (scene == nullptr) return XML_ERROR_FILE_READ_ERROR;
-
-	XMLElement *groups_xml = scene->FirstChildElement("group");
-
-	while (groups_xml != nullptr) {
-		vector<Operation*> ops;
-		vector<Figure> fig;
-		vector<Group> subGroups;
-		readGroup(groups_xml, &fig, &ops, &subGroups);
-		
-		Group group; 
-		group.set_values(fig, ops, subGroups);
-		groups.push_back(group);
-
-		groups_xml = groups_xml->NextSiblingElement("group");
-	}
-
-	return XML_SUCCESS;
-}
 
 
 
@@ -452,7 +122,7 @@ float beta = M_PI/6;
 float radius = 200;
 
 void renderGroup(vector<Figure> figs, vector<Operation*> ops, vector<Group> subGroups) {
-
+	printf("a renderizar o grupo\n");
 	glPushMatrix();
 
     for (Operation* o : ops) {
@@ -535,8 +205,8 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	if (readXML(argv[1]) == XML_SUCCESS) {
-
+	if (readXML(argv[1], &groups) == XML_SUCCESS) {
+		printf("cena tem %d grupos para desenhar\n",groups.size() );
 		// init GLUT and the window
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
