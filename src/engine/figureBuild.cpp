@@ -11,7 +11,7 @@ Figure getFigure(const string& name){
 }
 
 /**
-Fun‹o que constrói uma lista de tri‰ngulos consoante a lista de pontos que recebe como par‰metro
+Função que constrói uma lista de tri‰ngulos consoante a lista de pontos que recebe como parâmetro
 */
 vector<Triangle> getTriangles(vector<Point> points) {	
 	vector<Triangle> triangles;
@@ -37,7 +37,7 @@ vector<Triangle> getTriangles(vector<Point> points) {
 	
 
 /**
-Fun‹o que, partindo de um ficheiro gerado pelo programa 'generator', devolve a lista dos pontos existentes nesse ficheiro.
+Função que, partindo de um ficheiro gerado pelo programa 'generator', devolve a lista dos pontos existentes nesse ficheiro.
 */
 vector<Point> getPoints(const string& name) {
 	string point;

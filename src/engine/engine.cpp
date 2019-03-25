@@ -32,12 +32,12 @@ using namespace std;
 
 
 /**
-Variável global com a lista de figuras a desenhar
+Vari·vel global com a lista de figuras a desenhar
 */
 vector<Group> groups;
 
 /**
-Função que desenha um figura recebida como parâmetro
+FunÁ„o que desenha um figura recebida como par‚metro
 */
 void drawModel(Figure f) {
     int color=0;
@@ -198,7 +198,7 @@ void processCamera(unsigned char key, int x, int y) {
 int main(int argc, char **argv) {
 
 	if (argc == 1) {
-		printf("Por favor insira todos os parâmetros necessários. \n");
+		printf("Por favor insira todos os parametros necessarios. \n");
 		return -1;
 	}
 

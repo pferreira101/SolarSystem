@@ -292,7 +292,7 @@ void coneHandler(double raio, double altura, int slices, int stacks, char* destF
 } 
 
 int main(int argc, char** argv){
-	int error_flag=0;
+	int error_flag=0; 
 
 	if (argc == 1) return -1;
 

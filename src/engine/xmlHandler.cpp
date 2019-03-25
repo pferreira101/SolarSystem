@@ -5,12 +5,11 @@ string cur_dir;
 
 
 /**
-Fun‹o que interpreta um cen‡rio gr‡fico em XML
+Função que interpreta um cen‡rio gr‡fico em XML
 */
 
 int readXML(const char *filename, vector<Group>* groups){
 	cur_dir = getDirectory(filename);	
-	std::cout << " path: " << cur_dir <<"\n";
 	XMLDocument doc;
 	XMLError error = doc.LoadFile(filename);
 	if (error != XML_SUCCESS) { printf("Error: %i\n", error); return error; }
@@ -49,7 +48,6 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 
         
 		float x = 1, y = 1, z = 1; // Inicializar a 1 por do scale. Caso nao consiga ler Y, Y=0 e tem que ser 1. Daí usar QueryFloatSttribute tambem
-		const char* n;
 		double angle = 0;
 		switch (hashF((char*)child->Value()))
 		{
