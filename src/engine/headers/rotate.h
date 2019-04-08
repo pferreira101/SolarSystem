@@ -28,6 +28,23 @@ class Rotate : public Operation {
         }
 };
 
+class DynamicRotate : public Operation {
+	float time, x, y, z;
+
+public:
+	DynamicRotate(double t, double xx, double yy, double zz) {
+		time = t;
+		x = xx;
+		y = yy;
+		z = zz;
+	}
+
+	void transformacao() {
+
+		//glRotatef(time, x, y, z); // agora t é o tempo que demora a fazer 360 
+	}
+};
+
 #pragma GCC diagnostic pop
 #endif
 

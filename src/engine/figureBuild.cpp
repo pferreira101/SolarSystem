@@ -24,9 +24,8 @@ vector<Triangle> getTriangles(vector<Point> points) {
 		pts[i] = (*it);
 
 		if (i == 2) { // ver se Ž o 3o ponto e formar triangulo
-			Triangle t;
-			t.set_values(pts[0], pts[1], pts[2]);
-			triangles.push_back(t);
+			Triangle *t = new Triangle(pts[0], pts[1], pts[2]);
+			triangles.push_back(*t);
 		}
 
 		i++;

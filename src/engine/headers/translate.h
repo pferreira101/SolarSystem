@@ -17,9 +17,9 @@ class Translate : public Operation {
     
     public:
         Translate(double xx, double yy, double zz) {
-            x = xx;
-            y = yy;
-            z = zz;
+			x = xx;
+			y = yy;
+			z = zz;
         }
     
         void transformacao(){
@@ -28,6 +28,24 @@ class Translate : public Operation {
         }
 
 	
+};
+
+class DynamicTranslate : public Operation {
+	float time;
+	vector<Point> pontos_curva;
+
+public:
+	DynamicTranslate(double t, vector<Point> pts) {
+		time = t;
+		pontos_curva = pts;
+	}
+
+	void transformacao() {
+
+		//glTranslatef(x, y, z);
+	}
+
+
 };
 
 #pragma GCC diagnostic pop

@@ -13,6 +13,14 @@ Classe que guarda as coordenadas X, Y, Z de um ponto
 class Point {
 	float x, y, z;
 public:
+	Point() {
+		x = y = z = 0;
+	}
+	Point(float xx, float yy, float zz) {
+		x = xx;
+		y = yy;
+		z = zz;
+	}
 
 	void set_values(double a, double b, double c) {
 		x = a;
@@ -38,11 +46,12 @@ class Triangle {
 
 public:
 
-	void set_values(Point x, Point y, Point z) {
+	Triangle(Point x, Point y, Point z) {
 		one = x;
 		two = y;
 		three = z;
 	}
+
 	Point getOne() {
 		return one;
 	}
