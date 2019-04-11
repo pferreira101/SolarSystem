@@ -1,4 +1,4 @@
-#include <stdlib.h>
+ï»¿#include <stdlib.h>
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -33,12 +33,12 @@ using namespace std;
 int timebase = 0, frame = 0;
 
 /**
-Variável global com a lista de figuras a desenhar
+VariÃ¡vel global com a lista de figuras a desenhar
 */
 vector<Group> groups;
 
 /**
-Função que desenha um figura recebida como parâmetro
+FunÃ§Ã£o que desenha um figura recebida como parÃ¢metro
 */
 void drawModel(Figure f) {
     int color=0;
@@ -116,9 +116,15 @@ void drawCoordinates() {
 	glEnd();
 }
 
-float alpha = M_PI/3.4;
+/*float alpha = M_PI/3.4;
 float beta = M_PI/6;
 float radius = 200;
+*/
+float camX = 0; float camY = 0; float camZ = 200;
+float Lx = 0; float Ly = 0; float Lz = 0;
+int startX, startY, tracking = 0;
+int alpha = 180, beta = 0, r = 50;
+
 
 void renderGroup(vector<Figure> figs, vector<Operation*> ops, vector<Group> subGroups) {
 	glPushMatrix();
@@ -152,9 +158,9 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-    gluLookAt(radius*cos(beta)*cos(alpha), radius*sin(beta), radius*cos(beta)*sin(alpha),
-              0.0, 0.0, 0.0,
-              0.0f, 1.0f, 0.0f);
+	gluLookAt(camX, camY, camZ,
+		Lx, Ly, Lz,
+		0.0f, 1.0f, 0.0f);
 
 	glColor3b(0, 5, 20);
 	
@@ -182,7 +188,7 @@ void renderScene(void) {
 	glutSwapBuffers();
 }
 
-
+/*
 void processCamera(unsigned char key, int x, int y) {
 
 	switch (key) {
@@ -205,9 +211,144 @@ void processCamera(unsigned char key, int x, int y) {
 		radius -= 20;
 		break;
 	}
-
+	
 	glutPostRedisplay();
+}*/
+
+// escrever funï¿½ï¿½o de processamento do teclado
+
+void processKeys(unsigned char key, int xx, int yy) {
+	if (key == 'p') {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
+	float k;
+	float dx, dy, dz;
+	if (key == 'w' || key == 's') {
+		if (key == 'w')
+			k = 0.2;
+		if (key == 's')
+			k = -0.2;
+		dx = Lx - camX;
+		dy = Ly - camY;
+		dz = Lz - camZ;
+
+		camX = camX + k * dx;
+		camY = camY + k * dy;
+		camZ = camZ + k * dz;
+
+		Lx = Lx + k * dx;
+		Ly = Ly + k * dy;
+		Lz = Lz + k * dz;
+	}
+	if (key == 'd' || key == 'a') {
+		if (key == 'd') {
+			k = 0.2;
+			
+		}
+		if (key == 'a') {
+			k = -0.2;
+			
+		}
+
+
+		dx = Lx - camX;
+		dy = Ly - camY;
+		dz = Lz - camZ;
+		float upX = 0;
+		float upY = 1;
+		float upZ = 0;
+		float rx = dy*upZ-dz*upY;
+		float rz = dx*upY-dy*upX;
+
+		camX = camX + k * rx;
+		camZ = camZ + k * rz;
+
+		Lx = Lx + k * rx;
+		Lz = Lz + k * rz;
+		
+	}
+
+
+	
 }
+
+
+
+void processMouseButtons(int button, int state, int xx, int yy) {
+
+	if (state == GLUT_DOWN) {
+		startX = xx;
+		startY = yy;
+		if (button == GLUT_LEFT_BUTTON)
+			tracking = 1;
+		else if (button == GLUT_RIGHT_BUTTON)
+			tracking = 2;
+		else
+			tracking = 0;
+	}
+	else if (state == GLUT_UP) {
+		if (tracking == 1) {
+			alpha += (xx - startX);
+			beta += (yy - startY);
+		}
+		else if (tracking == 2) {
+
+			r -= yy - startY;
+			if (r < 3)
+				r = 3.0;
+		}
+		tracking = 0;
+	}
+
+}
+
+
+void processMouseMotion(int xx, int yy) {
+
+	int deltaX, deltaY;
+	int alphaAux, betaAux;
+	int rAux;
+
+	if (!tracking)
+		return;
+
+	deltaX = xx - startX;
+	deltaY = yy - startY;
+
+	if (tracking == 1) {
+
+
+		alphaAux = alpha + deltaX;
+		betaAux = beta + deltaY;
+
+		if (betaAux > 85.0)
+			betaAux = 85.0;
+		else if (betaAux < -85.0)
+			betaAux = -85.0;
+
+		rAux = r;
+	}
+	else if (tracking == 2) {
+
+		alphaAux = alpha;
+		betaAux = beta;
+		rAux = r - deltaY;
+		if (rAux < 3)
+			rAux = 3;
+	}
+
+	//Lx = camX + sin(alphaAux * 3.14 / 180.0);
+	//Ly = camY;
+	//Lz = camZ + cos(alphaAux* 3.14 / 180.0);
+
+	Lx = camX + rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
+	Lz = camZ + rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
+	Ly = camY + rAux * sin(betaAux * 3.14 / 180.0);
+
+
+}
+
 
 int main(int argc, char **argv) {
 
@@ -230,7 +371,9 @@ int main(int argc, char **argv) {
 		glutReshapeFunc(changeSize);
 
 		// Callback registration for keyboard processing
-		glutKeyboardFunc(processCamera);
+		glutKeyboardFunc(processKeys);
+		glutMouseFunc(processMouseButtons);
+		glutMotionFunc(processMouseMotion);
 
 		//  OpenGL settings
 		glEnable(GL_DEPTH_TEST);
