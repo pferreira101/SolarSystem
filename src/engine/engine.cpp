@@ -30,6 +30,7 @@
 
 using namespace std;
 
+int timebase = 0, frame = 0;
 
 /**
 Variável global com a lista de figuras a desenhar
@@ -141,6 +142,9 @@ void renderGroup(vector<Figure> figs, vector<Operation*> ops, vector<Group> subG
 }
 
 void renderScene(void) {
+	float fps;
+	int time;
+	char s[64];
 
 	glClearColor(20.0f, 20.0f, 20.0f, 1);
 	// clear buffers
@@ -163,6 +167,16 @@ void renderScene(void) {
 	}
 
 	drawCoordinates();
+
+	frame++;
+	time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - timebase > 1000) {
+		fps = frame * 1000.0 / (time - timebase);
+		timebase = time;
+		frame = 0;
+		sprintf(s, "FPS: %f6.2", fps);
+		glutSetWindowTitle(s);
+	}
 
 	// End of frame
 	glutSwapBuffers();
@@ -212,6 +226,7 @@ int main(int argc, char **argv) {
 
 		// Required callback registry 
 		glutDisplayFunc(renderScene);
+		glutIdleFunc(renderScene);
 		glutReshapeFunc(changeSize);
 
 		// Callback registration for keyboard processing

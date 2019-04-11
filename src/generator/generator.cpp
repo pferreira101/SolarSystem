@@ -288,11 +288,53 @@ void coneHandler(double raio, double altura, int slices, int stacks, char* destF
 		s.append(x1 + ",0," + z1 +"\n");
         s.append(x2 + ",0," + z2 + "\n");
 	}	
+
 	fileWriter(destFile, s);
 } 
 
+
+/**
+ Função responsável por calcular os pontos que formam uma figura do tipo 'ring'.
+ */
+void ringHandler(double r, double R, int slices, char* destFile) {
+	string s = "";
+	double a = 0;
+	double step = 2 * M_PI / slices;
+
+	for (int i = 0; i < slices; i++, a+=step) {
+		string x1 = to_string(r * cos(a));
+		string z1 = to_string(r * sin(a));
+		string x2 = to_string((r * cos(a + step)));		
+		string z2 = to_string(r * sin(a + step));
+		string x3 = to_string(R * cos(a));
+		string z3 = to_string(R * sin(a));
+		string x4 = to_string((R * cos(a + step)));
+		string z4 = to_string(R * sin(a + step));
+
+		// Draw top
+		s.append(x2 + ",0," + z2 + "\n");
+		s.append(x1 + ",0," + z1 + "\n");
+		s.append(x3 + ",0," + z3 + "\n");
+
+		s.append(x3 + ",0," + z3 + "\n");
+		s.append(x4 + ",0," + z4 + "\n");
+		s.append(x2 + ",0," + z2 + "\n");
+
+		// Draw bottom
+		s.append(x1 + ",0," + z1 + "\n");
+		s.append(x2 + ",0," + z2 + "\n");
+		s.append(x3 + ",0," + z3 + "\n");
+
+		s.append(x3 + ",0," + z3 + "\n");
+		s.append(x2 + ",0," + z2 + "\n");
+		s.append(x4 + ",0," + z4 + "\n");
+	}
+
+	fileWriter(destFile, s);
+}
+
 int main(int argc, char** argv){
-	int error_flag=0; 
+	int error_flag = 0; 
 
 	if (argc == 1) return -1;
 
@@ -326,6 +368,11 @@ int main(int argc, char** argv){
        	 	else error_flag = 1;
         	break;
 
+		case RING:
+			if (argc == 6) ringHandler(atof(argv[2]), atof(argv[3]), atoi(argv[4]), argv[5]);
+			else error_flag = 1;
+			break;
+
     	default:
        		printf("Por favor, insira um sólido válido. \n");
         	break;
@@ -334,7 +381,8 @@ int main(int argc, char** argv){
 
 
     if(error_flag) printf("Por favor insira todos os parâmetros necessários. \n");
-    printf("Ok\n");
+    else printf("Pontos gerados com sucesso\n");
+
 	return 1;
 
 }

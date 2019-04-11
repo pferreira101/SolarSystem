@@ -11,6 +11,7 @@
 #define BOX 3161
 #define SPHERE 7234
 #define CONE 4000
+#define RING 4102
 
 int hashF(char* s);
 
