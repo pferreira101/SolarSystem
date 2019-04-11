@@ -99,9 +99,9 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 					y = child->FloatAttribute("axisY");
 					z = child->FloatAttribute("axisZ");
 
-					(*ops).push_back(new Rotate(time, x, y, z));
+					(*ops).push_back(new Rotate(angle, x, y, z));
 					printf("Static Rotate = (%f, %f, %f, %f) \n", angle, x, y, z);
-				}
+				} 
 				
 				break;
 

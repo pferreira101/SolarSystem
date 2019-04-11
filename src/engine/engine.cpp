@@ -31,6 +31,7 @@
 using namespace std;
 
 int timebase = 0, frame = 0;
+int mode = 0;
 
 /**
 Variável global com a lista de figuras a desenhar
@@ -152,7 +153,7 @@ void renderScene(void) {
 	int time;
 	char s[64];
 
-	glClearColor(20.0f, 20.0f, 20.0f, 1);
+	//glClearColor(20.0f, 20.0f, 20.0f, 1);
 	// clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -218,17 +219,22 @@ void processCamera(unsigned char key, int x, int y) {
 // escrever fun��o de processamento do teclado
 
 void processKeys(unsigned char key, int xx, int yy) {
+	key = tolower(key);
+	
 	if (key == 'p') {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 
 	float k;
 	float dx, dy, dz;
+	
+
 	if (key == 'w' || key == 's') {
 		if (key == 'w')
 			k = 0.2;
 		if (key == 's')
 			k = -0.2;
+
 		dx = Lx - camX;
 		dy = Ly - camY;
 		dz = Lz - camZ;
@@ -241,16 +247,13 @@ void processKeys(unsigned char key, int xx, int yy) {
 		Ly = Ly + k * dy;
 		Lz = Lz + k * dz;
 	}
-	if (key == 'd' || key == 'a') {
+	else if (key == 'd' || key == 'a') {
 		if (key == 'd') {
-			k = 0.2;
-			
+			k = 0.2;			
 		}
 		if (key == 'a') {
-			k = -0.2;
-			
+			k = -0.2;		
 		}
-
 
 		dx = Lx - camX;
 		dy = Ly - camY;
@@ -265,11 +268,14 @@ void processKeys(unsigned char key, int xx, int yy) {
 		camZ = camZ + k * rz;
 
 		Lx = Lx + k * rx;
-		Lz = Lz + k * rz;
-		
+		Lz = Lz + k * rz;		
 	}
-
-
+	else if (key == 'm') {
+		mode = (mode + 1) % 3;
+		if (mode == 0) glPolygonMode(GL_FRONT, GL_FILL);
+		else if (mode == 1) glPolygonMode(GL_FRONT, GL_LINE);
+		else glPolygonMode(GL_FRONT, GL_POINT);
+	}
 	
 }
 
