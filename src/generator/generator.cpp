@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string>
 #include <hash.h>
+#include <figure.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -333,6 +334,266 @@ void ringHandler(double r, double R, int slices, char* destFile) {
 	fileWriter(destFile, s);
 }
 
+
+
+
+/********************
+*					*
+*	   BEZIER		*
+*					*
+********************/
+
+int nr_patches = 0;
+int** patch_indices;
+int nr_pts_ctrl;
+Point* pts_ctrl;
+
+void cross(float *a, float *b, float *res) {
+
+	res[0] = a[1] * b[2] - a[2] * b[1];
+	res[1] = a[2] * b[0] - a[0] * b[2];
+	res[2] = a[0] * b[1] - a[1] * b[0];
+}
+
+
+void normalize(float *a) {
+
+	float l = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+	a[0] = a[0] / l;
+	a[1] = a[1] / l;
+	a[2] = a[2] / l;
+}
+
+
+float length(float *v) {
+
+	float res = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+	return res;
+
+}
+
+void multMatrixVector(float *m, float *v, float *res) {
+
+	for (int j = 0; j < 4; ++j) {
+		res[j] = 0;
+		for (int k = 0; k < 4; ++k) {
+			res[j] += v[k] * m[j * 4 + k];
+		}
+	}
+
+}
+
+void multVectorMatrix(float *v, float *m, float *res) {
+	for (int i = 0; i < 4; ++i) {
+		res[i] = 0;
+		for (int j = 0; j < 4; ++j) {
+			res[i] += v[j] * m[j * 4 + i];
+		}
+	}
+}
+
+void multMatrixMatrix(float *m1, float *m2, float *res) {
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			res[i * 4 + j] = 0.0f;
+			for (int k = 0; k < 4; ++k)
+				res[i * 4 + j] += m1[i * 4 + k] * m2[k * 4 + j];
+		}
+	}
+}
+
+
+int bezierPatchParser(char *patch) {
+	string line;
+	ifstream file(patch);
+	float x, y, z;
+
+	if (!file) return -1;
+
+	// Verifica o número de patches
+	getline(file, line);
+	nr_patches = atoi((char*)line.c_str());
+	if (nr_patches < 1) return -1;
+	printf("Numero de patches = %d\n", nr_patches);
+
+	// Preenche array dos indices de cada patch
+	patch_indices = (int**)malloc(sizeof(int*) * nr_patches);
+
+	for (int i = 0; i < nr_patches; i++) {
+		getline(file, line);
+		patch_indices[i] = (int*)malloc(sizeof(int) * 16);
+
+		char* token = strtok((char*)line.c_str(), ",");
+		for (int j = 0; j < 16 && token != NULL; token = strtok(NULL, ","), j++) {
+			patch_indices[i][j] = atoi(token);
+		}
+	}
+
+	// Verifica o número de pontos de controlo
+	getline(file, line);
+	nr_pts_ctrl = atoi((char*)line.c_str());
+	if (nr_pts_ctrl < 1) return -1;
+	printf("Numero de pontos de controlo = %d\n", nr_pts_ctrl);
+
+
+	// Preenche o array dos pontos de controlo
+	pts_ctrl = (Point*)malloc(sizeof(Point) * nr_pts_ctrl);
+	for (int i = 0; i < nr_pts_ctrl; i++) {
+		getline(file, line);
+
+		x = atof(strtok((char*)line.c_str(), ","));
+		y = atof(strtok(NULL, ","));
+		z = atof(strtok(NULL, ","));
+
+		pts_ctrl[i] = *new Point(x, y, z);
+	}
+
+	return 1;
+}
+
+
+void getBezierPatchPoint(float u, float v, Point *pts, float *res, float *pNormal, float *coor_contexto) {
+
+	float M[4][4] = { {-1.0f,  3.0f, -3.0f, 1.0f},
+					{3.0f, -6.0f,  3.0f, 0.0f},
+					{-3.0f,  3.0f,  0.0f, 0.0f},
+					{ 1.0f,  0.0f,  0.0f, 0.0f} };
+
+	float U[4] = { u*u*u, u*u, u, 1 };
+	float der_U[4] = { 3*u*u, 2*u, 1, 0 };
+	float V[4] = { v*v*v, v*v, v, 1 };
+	float der_V[4] = { 3*v*v, 2*v, 1, 0 };
+
+	// M * V
+	float MV[4];
+	float Mder_V[4];
+	multMatrixVector((float *)M, V, MV);
+	multMatrixVector((float *)M, der_V, Mder_V);
+
+	// U * M 
+	float UM[4];
+	float der_UM[4];
+	multVectorMatrix(U, (float *)M, UM);
+	multVectorMatrix(der_U, (float *)M, der_UM);
+
+	// x, y, z
+	float Px[4][4] = {
+		{ pts[0].getX(), pts[1].getX(), pts[2].getX(), pts[3].getX() },
+		{ pts[4].getX(), pts[5].getX(), pts[6].getX(), pts[7].getX() },
+		{ pts[8].getX(), pts[9].getX(), pts[10].getX(), pts[11].getX() },
+		{ pts[12].getX(), pts[13].getX(), pts[14].getX(), pts[15].getX() }
+	};
+
+	float Py[4][4] = {
+		{ pts[0].getY(), pts[1].getY(), pts[2].getY(), pts[3].getY() },
+		{ pts[4].getY(), pts[5].getY(), pts[6].getY(), pts[7].getY() },
+		{ pts[8].getY(), pts[9].getY(), pts[10].getY(), pts[11].getY() },
+		{ pts[12].getY(), pts[13].getY(), pts[14].getY(), pts[15].getY() }
+	};
+
+	float Pz[4][4] = {
+		{ pts[0].getZ(), pts[1].getZ(), pts[2].getZ(), pts[3].getZ() },
+		{ pts[4].getZ(), pts[5].getZ(), pts[6].getZ(), pts[7].getZ() },
+		{ pts[8].getZ(), pts[9].getZ(), pts[10].getZ(), pts[11].getZ() },
+		{ pts[12].getZ(), pts[13].getZ(), pts[14].getZ(), pts[15].getZ() }
+	};
+
+	// UM * P 
+	float UMP[3][4];
+	multVectorMatrix(UM, (float *)Px, UMP[0]);
+	multVectorMatrix(UM, (float *)Py, UMP[1]);
+	multVectorMatrix(UM, (float *)Pz, UMP[2]);
+
+	float der_UMP[3][4];
+	multVectorMatrix(der_UM, (float *)Px, der_UMP[0]);
+	multVectorMatrix(der_UM, (float *)Py, der_UMP[1]);
+	multVectorMatrix(der_UM, (float *)Pz, der_UMP[2]);
+
+	// UMP * MV 
+	float dU[3];
+	float dV[3];
+
+	for (int j = 0; j < 3; j++) {
+		res[j] = 0.0f;
+		dU[j] = 0.0f;
+		dV[j] = 0.0f;
+
+		for (int i = 0; i < 4; i++) {
+			res[j] += MV[i] * UMP[j][i];
+			dU[j] += MV[i] * der_UMP[j][i];
+			dV[j] += Mder_V[i] * UMP[j][i];
+		}
+	}
+
+	normalize(dU);
+	normalize(dV);
+	cross(dV, dU, pNormal);
+	normalize(pNormal);
+
+	coor_contexto[0] = u;
+	coor_contexto[1] = v;
+}
+
+int bezierPatchGenerator(char* patch_file, int tesselationLevel, char *dest_file) {
+	bezierPatchParser(patch_file);
+	Point pv[16];
+	int divs = tesselationLevel; // change this to change the tesselation level
+	string points_str, normals_str, coor_contexto_str;
+	string output;
+
+
+	for (int i = 0; i < nr_patches; i++) {
+		for (int j = 0; j < 16; j++) {
+			pv[j] = pts_ctrl[patch_indices[i][j]];
+		}
+		for (int u = 0; u < divs; u++) {
+			float resP1[3], pNormal1[3], coor_contexto_1[2];
+			float resP2[3], pNormal2[3], coor_contexto_2[2];
+			float resP3[3], pNormal3[3], coor_contexto_3[2];
+			float resP4[3], pNormal4[3], coor_contexto_4[2];
+
+			for (int v = 0; v < divs; v++) {
+				getBezierPatchPoint(u / (float)divs, v / (float)divs, pv, resP1, pNormal1, coor_contexto_1);
+				getBezierPatchPoint((u + 1) / (float)divs, v / (float)divs, pv, resP2, pNormal2, coor_contexto_2);
+				getBezierPatchPoint(u / (float)divs, (v + 1) / (float)divs, pv, resP3, pNormal3, coor_contexto_3);
+				getBezierPatchPoint((u + 1) / (float)divs, (v + 1) / (float)divs, pv, resP4, pNormal4, coor_contexto_4);
+
+				points_str.append(to_string(resP1[0]) + ',' + to_string(resP1[1]) + ',' + to_string(resP1[2]) + '\n');
+				points_str.append(to_string(resP3[0]) + ',' + to_string(resP3[1]) + ',' + to_string(resP3[2]) + '\n');
+				points_str.append(to_string(resP4[0]) + ',' + to_string(resP4[1]) + ',' + to_string(resP4[2]) + '\n');
+
+				points_str.append(to_string(resP2[0]) + ',' + to_string(resP2[1]) + ',' + to_string(resP2[2]) + '\n');
+				points_str.append(to_string(resP1[0]) + ',' + to_string(resP1[1]) + ',' + to_string(resP1[2]) + '\n');
+				points_str.append(to_string(resP4[0]) + ',' + to_string(resP4[1]) + ',' + to_string(resP4[2]) + '\n');
+
+				normals_str.append(to_string(pNormal1[0]) + ',' + to_string(pNormal1[1]) + ',' + to_string(pNormal1[2]) + '\n');
+				normals_str.append(to_string(pNormal3[0]) + ',' + to_string(pNormal3[1]) + ',' + to_string(pNormal3[2]) + '\n');
+				normals_str.append(to_string(pNormal4[0]) + ',' + to_string(pNormal4[1]) + ',' + to_string(pNormal4[2]) + '\n');
+
+				normals_str.append(to_string(pNormal2[0]) + ',' + to_string(pNormal2[1]) + ',' + to_string(pNormal2[2]) + '\n');
+				normals_str.append(to_string(pNormal1[0]) + ',' + to_string(pNormal1[1]) + ',' + to_string(pNormal1[2]) + '\n');
+				normals_str.append(to_string(pNormal4[0]) + ',' + to_string(pNormal4[1]) + ',' + to_string(pNormal4[2]) + '\n');
+
+				coor_contexto_str.append(to_string(coor_contexto_1[0]) + ',' + to_string(coor_contexto_1[1]) + '\n');
+				coor_contexto_str.append(to_string(coor_contexto_3[0]) + ',' + to_string(coor_contexto_3[1]) + '\n');
+				coor_contexto_str.append(to_string(coor_contexto_4[0]) + ',' + to_string(coor_contexto_4[1]) + '\n');
+
+				coor_contexto_str.append(to_string(coor_contexto_2[0]) + ',' + to_string(coor_contexto_2[1]) + '\n');
+				coor_contexto_str.append(to_string(coor_contexto_1[0]) + ',' + to_string(coor_contexto_1[1]) + '\n');
+				coor_contexto_str.append(to_string(coor_contexto_4[0]) + ',' + to_string(coor_contexto_4[1]) + '\n');
+
+			}
+		}
+	}
+
+	output.append(/*to_string(p) + "\n" + */points_str + normals_str + coor_contexto_str);
+	fileWriter(dest_file, output);
+	return 0;
+}
+
+
+
+
 int main(int argc, char** argv){
 	int error_flag = 0; 
 
@@ -373,12 +634,16 @@ int main(int argc, char** argv){
 			else error_flag = 1;
 			break;
 
+		case PATCH:
+			if(argc == 5) bezierPatchGenerator(argv[2], atoi(argv[3]), argv[4]);
+			else error_flag = 1;
+			break;
+
     	default:
-       		printf("Por favor, insira um sólido válido. \n");
+			error_flag = 1;
         	break;
     }
     
-
 
     if(error_flag) printf("Por favor insira todos os parâmetros necessários. \n");
     else printf("Pontos gerados com sucesso\n");
@@ -386,3 +651,4 @@ int main(int argc, char** argv){
 	return 1;
 
 }
+

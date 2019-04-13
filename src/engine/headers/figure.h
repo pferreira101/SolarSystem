@@ -22,20 +22,21 @@ public:
 		z = zz;
 	}
 
-	void set_values(double a, double b, double c) {
+	void set_values(float a, float b, float c) {
 		x = a;
 		y = b;
 		z = c;
 	}
-	double getX() {
+	float getX() {
 		return x;
 	}
-	double getY() {
+	float getY() {
 		return y;
 	}
-	double getZ() {
+	float getZ() {
 		return z;
 	}
+
 };
 
 /**
