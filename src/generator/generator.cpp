@@ -593,6 +593,27 @@ int bezierPatchGenerator(char* patch_file, int tesselationLevel, char *dest_file
 
 
 
+void help() {
+	string s;
+	s.append("+---------------------------------------------------+\n" +
+		string("|                        HELP                       |\n") + // nao sei porque mas estava a dar erro nesta linha e assim com "string" nao da... tudo dentro do printf não dava tambem
+		"+---------------------------------------------------+\n" +
+		"| Primitive |               Parameters              |\n" +
+		"+-----------+---------------------------------------+\n" +
+		"| box       | edge output                           |\n" +
+		"+-----------+---------------------------------------+\n" +
+		"| plane     | x z [divisons] output                 |\n" +
+		"+-----------+---------------------------------------+\n" +
+		"| sphere    | radius slices stacks output           |\n" +
+		"+-----------+---------------------------------------+\n" +
+		"| cone      | radius height slices stacks output    |\n" +
+		"+-----------+---------------------------------------+\n" +
+		"| ring      | innerRadius outerRadius slices output |\n" +
+		"+-----------+---------------------------------------+\n" +
+		"| patch     | patchFile tesselation output          |\n" +
+		"+-----------+---------------------------------------+\n");
+	printf("%s\n", s);
+}
 
 int main(int argc, char** argv){
 	int error_flag = 0; 
@@ -637,6 +658,11 @@ int main(int argc, char** argv){
 		case PATCH:
 			if(argc == 5) bezierPatchGenerator(argv[2], atoi(argv[3]), argv[4]);
 			else error_flag = 1;
+			break;
+
+		case HELP:
+			help();
+			error_flag = 2;
 			break;
 
     	default:

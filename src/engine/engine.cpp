@@ -89,6 +89,17 @@ void drawModel() {
 
 }
 
+void prepareAllModels() {
+	for (vector<Group>::iterator it = groups.begin(); it != groups.end(); ++it) {
+		Group g = *it;
+		vector<Figure> figs = g.getFigures();
+		for (vector<Figure>::iterator it = figs.begin(); it != figs.end(); ++it) {
+			Figure f = *it;
+			prepareModel(f);
+		}
+	}
+}
+
 
 
 
@@ -412,14 +423,8 @@ int main(int argc, char **argv) {
 		// init GLEW
 		glewInit();
 		#endif	
-		for (vector<Group>::iterator it = groups.begin(); it != groups.end(); ++it) {
-			Group g = *it;
-			vector<Figure> figs = g.getFigures();
-			for (vector<Figure>::iterator it = figs.begin(); it != figs.end(); ++it) {
-				Figure f = *it;
-				prepareModel(f);
-			}
-		}
+
+		prepareAllModels();
 
 		//  OpenGL settings
 		glEnable(GL_DEPTH_TEST);

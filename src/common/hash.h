@@ -13,6 +13,7 @@
 #define CONE 4000
 #define RING 4102
 #define PATCH 5462
+#define HELP 4023
 
 int hashF(char* s);
 
