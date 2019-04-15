@@ -1,7 +1,4 @@
 #include <figure.h>
-#include <iostream>
-#include <string>
-#include <stdio.h>
 
 
 /**
@@ -9,27 +6,31 @@ Função que dado o nome de um ficheiro constroi a figura nele representada
 */
 Figure getFigure(const string& name){
 	Figure f;
-	vector<Point> points = getPoints(name);
-	f.set_values(fillArray(points),points.size()*3);
+	f.set_values(getTriangles(getPoints(name)));
 	return f;
 }
 
 /**
-Função que constrói uma lista de triangulos consoante a lista de pontos que recebe como parâmetro
+Função que constrói uma lista de tri‰ngulos consoante a lista de pontos que recebe como parâmetro
 */
-float* fillArray(vector<Point> points) {
-	float* vertexB;
-	vertexB = (float*)malloc(sizeof(float)*points.size() * 3);
-	int i = 0;
+vector<Triangle> getTriangles(vector<Point> points) {	
+	vector<Triangle> triangles;
+	Point pts[3];
+	int i = 0; 
 	for (vector<Point>::const_iterator it = points.begin(); it != points.end(); ++it) {
-		Point p = (*it);
 
-		vertexB[i++] = p.getX();
-		vertexB[i++] = p.getY();
-		vertexB[i++] = p.getZ();
+		if (i == 3) i = 0;
+		
+		pts[i] = (*it);
+
+		if (i == 2) { // ver se Ž o 3o ponto e formar triangulo
+			Triangle *t = new Triangle(pts[0], pts[1], pts[2]);
+			triangles.push_back(*t);
+		}
+
+		i++;
 	}
-
-	return vertexB;
+	return triangles;
 }
 
 	

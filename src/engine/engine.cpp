@@ -2,8 +2,7 @@
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
-#include <GL/glew.h>
-#include <GL/glut.h>
+#include "glut.h"
 #endif
 
 #include <stdio.h>
@@ -34,9 +33,6 @@ using namespace std;
 int timebase = 0, frame = 0;
 int mode = 0;
 
-GLuint buffers[1];
-float* vertexB;
-
 /**
 Variável global com a lista de figuras a desenhar
 */
@@ -47,20 +43,24 @@ Função que desenha um figura recebida como parâmetro
 */
 void drawModel(Figure f) {
     int color=0;
-	vertexB = f.get_vertex();
-	int v = f.get_num();
-
-	glGenBuffers(1, buffers);
-
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * v, vertexB, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-	glVertexPointer(3, GL_FLOAT, 0, 0);
-
-	glColor3f(0.49, 0.51, 0.53);
-
-	glDrawArrays(GL_TRIANGLES, 0, v);
+	vector<Triangle> triangles = f.get_triangles();
+	glBegin(GL_TRIANGLES);
+	for (vector<Triangle>::iterator it = triangles.begin(); it != triangles.end(); ++it) {
+		Triangle t = *it;
+        
+        if(color==0)
+            glColor3f(0.49,0.51,0.53);
+        else
+            glColor3f(0.2,0.2,0.2);
+        
+		glVertex3d(t.getOne().getX(), t.getOne().getY(), t.getOne().getZ());
+		glVertex3d(t.getTwo().getX(), t.getTwo().getY(), t.getTwo().getZ());
+		glVertex3d(t.getThree().getX(), t.getThree().getY(), t.getThree().getZ());
+        
+        
+        color = abs(color-1);
+	}
+	glEnd();
 }
 
 
@@ -364,7 +364,6 @@ int main(int argc, char **argv) {
 	}
 
 	if (readXML(argv[1], &groups) == XML_SUCCESS){
-
 		// init GLUT and the window
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -381,10 +380,6 @@ int main(int argc, char **argv) {
 		glutKeyboardFunc(processKeys);
 		glutMouseFunc(processMouseButtons);
 		glutMotionFunc(processMouseMotion);
-
-		glewInit();
-
-		glEnableClientState(GL_VERTEX_ARRAY);
 
 		//  OpenGL settings
 		glEnable(GL_DEPTH_TEST);

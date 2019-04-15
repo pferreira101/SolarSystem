@@ -40,29 +40,50 @@ public:
 };
 
 /**
-Classe que guarda a lista de triangulos que comp›em uma figura
+Classe que guarda os trs pontos de um tri‰ngulo
 */
-class Figure {
-	float *vertexB;
-	int num_points;
+class Triangle {
+	Point one, two, three;
+
 public:
 
-	void set_values(float* vertex,int p) {
-		vertexB = vertex;
-		num_points = p;
+	Triangle(Point x, Point y, Point z) {
+		one = x;
+		two = y;
+		three = z;
 	}
 
-	float* get_vertex() {
-		return vertexB;
+	Point getOne() {
+		return one;
 	}
-	int get_num(){
-		return num_points;
+	Point getTwo() {
+		return two;
+	}
+	Point getThree() {
+		return three;
+	}
+};
+
+
+/**
+Classe que guarda a lista de tri‰ngulos que comp›em uma figura
+*/
+class Figure {
+	std::vector<Triangle> triangles;
+public:
+
+	void set_values(std::vector<Triangle> ts) {
+		triangles = ts;
+	}
+
+	std::vector<Triangle> get_triangles() {
+		return triangles;
 	}
 };
 
 
 Figure getFigure(const string& name);
-float* fillArray(vector<Point> points);
+vector<Triangle> getTriangles(vector<Point> points);
 vector<Point> getPoints(const string& name);
 
 #endif
