@@ -2,7 +2,8 @@
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
-#include "glut.h"
+#include <GL/glew.h>
+#include <GL/glut.h>
 #endif
 
 #include <stdio.h>
@@ -41,28 +42,52 @@ vector<Group> groups;
 /**
 Função que desenha um figura recebida como parâmetro
 */
-void drawModel(Figure f) {
-    int color=0;
+
+float* vertexB;
+GLuint buffers[1];
+GLuint vertex_count;
+
+void prepareModel(Figure f) {
+	vertex_count = 0;
 	vector<Triangle> triangles = f.get_triangles();
-	glBegin(GL_TRIANGLES);
-	for (vector<Triangle>::iterator it = triangles.begin(); it != triangles.end(); ++it) {
+	float* v = (float*)malloc(sizeof(float)*triangles.size() * 3 * 3);
+
+	for (vector<Triangle>::iterator it = triangles.begin(); it != triangles.end(); ++it) {		
 		Triangle t = *it;
-        
-        if(color==0)
-            glColor3f(0.49,0.51,0.53);
-        else
-            glColor3f(0.2,0.2,0.2);
-        
-		glVertex3d(t.getOne().getX(), t.getOne().getY(), t.getOne().getZ());
-		glVertex3d(t.getTwo().getX(), t.getTwo().getY(), t.getTwo().getZ());
-		glVertex3d(t.getThree().getX(), t.getThree().getY(), t.getThree().getZ());
-        
-        
-        color = abs(color-1);
+		Point one, two, three;
+
+		one = t.getOne();
+		two = t.getTwo();
+		three = t.getThree();
+
+		v[vertex_count++] = one.getX();
+		v[vertex_count++] = one.getY();
+		v[vertex_count++] = one.getZ();
+		v[vertex_count++] = two.getX();
+		v[vertex_count++] = two.getY();
+		v[vertex_count++] = two.getZ();		
+		v[vertex_count++] = three.getX();
+		v[vertex_count++] = three.getY();
+		v[vertex_count++] = three.getZ();
+
 	}
-	glEnd();
+
+	glGenBuffers(1, buffers);
+
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_count, v, GL_STATIC_DRAW);
+
+	free(v);
 }
 
+void drawModel() {
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+	glVertexPointer(3, GL_FLOAT, 0, 0);
+
+	glColor3f(0.49, 0.51, 0.53);
+	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+
+}
 
 
 
@@ -135,7 +160,8 @@ void renderGroup(vector<Figure> figs, vector<Operation*> ops, vector<Group> subG
 	}
 	for (vector<Figure>::iterator it = figs.begin(); it != figs.end(); ++it) {
 		Figure f = *it;
-		drawModel(f);
+		//prepareModel(f);
+		drawModel();
 	}
 	for (vector<Group>::iterator it = subGroups.begin(); it != subGroups.end(); ++it) {
 		Group g = *it;
@@ -155,6 +181,7 @@ void renderScene(void) {
 
 	//glClearColor(20.0f, 20.0f, 20.0f, 1);
 	// clear buffers
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// set the camera
@@ -380,10 +407,24 @@ int main(int argc, char **argv) {
 		glutKeyboardFunc(processKeys);
 		glutMouseFunc(processMouseButtons);
 		glutMotionFunc(processMouseMotion);
+		
+		#ifndef __APPLE__	
+		// init GLEW
+		glewInit();
+		#endif	
+		for (vector<Group>::iterator it = groups.begin(); it != groups.end(); ++it) {
+			Group g = *it;
+			vector<Figure> figs = g.getFigures();
+			for (vector<Figure>::iterator it = figs.begin(); it != figs.end(); ++it) {
+				Figure f = *it;
+				prepareModel(f);
+			}
+		}
 
 		//  OpenGL settings
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
+		glEnableClientState(GL_VERTEX_ARRAY);
 
 		// enter GLUT's main cycle
 		glutMainLoop();
