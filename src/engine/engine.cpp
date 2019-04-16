@@ -38,67 +38,71 @@ int mode = 0;
 Variável global com a lista de figuras a desenhar
 */
 vector<Group> groups;
-
-/**
-Função que desenha um figura recebida como parâmetro
-*/
-
-float* vertexB;
-GLuint buffers[1];
-GLuint vertex_count;
+GLuint *buffers, *vertex_count;
+int f_index;
 
 void prepareModel(Figure f) {
-	vertex_count = 0;
 	vector<Triangle> triangles = f.get_triangles();
-	float* v = (float*)malloc(sizeof(float)*triangles.size() * 3 * 3);
+	GLuint f_vertex_count = triangles.size() * 3;
+	float* v = (float*)malloc(sizeof(float) * f_vertex_count * 3);
 
-	for (vector<Triangle>::iterator it = triangles.begin(); it != triangles.end(); ++it) {		
-		Triangle t = *it;
+	int i=0;
+	for (Triangle t : triangles) {		
 		Point one, two, three;
 
 		one = t.getOne();
 		two = t.getTwo();
 		three = t.getThree();
 
-		v[vertex_count++] = one.getX();
-		v[vertex_count++] = one.getY();
-		v[vertex_count++] = one.getZ();
-		v[vertex_count++] = two.getX();
-		v[vertex_count++] = two.getY();
-		v[vertex_count++] = two.getZ();		
-		v[vertex_count++] = three.getX();
-		v[vertex_count++] = three.getY();
-		v[vertex_count++] = three.getZ();
-
+		v[i++] = one.getX();
+		v[i++] = one.getY();
+		v[i++] = one.getZ();
+		v[i++] = two.getX();
+		v[i++] = two.getY();
+		v[i++] = two.getZ();		
+		v[i++] = three.getX();
+		v[i++] = three.getY();
+		v[i++] = three.getZ();
 	}
 
-	glGenBuffers(1, buffers);
-
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_count, v, GL_STATIC_DRAW);
-
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * f_vertex_count * 3, v, GL_STATIC_DRAW);
+	vertex_count[f_index] = f_vertex_count; //a usar na glDrawArrays
+	++f_index;
 	free(v);
 }
 
-void drawModel() {
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+void drawModel(int index) {
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[index]);
 	glVertexPointer(3, GL_FLOAT, 0, 0);
 
 	glColor3f(0.49, 0.51, 0.53);
-	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+	glDrawArrays(GL_TRIANGLES, 0, vertex_count[index]);
 
 }
 
-void prepareAllModels() {
-	for (vector<Group>::iterator it = groups.begin(); it != groups.end(); ++it) {
-		Group g = *it;
-		vector<Figure> figs = g.getFigures();
-		for (vector<Figure>::iterator it = figs.begin(); it != figs.end(); ++it) {
-			Figure f = *it;
-			prepareModel(f);
-		}
+
+void prepareGroup(Group g){
+	for(Figure f : g.getFigures()){
+		prepareModel(f);
+	}
+	for(Group sg : g.getSubGroups()){
+		prepareGroup(sg);
 	}
 }
+
+void prepareAllModels(int n_figures){
+	f_index=0;
+	buffers = (GLuint *) malloc(sizeof(GLuint) * n_figures);
+	vertex_count = (GLuint *) malloc(sizeof(GLuint) * n_figures);
+	glGenBuffers(n_figures, buffers); 
+
+	for(Group g : groups){
+		prepareGroup(g);
+	}
+}
+
+
 
 
 
@@ -169,13 +173,11 @@ void renderGroup(vector<Figure> figs, vector<Operation*> ops, vector<Group> subG
     for (Operation* o : ops) {
         o->transformacao();
 	}
-	for (vector<Figure>::iterator it = figs.begin(); it != figs.end(); ++it) {
-		Figure f = *it;
-		//prepareModel(f);
-		drawModel();
+	for (Figure f : figs) {
+		drawModel(f_index);
+		f_index++;
 	}
-	for (vector<Group>::iterator it = subGroups.begin(); it != subGroups.end(); ++it) {
-		Group g = *it;
+	for (Group g : subGroups) {
 		vector<Operation*> g_ops = g.getOperations();
 		vector<Figure> g_figs = g.getFigures();
 		vector<Group> g_sub_groups = g.getSubGroups();
@@ -203,8 +205,8 @@ void renderScene(void) {
 
 	glColor3b(0, 5, 20);
 	
-	for (vector<Group>::iterator it = groups.begin(); it != groups.end(); ++it) {
-		Group g = *it;
+	f_index=0;
+	for (Group g : groups) {
 		vector<Operation*> ops = g.getOperations();
 		vector<Figure> figs = g.getFigures();
 		vector<Group> subGroups = g.getSubGroups();
@@ -424,7 +426,13 @@ int main(int argc, char **argv) {
 		glewInit();
 		#endif	
 
-		prepareAllModels();
+		int total_n_figures = 0;
+		for(Group g : groups){
+			total_n_figures += g.getNumFigures();
+		}
+		printf("Total de figuras %d\n",total_n_figures);
+		f_index=0;
+		prepareAllModels(total_n_figures); 
 
 		//  OpenGL settings
 		glEnable(GL_DEPTH_TEST);

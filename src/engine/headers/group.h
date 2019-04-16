@@ -30,6 +30,14 @@ public:
 		return subGroups;
 	}
 
+	int getNumFigures(){
+		int num_figures = figures.size();
+		for(Group g : subGroups){
+			num_figures += g.getNumFigures();
+		}
+		return num_figures;
+	}
+
 };
 
 #endif

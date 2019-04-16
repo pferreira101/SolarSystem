@@ -612,7 +612,7 @@ void help() {
 		"+-----------+---------------------------------------+\n" +
 		"| patch     | patchFile tesselation output          |\n" +
 		"+-----------+---------------------------------------+\n");
-	printf("%s\n", s);
+	printf("%s\n", s.c_str());
 }
 
 int main(int argc, char** argv){
