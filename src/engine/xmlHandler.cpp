@@ -53,6 +53,7 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 		switch (hashF((char*)child->Value())){
 			case TRANSLATE:
 				if (child->FindAttribute("time") != NULL) {
+					pts = * new std::vector<Point>;
 					time = child->FloatAttribute("time");
 					printf("time = %f \n", time);
 					XMLElement* point;
@@ -61,7 +62,7 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 						y = point->FloatAttribute("Y");
 						z = point->FloatAttribute("Z");
 
-						pts.push_back(*new Point(x, y, z));
+						pts.push_back(* new Point(x, y, z));
 						printf("Ponto %d = (%f, %f, %f) \n", nr_points, x, y, z);
 						nr_points++; // para verificar no fim se são 4+
 					}
@@ -83,7 +84,7 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 				break;
 
 			case ROTATE:
-				if (child->FindAttribute("time") != NULL) {
+				if (child->FindAttribute("time") != NULL) { 
 					time = child->FloatAttribute("time");
 					x = child->FloatAttribute("axisX");
 					y = child->FloatAttribute("axisY");
