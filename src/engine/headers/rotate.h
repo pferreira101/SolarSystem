@@ -41,7 +41,7 @@ public:
 
 	void transformacao() {
 
-		//glRotatef(time, x, y, z); // agora t é o tempo que demora a fazer 360 
+		glRotatef((glutGet(GLUT_ELAPSED_TIME)/(time*1000))*360, x, y, z);
 	}
 };
 
