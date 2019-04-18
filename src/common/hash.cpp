@@ -1,4 +1,4 @@
-#include "hash.h"
+#include <hash.h>
 /**
  Função auxiliar para calcular o valor da operaçao a usar
  */

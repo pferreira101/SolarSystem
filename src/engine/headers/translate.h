@@ -8,7 +8,8 @@
 #include "glut.h"
 #endif
 #include <math.h> 
-#include <utility>  
+#include <utility>
+#include <matrixOperations.h>  
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -74,28 +75,28 @@ public:
 
 
 		// Compute A = M * P
-		multMatrixVector(*m, px, ax,4);
-		multMatrixVector(*m, py, ay,4);
-		multMatrixVector(*m, pz, az,4);
+		multMatrixVector(*m, px, ax);
+		multMatrixVector(*m, py, ay);
+		multMatrixVector(*m, pz, az);
 
 		// Compute pos = T * A
-		multMatrixVector(vt,ax,pos,1);
-		multMatrixVector(vt,ay,pos+1,1);
-		multMatrixVector(vt,az,pos+2,1);
+		multLVectorCVector(vt,ax,pos);
+		multLVectorCVector(vt,ay,pos+1);
+		multLVectorCVector(vt,az,pos+2);
 
 		// compute deriv = T' * A
-		multMatrixVector(vdt,ax,deriv,1);
-		multMatrixVector(vdt,ay,deriv+1,1);
-		multMatrixVector(vdt,az,deriv+2,1);
+		multLVectorCVector(vdt,ax,deriv);
+		multLVectorCVector(vdt,ay,deriv+1);
+		multLVectorCVector(vdt,az,deriv+2);
 
 		pair <Point,Point> to_return = make_pair(* new Point(pos[0], pos[1], pos[2]), * new Point(deriv[0], deriv[1], deriv[2]));
 		return to_return;
 	}
 
 	pair<Point,Point> getGlobalCatmullRomPoint(float gt) {
-		float t = gt * n_points; // this is the real global t
-		int index = floor(t);  // which segment
-		t = t - index; // where within  the segment
+		float t1 = gt * n_points; // this is the real global t
+		int index = floor(t1);  // which segment
+		float t = t1 - index; // where within  the segment
 
 		// indices store the points
 		int indices[4]; 
@@ -106,9 +107,11 @@ public:
 
 		return getCatmullRomPoint(t, points.at(indices[0]), points.at(indices[1]), points.at(indices[2]), points.at(indices[3]));
 	}
-
+ 
 	void processCatmullRomCurve(){
+
 		float gt = glutGet(GLUT_ELAPSED_TIME)/(time*1000);
+		gt -= floor(gt); // gt in [0,1[
 
 		pair<Point,Point> pts = getGlobalCatmullRomPoint(gt);
 
@@ -144,47 +147,6 @@ public:
 			t += inc;
 		}
 		glEnd();
-
-	}
-
-
-
-	//############# Funções auxiliares #####################
-
-	void buildRotTransMatrix(float *x, float *y, float *z, float *pos, float *m) {
-		// matriz transposta 
-		m[0] = x[0]; m[1] = x[1]; m[2] = x[2]; m[3] = 0;
-		m[4] = y[0]; m[5] = y[1]; m[6] = y[2]; m[7] = 0;
-		m[8] = z[0]; m[9] = z[1]; m[10] = z[2]; m[11] = 0;
-		m[12] = pos[0]; m[13] = pos[1]; m[14] = pos[2]; m[15] = 1; // ao usar o ponto calculado podemos aplicar a translacao atraves da matriz
-	}
-
-
-	void cross(float *a, float *b, float *res) {
-
-		res[0] = a[1]*b[2] - a[2]*b[1];
-		res[1] = a[2]*b[0] - a[0]*b[2];
-		res[2] = a[0]*b[1] - a[1]*b[0];
-	}
-
-
-	void normalize(float *a) {
-
-		float l = sqrt(a[0]*a[0] + a[1] * a[1] + a[2] * a[2]); //length
-		a[0] = a[0]/l;
-		a[1] = a[1]/l;
-		a[2] = a[2]/l;
-	}
-
-
-	void multMatrixVector(float *m, float *v, float *res, int num_linhas) {
-
-		for (int j = 0; j < num_linhas; ++j) {
-			res[j] = 0;
-			for (int k = 0; k < 4; ++k) {
-				res[j] += v[k] * m[j * 4 + k];
-			}
-		}
 
 	}
 
