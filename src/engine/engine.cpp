@@ -31,83 +31,92 @@
 
 using namespace std;
 
+
+//########################################## Settings ##########################################
+
+float camX = 0; float camY = 0; float camZ = 200;
+float Lx = 0; float Ly = 0; float Lz = 0;
+int startX, startY, tracking = 0;
+int alpha = 180, beta = 0, r = 50;
 int timebase = 0, frame = 0;
 int mode = 0;
+
+//####################################### Variàveis globais ####################################
+
 
 /**
 Variável global com a lista de figuras a desenhar
 */
 vector<Group> groups;
-GLuint *buffers, *vertex_count;
-int f_index;
 
-void prepareModel(Figure f) {
-	vector<Triangle> triangles = f.get_triangles();
-	GLuint f_vertex_count = triangles.size() * 3;
-	float* v = (float*)malloc(sizeof(float) * f_vertex_count * 3);
+/**
+Variável global para utilizar VBOs
+*/
+GLuint *buffers;
 
+
+//################################ Funções para aplicação de VBOs ##############################
+
+/**
+Função responsável por ativar e preencher o buffer associado a uma determinada figura
+*/
+void prepareFigure(Figure f, int index) {
+	int vector_size = sizeof(float) * f.getNumPoints() * 3; // 3 floats per vertex
+	float* coord_vector = (float*)malloc(sizeof(float) * vector_size);
 	int i=0;
-	for (Triangle t : triangles) {		
-		Point one, two, three;
 
-		one = t.getOne();
-		two = t.getTwo();
-		three = t.getThree();
-
-		v[i++] = one.getX();
-		v[i++] = one.getY();
-		v[i++] = one.getZ();
-		v[i++] = two.getX();
-		v[i++] = two.getY();
-		v[i++] = two.getZ();		
-		v[i++] = three.getX();
-		v[i++] = three.getY();
-		v[i++] = three.getZ();
+	for(Point p : f.getPoints()){
+		coord_vector[i++] = p.getX();
+		coord_vector[i++] = p.getY();
+		coord_vector[i++] = p.getZ();
 	}
+	
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[index]);
+	glBufferData(GL_ARRAY_BUFFER,  vector_size, coord_vector, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * f_vertex_count * 3, v, GL_STATIC_DRAW);
-	vertex_count[f_index] = f_vertex_count; //a usar na glDrawArrays
-	++f_index;
-	free(v);
+	free(coord_vector);
 }
 
-void drawModel(int index) {
+/**
+ Função que garante que são inicializados e preenchidos os buffers associados a cada uma das figuras de um grupo
+*/
+void prepareGroup(Group g, int index){
+	for(Figure f : g.getFigures()){
+		prepareFigure(f,index++);
+	}
+	for(Group sg : g.getSubGroups()){
+		prepareGroup(sg, index);
+	}
+}
+
+/**
+ Função responsável por inicilizar e preencher todos os buffers, um para cada figura presente na cena
+*/
+void prepareAllFigures(int n_figures){
+	buffers = (GLuint *) malloc(sizeof(GLuint) * n_figures);
+	glGenBuffers(n_figures, buffers); 
+
+	int index=0;
+	for(Group g : groups){
+		prepareGroup(g, index);
+	}
+}
+
+/**
+ Função que, dada a posicao do buffer associado a uma determinada figura, efetua o seu desenho
+*/
+void drawFigure(Figure f, int index) {
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[index]);
 	glVertexPointer(3, GL_FLOAT, 0, 0);
 
 	glColor3f(0.49, 0.51, 0.53);
-	glDrawArrays(GL_TRIANGLES, 0, vertex_count[index]);
+	glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
 
 }
 
 
-void prepareGroup(Group g){
-	for(Figure f : g.getFigures()){
-		prepareModel(f);
-	}
-	for(Group sg : g.getSubGroups()){
-		prepareGroup(sg);
-	}
-}
+//############################################# GLUT ###########################################
 
-void prepareAllModels(int n_figures){
-	f_index=0;
-	buffers = (GLuint *) malloc(sizeof(GLuint) * n_figures);
-	vertex_count = (GLuint *) malloc(sizeof(GLuint) * n_figures);
-	glGenBuffers(n_figures, buffers); 
-
-	for(Group g : groups){
-		prepareGroup(g);
-	}
-}
-
-
-
-
-
-
-// GLUT ------------------------------------------------------------------------------------
 void changeSize(int w, int h) {
 
 	// Prevent a divide by zero, when window is too short
@@ -157,31 +166,23 @@ void drawCoordinates() {
 	glEnd();
 }
 
-/*float alpha = M_PI/3.4;
-float beta = M_PI/6;
-float radius = 200;
-*/
-float camX = 0; float camY = 0; float camZ = 200;
-float Lx = 0; float Ly = 0; float Lz = 0;
-int startX, startY, tracking = 0;
-int alpha = 180, beta = 0, r = 50;
+//###################################### Render Scene ##########################################
 
+void renderGroup(Group g, int index) {
+	vector<Operation*> ops = g.getOperations();
+	vector<Figure> figs = g.getFigures();
+	vector<Group> subGroups = g.getSubGroups();
 
-void renderGroup(vector<Figure> figs, vector<Operation*> ops, vector<Group> subGroups) {
 	glPushMatrix();
 
     for (Operation* o : ops) {
         o->transformacao();
 	}
 	for (Figure f : figs) {
-		drawModel(f_index);
-		f_index++;
+		drawFigure(f, index++);
 	}
 	for (Group g : subGroups) {
-		vector<Operation*> g_ops = g.getOperations();
-		vector<Figure> g_figs = g.getFigures();
-		vector<Group> g_sub_groups = g.getSubGroups();
-		renderGroup(g_figs, g_ops, g_sub_groups);
+		renderGroup(g, index);
 	}
 
 	glPopMatrix();
@@ -205,12 +206,9 @@ void renderScene(void) {
 
 	glColor3b(0, 5, 20);
 	
-	f_index=0;
-	for (Group g : groups) {
-		vector<Operation*> ops = g.getOperations();
-		vector<Figure> figs = g.getFigures();
-		vector<Group> subGroups = g.getSubGroups();
-		renderGroup(figs, ops, subGroups);
+	int index=0;
+	for (Group g : groups) {		
+		renderGroup(g, index);
 	}
 
 	drawCoordinates();
@@ -229,34 +227,7 @@ void renderScene(void) {
 	glutSwapBuffers();
 }
 
-/*
-void processCamera(unsigned char key, int x, int y) {
-
-	switch (key) {
-	case 'A' | 'a':
-		alpha += 0.1;
-		break;
-	case 'D' | 'd':
-		alpha -= 0.1;
-		break;
-	case 'W' | 'w':
-		if (beta < 1.5) beta += 0.1;
-		break;
-	case 'S' | 's':
-		if (beta > -1.5) beta -= 0.1;
-		break;
-	case 'Q' | 'q':
-		radius += 20;
-		break;
-	case 'E' | 'e':
-		radius -= 20;
-		break;
-	}
-	
-	glutPostRedisplay();
-}*/
-
-// escrever fun��o de processamento do teclado
+//############ Funções responsáveis pelo processamento de açoes do utilizador ##################
 
 void processKeys(unsigned char key, int xx, int yy) {
 	key = tolower(key);
@@ -318,7 +289,6 @@ void processKeys(unsigned char key, int xx, int yy) {
 	}
 	
 }
-
 
 
 void processMouseButtons(int button, int state, int xx, int yy) {
@@ -384,9 +354,6 @@ void processMouseMotion(int xx, int yy) {
 			rAux = 3;
 	}
 
-	//Lx = camX + sin(alphaAux * 3.14 / 180.0);
-	//Ly = camY;
-	//Lz = camZ + cos(alphaAux* 3.14 / 180.0);
 
 	Lx = camX + rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
 	Lz = camZ + rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
@@ -394,6 +361,8 @@ void processMouseMotion(int xx, int yy) {
 
 
 }
+
+//########################################### MAIN #############################################
 
 
 int main(int argc, char **argv) {
@@ -431,8 +400,8 @@ int main(int argc, char **argv) {
 			total_n_figures += g.getNumFigures();
 		}
 		printf("Total de figuras %d\n",total_n_figures);
-		f_index=0;
-		prepareAllModels(total_n_figures); 
+
+		prepareAllFigures(total_n_figures); 
 
 		//  OpenGL settings
 		glEnable(GL_DEPTH_TEST);

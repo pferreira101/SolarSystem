@@ -39,51 +39,30 @@ public:
 
 };
 
-/**
-Classe que guarda os trs pontos de um tri‰ngulo
-*/
-class Triangle {
-	Point one, two, three;
-
-public:
-
-	Triangle(Point x, Point y, Point z) {
-		one = x;
-		two = y;
-		three = z;
-	}
-
-	Point getOne() {
-		return one;
-	}
-	Point getTwo() {
-		return two;
-	}
-	Point getThree() {
-		return three;
-	}
-};
 
 
 /**
 Classe que guarda a lista de tri‰ngulos que comp›em uma figura
 */
 class Figure {
-	std::vector<Triangle> triangles;
+	vector<Point> points;
 public:
 
-	void set_values(std::vector<Triangle> ts) {
-		triangles = ts;
+	void set_values(std::vector<Point> pts) {
+		points = pts;
 	}
 
-	std::vector<Triangle> get_triangles() {
-		return triangles;
+	int getNumPoints() {
+		return points.size();
+	}
+
+	vector<Point> getPoints(){
+		return points;
 	}
 };
 
 
 Figure getFigure(const string& name);
-vector<Triangle> getTriangles(vector<Point> points);
-vector<Point> getPoints(const string& name);
+
 
 #endif
