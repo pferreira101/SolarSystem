@@ -5,6 +5,23 @@
             <model file="sphere.3d" />
         </models>
     </group>
+    <group> <!-- Cometa -->
+            <rotate angle="-20" axisX="-1" />
+            <translate time="5" >
+             <point X="120" Y="0" Z="0" />
+             <point X="84.85" Y="0" Z="84.85" />
+             <point X="0" Y="0" Z="120" />
+             <point X="-84.85" Y="0" Z="84.85" />
+             
+             <point X="-120" Y="0" Z="0" />
+             <point X="-84.85" Y="0" Z="-84.85" />
+             <point X="0" Y="0" Z="-120" />
+             <point X="84.85" Y="0" Z="-84.85" />
+        </translate>
+        <models>        
+            <model file="sphere.3d" />
+        </models>
+    </group>
     <group> <!-- Mercúrio -->
         <translate time="10" >
              <point X="84.45" Y="0" Z="0" />
