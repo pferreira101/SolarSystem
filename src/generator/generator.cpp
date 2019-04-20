@@ -355,7 +355,6 @@ Point* pts_ctrl;
 int bezierPatchParser(char *patch) {
 	string line;
 	ifstream file(patch);
-	float x, y, z;
 
 	if (!file) return -1;
 
@@ -366,14 +365,14 @@ int bezierPatchParser(char *patch) {
 	printf("Numero de patches = %d\n", nr_patches);
 
 	// Preenche array dos indices de cada patch
-	patch_indices = (int**)malloc(sizeof(int*) * nr_patches);
+	patch_indices = (int**)malloc(sizeof(int*) * nr_patches); 
 
-	for (int i = 0; i < nr_patches; i++) {
+	for (int i = 0; i < nr_patches; i++){
 		getline(file, line);
 		patch_indices[i] = (int*)malloc(sizeof(int) * 16);
 
-		char* token = strtok((char*)line.c_str(), ",");
-		for (int j = 0; j < 16 && token != NULL; token = strtok(NULL, ","), j++) {
+		char* token = strtok((char*)line.c_str(), ", ");
+		for (int j = 0; j < 16 && token != NULL; token = strtok(NULL, ", "), j++) {
 			patch_indices[i][j] = atoi(token);
 		}
 	}
@@ -388,11 +387,10 @@ int bezierPatchParser(char *patch) {
 	// Preenche o array dos pontos de controlo
 	pts_ctrl = (Point*)malloc(sizeof(Point) * nr_pts_ctrl);
 	for (int i = 0; i < nr_pts_ctrl; i++) {
+		float x, y, z;
 		getline(file, line);
 
-		x = atof(strtok((char*)line.c_str(), ","));
-		y = atof(strtok(NULL, ","));
-		z = atof(strtok(NULL, ","));
+		sscanf(line.c_str(), "%f, %f, %f", &x, &y, &z);
 
 		pts_ctrl[i] = *new Point(x, y, z);
 	}
@@ -401,29 +399,16 @@ int bezierPatchParser(char *patch) {
 }
 
 
-void getBezierPatchPoint(float u, float v, Point *pts, float *res, float *pNormal, float *coor_contexto) {
-
+Point getBezierPatchPoint(float u, float v, Point *pts) {
+	//vector U
+	float U[4] = { u*u*u, u*u, u, 1 };
+	//vectorV
+	float V[4] = { v*v*v, v*v, v, 1 };
+	//Matrix M (= transpose M )
 	float M[4][4] = { {-1.0f,  3.0f, -3.0f, 1.0f},
 					{3.0f, -6.0f,  3.0f, 0.0f},
 					{-3.0f,  3.0f,  0.0f, 0.0f},
 					{ 1.0f,  0.0f,  0.0f, 0.0f} };
-
-	float U[4] = { u*u*u, u*u, u, 1 };
-	float der_U[4] = { 3*u*u, 2*u, 1, 0 };
-	float V[4] = { v*v*v, v*v, v, 1 };
-	float der_V[4] = { 3*v*v, 2*v, 1, 0 };
-
-	// M * V
-	float MV[4];
-	float Mder_V[4];
-	multMatrixVector((float *)M, V, MV);
-	multMatrixVector((float *)M, der_V, Mder_V);
-
-	// U * M 
-	float UM[4];
-	float der_UM[4];
-	multVectorMatrix(U, (float *)M, UM);
-	multVectorMatrix(der_U, (float *)M, der_UM);
 
 	// x, y, z
 	float Px[4][4] = {
@@ -445,98 +430,74 @@ void getBezierPatchPoint(float u, float v, Point *pts, float *res, float *pNorma
 		{ pts[4].getZ(), pts[5].getZ(), pts[6].getZ(), pts[7].getZ() },
 		{ pts[8].getZ(), pts[9].getZ(), pts[10].getZ(), pts[11].getZ() },
 		{ pts[12].getZ(), pts[13].getZ(), pts[14].getZ(), pts[15].getZ() }
-	};
+	};	
+				
+	// transpose M * V
+	float MV[4];
+	multMatrixVector((float *)M, V, MV);
 
-	// UM * P 
-	float UMP[3][4];
-	multVectorMatrix(UM, (float *)Px, UMP[0]);
-	multVectorMatrix(UM, (float *)Py, UMP[1]);
-	multVectorMatrix(UM, (float *)Pz, UMP[2]);
 
-	float der_UMP[3][4];
-	multVectorMatrix(der_UM, (float *)Px, der_UMP[0]);
-	multVectorMatrix(der_UM, (float *)Py, der_UMP[1]);
-	multVectorMatrix(der_UM, (float *)Pz, der_UMP[2]);
+	// P * MV
+	float PxMV[4], PyMV[4], PzMV[4];
+	multMatrixVector((float*)Px, MV, PxMV);
+	multMatrixVector((float*)Py, MV, PyMV);
+ 	multMatrixVector((float*)Pz, MV, PzMV);
 
-	// UMP * MV 
-	float dU[3];
-	float dV[3];
+	// M * PMV
+	float MPxMV[4], MPyMV[4], MPzMV[4];
+	multMatrixVector((float*)M, PxMV, MPxMV);
+	multMatrixVector((float*)M, PyMV, MPyMV);
+ 	multMatrixVector((float*)M, PzMV, MPzMV);
 
-	for (int j = 0; j < 3; j++) {
-		res[j] = 0.0f;
-		dU[j] = 0.0f;
-		dV[j] = 0.0f;
+	// U * MPMV
+	float res[3];
+	multLVectorCVector(U, MPxMV, res);
+	multLVectorCVector(U, MPyMV, res+1);
+	multLVectorCVector(U, MPzMV, res+2);
 
-		for (int i = 0; i < 4; i++) {
-			res[j] += MV[i] * UMP[j][i];
-			dU[j] += MV[i] * der_UMP[j][i];
-			dV[j] += Mder_V[i] * UMP[j][i];
-		}
-	}
+	return * new Point(res[0], res[1], res[2]);
 
-	normalize(dU);
-	normalize(dV);
-	cross(dV, dU, pNormal);
-	normalize(pNormal);
-
-	coor_contexto[0] = u;
-	coor_contexto[1] = v;
 }
 
-int bezierPatchGenerator(char* patch_file, int tesselationLevel, char *dest_file) {
+int patchHandler(char* patch_file, int tesselationLevel, char *dest_file) {
 	bezierPatchParser(patch_file);
 	Point pv[16];
-	int divs = tesselationLevel; // change this to change the tesselation level
-	string points_str, normals_str, coor_contexto_str;
-	string output;
+	float inc = 1.0 /tesselationLevel; // change this to change the tesselation level
+	string points_str;
+	string s;
 
 
 	for (int i = 0; i < nr_patches; i++) {
 		for (int j = 0; j < 16; j++) {
+			// load control points for current patch
 			pv[j] = pts_ctrl[patch_indices[i][j]];
 		}
-		for (int u = 0; u < divs; u++) {
-			float resP1[3], pNormal1[3], coor_contexto_1[2];
-			float resP2[3], pNormal2[3], coor_contexto_2[2];
-			float resP3[3], pNormal3[3], coor_contexto_3[2];
-			float resP4[3], pNormal4[3], coor_contexto_4[2];
+		for (int u = 0; u < tesselationLevel; u++) {
 
-			for (int v = 0; v < divs; v++) {
-				getBezierPatchPoint(u / (float)divs, v / (float)divs, pv, resP1, pNormal1, coor_contexto_1);
-				getBezierPatchPoint((u + 1) / (float)divs, v / (float)divs, pv, resP2, pNormal2, coor_contexto_2);
-				getBezierPatchPoint(u / (float)divs, (v + 1) / (float)divs, pv, resP3, pNormal3, coor_contexto_3);
-				getBezierPatchPoint((u + 1) / (float)divs, (v + 1) / (float)divs, pv, resP4, pNormal4, coor_contexto_4);
+			for (int v = 0; v < tesselationLevel; v++) {
+				float u1 = (float) u * inc;
+				float u2 = (float) (u + 1) * inc;
+				float v1 = (float) v * inc;
+				float v2 = (float) (v+1) * inc;
 
-				points_str.append(to_string(resP1[0]) + ',' + to_string(resP1[1]) + ',' + to_string(resP1[2]) + '\n');
-				points_str.append(to_string(resP3[0]) + ',' + to_string(resP3[1]) + ',' + to_string(resP3[2]) + '\n');
-				points_str.append(to_string(resP4[0]) + ',' + to_string(resP4[1]) + ',' + to_string(resP4[2]) + '\n');
+				Point p0 = getBezierPatchPoint(u1, v1, pv);
+				Point p1 = getBezierPatchPoint(u1, v2, pv);
+				Point p2 = getBezierPatchPoint(u2, v1, pv);
+				Point p3 = getBezierPatchPoint(u2, v2, pv);
 
-				points_str.append(to_string(resP2[0]) + ',' + to_string(resP2[1]) + ',' + to_string(resP2[2]) + '\n');
-				points_str.append(to_string(resP1[0]) + ',' + to_string(resP1[1]) + ',' + to_string(resP1[2]) + '\n');
-				points_str.append(to_string(resP4[0]) + ',' + to_string(resP4[1]) + ',' + to_string(resP4[2]) + '\n');
+				s.append(p0.toString());
+				s.append(p1.toString());
+				s.append(p3.toString());
 
-				normals_str.append(to_string(pNormal1[0]) + ',' + to_string(pNormal1[1]) + ',' + to_string(pNormal1[2]) + '\n');
-				normals_str.append(to_string(pNormal3[0]) + ',' + to_string(pNormal3[1]) + ',' + to_string(pNormal3[2]) + '\n');
-				normals_str.append(to_string(pNormal4[0]) + ',' + to_string(pNormal4[1]) + ',' + to_string(pNormal4[2]) + '\n');
-
-				normals_str.append(to_string(pNormal2[0]) + ',' + to_string(pNormal2[1]) + ',' + to_string(pNormal2[2]) + '\n');
-				normals_str.append(to_string(pNormal1[0]) + ',' + to_string(pNormal1[1]) + ',' + to_string(pNormal1[2]) + '\n');
-				normals_str.append(to_string(pNormal4[0]) + ',' + to_string(pNormal4[1]) + ',' + to_string(pNormal4[2]) + '\n');
-
-				coor_contexto_str.append(to_string(coor_contexto_1[0]) + ',' + to_string(coor_contexto_1[1]) + '\n');
-				coor_contexto_str.append(to_string(coor_contexto_3[0]) + ',' + to_string(coor_contexto_3[1]) + '\n');
-				coor_contexto_str.append(to_string(coor_contexto_4[0]) + ',' + to_string(coor_contexto_4[1]) + '\n');
-
-				coor_contexto_str.append(to_string(coor_contexto_2[0]) + ',' + to_string(coor_contexto_2[1]) + '\n');
-				coor_contexto_str.append(to_string(coor_contexto_1[0]) + ',' + to_string(coor_contexto_1[1]) + '\n');
-				coor_contexto_str.append(to_string(coor_contexto_4[0]) + ',' + to_string(coor_contexto_4[1]) + '\n');
+				s.append(p2.toString());
+				s.append(p0.toString());
+				s.append(p3.toString());
 
 			}
 		}
 	}
 
-	output.append(/*to_string(p) + "\n" + */points_str + normals_str + coor_contexto_str);
-	fileWriter(dest_file, output);
+	fileWriter(dest_file, s);
 	return 0;
 }
 
@@ -605,7 +566,7 @@ int main(int argc, char** argv){
 			break;
 
 		case PATCH:
-			if(argc == 5) bezierPatchGenerator(argv[2], atoi(argv[3]), argv[4]);
+			if(argc == 5) patchHandler(argv[2], atoi(argv[3]), argv[4]);
 			else error_flag = 1;
 			break;
 

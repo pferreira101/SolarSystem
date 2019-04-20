@@ -55,7 +55,7 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 				if (child->FindAttribute("time") != NULL) {
 					pts = * new std::vector<Point>;
 					time = child->FloatAttribute("time");
-					printf("time = %f \n", time);
+
 					XMLElement* point;
 					for (point = child->FirstChildElement(); point != NULL; point = point->NextSiblingElement()) {
 						x = point->FloatAttribute("X");
@@ -63,7 +63,7 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 						z = point->FloatAttribute("Z");
 
 						pts.push_back(* new Point(x, y, z));
-						printf("Ponto %d = (%f, %f, %f) \n", nr_points, x, y, z);
+
 						nr_points++; // para verificar no fim se são 4+
 					}
 
@@ -78,7 +78,7 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 
 					(*ops).push_back(new Translate(x, y, z));
 
-					printf("Static Translate = (%f, %f, %f) \n", x, y, z);
+					
 				}
 				
 				break;
@@ -91,7 +91,7 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 					z = child->FloatAttribute("axisZ");
 
 					(*ops).push_back(new DynamicRotate(time, x, y, z));
-					printf("Dynamic Rotate = (%f, %f, %f, %f) \n", time, x, y, z);
+					
 
 				}
 				else {
@@ -101,7 +101,7 @@ int readGroup(XMLElement* element, vector<Figure>* fig, vector<Operation*>* ops,
 					z = child->FloatAttribute("axisZ");
 
 					(*ops).push_back(new Rotate(angle, x, y, z));
-					printf("Static Rotate = (%f, %f, %f, %f) \n", angle, x, y, z);
+					
 				} 
 				
 				break;

@@ -54,13 +54,17 @@ Variável global para utilizar VBOs
 */
 GLuint *buffers;
 
+/**
+Variável global para indicar qual a figura que esta a ser processada (ajuda a contrucao e desenho por VBOS)
+*/
+int findex;
 
 //################################ Funções para aplicação de VBOs ##############################
 
 /**
 Função responsável por ativar e preencher o buffer associado a uma determinada figura
 */
-void prepareFigure(Figure f, int index) {
+void prepareFigure(Figure f, int f_index) {
 	int vector_size = sizeof(float) * f.getNumPoints() * 3; // 3 floats per vertex
 	float* coord_vector = (float*)malloc(sizeof(float) * vector_size);
 	int i=0;
@@ -71,7 +75,7 @@ void prepareFigure(Figure f, int index) {
 		coord_vector[i++] = p.getZ();
 	}
 	
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[index]);
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
 	glBufferData(GL_ARRAY_BUFFER,  vector_size, coord_vector, GL_STATIC_DRAW);
 
 	free(coord_vector);
@@ -80,12 +84,13 @@ void prepareFigure(Figure f, int index) {
 /**
  Função que garante que são inicializados e preenchidos os buffers associados a cada uma das figuras de um grupo
 */
-void prepareGroup(Group g, int index){
+void prepareGroup(Group g){
 	for(Figure f : g.getFigures()){
-		prepareFigure(f,index++);
+		prepareFigure(f,findex);
+		++findex;
 	}
 	for(Group sg : g.getSubGroups()){
-		prepareGroup(sg, index);
+		prepareGroup(sg);
 	}
 }
 
@@ -96,17 +101,18 @@ void prepareAllFigures(int n_figures){
 	buffers = (GLuint *) malloc(sizeof(GLuint) * n_figures);
 	glGenBuffers(n_figures, buffers); 
 
-	int index=0;
+	findex=0;
 	for(Group g : groups){
-		prepareGroup(g, index);
+		prepareGroup(g);
 	}
+
 }
 
 /**
  Função que, dada a posicao do buffer associado a uma determinada figura, efetua o seu desenho
 */
-void drawFigure(Figure f, int index) {
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[index]);
+void drawFigure(Figure f, int f_index) {
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
 	glVertexPointer(3, GL_FLOAT, 0, 0);
 
 	glColor3f(0.49, 0.51, 0.53);
@@ -168,7 +174,7 @@ void drawCoordinates() {
 
 //###################################### Render Scene ##########################################
 
-void renderGroup(Group g, int index) {
+void renderGroup(Group g) {
 	vector<Operation*> ops = g.getOperations();
 	vector<Figure> figs = g.getFigures();
 	vector<Group> subGroups = g.getSubGroups();
@@ -179,10 +185,11 @@ void renderGroup(Group g, int index) {
         o->transformacao();
 	}
 	for (Figure f : figs) {
-		drawFigure(f, index++);
+		drawFigure(f, findex);
+		++findex; //printf("%d\n",  findex;);
 	}
 	for (Group g : subGroups) {
-		renderGroup(g, index);
+		renderGroup(g);
 	}
 
 	glPopMatrix();
@@ -206,9 +213,9 @@ void renderScene(void) {
 
 	glColor3b(0, 5, 20);
 	
-	int index=0;
+	findex=0;
 	for (Group g : groups) {		
-		renderGroup(g, index);
+		renderGroup(g);
 	}
 
 	drawCoordinates();
@@ -399,7 +406,7 @@ int main(int argc, char **argv) {
 		for(Group g : groups){
 			total_n_figures += g.getNumFigures();
 		}
-		printf("Total de figuras %d\n",total_n_figures);
+
 
 		prepareAllFigures(total_n_figures); 
 

@@ -19,7 +19,7 @@
              <point X="84.85" Y="0" Z="-84.85" />
         </translate>
         <models>        
-            <model file="sphere.3d" />
+            <model file="teapot.3d" />
         </models>
     </group>
     <group> <!-- Mercúrio -->

@@ -37,6 +37,9 @@ public:
 		return z;
 	}
 
+	string toString(){
+		return string(to_string(x)+","+to_string(y)+","+to_string(z)+"\n");
+	}
 };
 
 
