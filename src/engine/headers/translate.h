@@ -133,6 +133,9 @@ public:
 		buildRotTransMatrix(deriv_aux, vector_y, vector_z, pos_aux, m);
 
 		glMultMatrixf(m);
+		
+		delete pts.first;
+		delete pts.second;
 	}
 
 	void drawCurve() {
