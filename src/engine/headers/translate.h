@@ -52,7 +52,7 @@ public:
 
 	
 
-	pair<Point,Point> getCatmullRomPoint(float t, Point p0, Point p1, Point p2, Point p3) {
+	pair<Point*,Point*> getCatmullRomPoint(float t, Point p0, Point p1, Point p2, Point p3) {
 		float pos[3], deriv[3];
 
 		// catmull-rom matrix
@@ -89,11 +89,11 @@ public:
 		multLVectorCVector(vdt,ay,deriv+1);
 		multLVectorCVector(vdt,az,deriv+2);
 
-		pair <Point,Point> to_return = make_pair(* new Point(pos[0], pos[1], pos[2]), * new Point(deriv[0], deriv[1], deriv[2]));
+		pair <Point*, Point*> to_return = make_pair( new Point(pos[0], pos[1], pos[2]),  new Point(deriv[0], deriv[1], deriv[2]));
 		return to_return;
 	}
 
-	pair<Point,Point> getGlobalCatmullRomPoint(float gt) {
+	pair<Point*,Point*> getGlobalCatmullRomPoint(float gt) {
 		float t1 = gt * n_points; // this is the real global t
 		int index = floor(t1);  // which segment
 		float t = t1 - index; // where within  the segment
@@ -113,12 +113,12 @@ public:
 		float gt = glutGet(GLUT_ELAPSED_TIME)/(time*1000);
 		gt -= floor(gt); // gt in [0,1[
 
-		pair<Point,Point> pts = getGlobalCatmullRomPoint(gt);
+		pair<Point*,Point*> pts = getGlobalCatmullRomPoint(gt);
 
-		Point pos = pts.first;
+		Point pos = *pts.first;
 		float pos_aux[3] = {pos.getX(), pos.getY(), pos.getZ()};
 
-		Point deriv = pts.second;
+		Point deriv = *pts.second;
 		float deriv_aux[3] = {deriv.getX(), deriv.getY(), deriv.getZ()};
 		normalize(deriv_aux);
 
@@ -142,9 +142,12 @@ public:
 		glColor3f(1,1,1);
 		glBegin(GL_LINE_LOOP);
 		for(int i=0; i < num_segmentos; i++){
-			Point p = (getGlobalCatmullRomPoint(t)).first;
-			glVertex3f(p.getX(), p.getY(), p.getZ());
+			pair<Point*, Point*> pts = (getGlobalCatmullRomPoint(t));
+
+			glVertex3f((*pts.first).getX(), (*pts.first).getY(), (*pts.first).getZ());
 			t += inc;
+			delete pts.first;
+			delete pts.second;
 		}
 		glEnd();
 
