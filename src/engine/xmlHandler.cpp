@@ -8,7 +8,7 @@ string cur_dir;
 Função que interpreta um cen‡rio gr‡fico em XML
 */
 
-int readXML(const char *filename, vector<Group>* groups){
+int readXML(const char *filename, vector<Group>* groups , vector<Light>* lights){
 	cur_dir = getDirectory(filename);	
 	XMLDocument doc;
 	XMLError error = doc.LoadFile(filename);
@@ -17,8 +17,8 @@ int readXML(const char *filename, vector<Group>* groups){
 	XMLNode *scene = doc.FirstChild();
 	if (scene == nullptr) return XML_ERROR_FILE_READ_ERROR;
 
+	// GROUPS
 	XMLElement *groups_xml = scene->FirstChildElement("group");
-
 	while (groups_xml != nullptr) {
 		vector<Operation*> ops;
 		vector<Figure> fig;
@@ -30,6 +30,18 @@ int readXML(const char *filename, vector<Group>* groups){
 		groups->push_back(group);
 
 		groups_xml = groups_xml->NextSiblingElement("group");
+	}
+
+	// LIGHTS
+	XMLElement *lights_xml = scene->FirstChildElement("lights");
+	if(lights_xml != nullptr) {	
+		XMLElement *light_xml = lights_xml->FirstChildElement("light");
+		while (light_xml != nullptr) {
+			Light light = readLight(light_xml);
+			lights->push_back(light);
+
+			light_xml = light_xml->NextSiblingElement("light");
+		}	
 	}
 
 	return XML_SUCCESS;
@@ -141,9 +153,15 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 			fileName = model->Attribute("file");
 
 			if (fileName == nullptr) return XML_ERROR_PARSING_ATTRIBUTE;
-
+			
 			string fname(fileName);
 			string path = cur_dir+fname;
+
+			/*
+			const char* textureFile = nullptr;
+			textureFile = model->Attribute("texture");
+			*/
+
 			Figure f = getFigure(path);
 			(*fig).push_back(f);
 
@@ -154,6 +172,57 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 		return XML_SUCCESS;
 	}
 	return XML_NO_TEXT_NODE;
+}
+
+
+Light readLight(XMLElement* light_element) {
+	string type = light_element->Attribute("type");
+	float *pos = (float*)malloc(sizeof(float*) * 4); 
+	float *diff = (float*)malloc(sizeof(float*) * 4); 
+	diff[0] = diff[1] = diff[2] = diff[3] = 1.0f;
+
+	if (type.compare("DIRECTIONAL") == 0) {
+		float *amb = (float*)malloc(sizeof(float*) * 4);
+		amb[0] = amb[1] = amb[2] = amb[3] = 1.0f;
+
+		pos[0] = light_element->FloatAttribute("posX");
+		pos[1] = light_element->FloatAttribute("posY");
+		pos[2] = light_element->FloatAttribute("posZ");
+		pos[3] = 0;
+
+		return LightDirectional(0, pos, diff, amb);
+	}	
+	else if (type.compare("POINT") == 0) {
+		float *amb = (float*)malloc(sizeof(float*) * 4);
+		amb[0] = amb[1] = amb[2] = amb[3] = 1.0f;
+		float attenuation;
+
+		pos[0] = light_element->FloatAttribute("posX");
+		pos[1] = light_element->FloatAttribute("posY");
+		pos[2] = light_element->FloatAttribute("posZ");
+		pos[3] = 1;
+
+		attenuation = light_element->FloatAttribute("attenuation");
+
+		return LightPoint(1, pos, diff, amb, attenuation);
+	}
+	else if (type.compare("SPOT") == 0){
+		float dir[3], angle, exp;
+
+		pos[0] = light_element->FloatAttribute("posX");
+		pos[1] = light_element->FloatAttribute("posY");
+		pos[2] = light_element->FloatAttribute("posZ");
+		pos[3] = 1;
+
+		dir[0] = light_element->FloatAttribute("dirX");
+		dir[1] = light_element->FloatAttribute("dirY");
+		dir[2] = light_element->FloatAttribute("dirZ");
+
+		angle = light_element->FloatAttribute("angle");
+		exp = light_element->FloatAttribute("exponent");
+
+		return LightSpot(2, pos, diff, dir, angle, exp);
+	}
 }
 
 

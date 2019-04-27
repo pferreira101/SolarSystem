@@ -45,9 +45,10 @@ int mode = 0;
 
 
 /**
-Variável global com a lista de figuras a desenhar
+Variável global com a lista de figuras a desenhar e luzes
 */
 vector<Group> groups;
+vector<Light> lights;
 
 /**
 Variável global para utilizar VBOs
@@ -173,6 +174,7 @@ void drawCoordinates() {
 }
 
 //###################################### Render Scene ##########################################
+
 
 void renderGroup(Group g) {
 	vector<Operation*> ops = g.getOperations();
@@ -369,6 +371,47 @@ void processMouseMotion(int xx, int yy) {
 
 }
 
+
+
+void prepareLights() {	
+	glEnable(GL_LIGHTING);
+	int light_nr = 0;
+
+	for(vector<Light>::iterator it = lights.begin(); it != lights.end(); ++it, light_nr++) {
+		Light light = *it;
+
+		GLenum light_number = light.getNumber(light_nr);
+		glEnable(light_number);
+
+		int type = light.getType();
+		printf("TYPE = %d\n", type);
+
+		if (type == 0) {
+			LightDirectional ld = *static_cast<LightDirectional*>(&light);
+			ld.toString();
+
+			glLightfv(light_number, GL_POSITION, ld.getPos());
+			glLightfv(light_number, GL_AMBIENT, ld.getAmb());
+			glLightfv(light_number, GL_DIFFUSE, ld.getDiff());
+		}
+		else if (type == 1) {
+			LightPoint lp = *static_cast<LightPoint*>(&light);
+			lp.toString();
+
+			glLightfv(light_number, GL_POSITION, lp.getPos());
+			glLightfv(light_number, GL_AMBIENT, lp.getAmb());
+			glLightfv(light_number, GL_DIFFUSE, lp.getDiff());
+		}
+		else if (type == 2) {
+		
+		}		
+
+	}
+	
+}
+
+
+
 //########################################### MAIN #############################################
 
 
@@ -379,7 +422,8 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	if (readXML(argv[1], &groups) == XML_SUCCESS){
+	if (readXML(argv[1], &groups, &lights) == XML_SUCCESS){
+		printf("TAMANHO LUZES = %d\n", lights.size());
 		// init GLUT and the window
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -402,13 +446,17 @@ int main(int argc, char **argv) {
 		glewInit();
 		#endif	
 
+
 		int total_n_figures = 0;
 		for(Group g : groups){
 			total_n_figures += g.getNumFigures();
 		}
-
-
 		prepareAllFigures(total_n_figures); 
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+
+		prepareLights();
 
 		//  OpenGL settings
 		glEnable(GL_DEPTH_TEST);
