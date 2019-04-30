@@ -23,3 +23,5 @@ solar-system/Release/sample2.xml
 *.3d
 
 *.3d
+*.ipch
+*.bin
