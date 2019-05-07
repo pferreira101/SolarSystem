@@ -160,6 +160,41 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 			/*
 			const char* textureFile = nullptr;
 			textureFile = model->Attribute("texture");
+
+
+			// PODE TER MAIS QUE UM TIPO AO MM TEMPO (DIFF/SPEC/AMB/EMI) ??
+
+			float r = 0;
+			float g = 0;
+			float b = 0;
+			int diff, spec, emi, amb;
+
+			diff = model->QueryFloatAttribute("diffR",&r);
+			if (diff != XML_NO_ATTRIBUTE){
+				model->QueryFloatAttribute("diffG",&g);
+				model->QueryFloatAttribute("diffB",&b);
+			}
+
+			spec = model->QueryFloatAttribute("specR",%r);
+			if (spec != XML_NO_ATTRIBUTE){
+				model->QueryFloatAttribute("specG",&g);
+				model->QueryFloatAttribute("specB",&b);
+			}
+
+			emi = model->QueryFloatAttribute("emiR",&r);
+			if (emi != XML_NO_ATTRIBUTE) {
+				model->QueryFloatAttrubute("emiG",&g);
+				model->QueryFloatAttribute("emiB",&b);
+			}
+
+			amb = model->QueryFloatAttribute("ambR",&r);
+			if (amb != XML_NO_ATTRIBUTE) {
+				model->QueryFloatAttribute("ambG",&g);
+				model->QueryFloatAttribute("ambB",&b);
+			}
+			
+
+
 			*/
 
 			Figure f = getFigure(path);
