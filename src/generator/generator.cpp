@@ -48,6 +48,16 @@ void planeHandler(double size, char* destFile){
     s.append(p1);
     s.append(p3);
     s.append(p4);
+
+	// normais
+
+	// textura
+	s.append("\n0,0\n");
+	s.append("1,0\n");
+	s.append("1,1\n");
+	s.append("0,0\n");
+	s.append("1,1\n");
+	s.append("1,0\n");
     
 	fileWriter(destFile, s);
 }
@@ -169,6 +179,10 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
         y1 = -y/2;
     }
 
+	// normais
+
+	// textura
+
 	fileWriter(destFile, s);
 }
 
@@ -182,6 +196,9 @@ void sphereHandler(double raio, int slices, int stacks, char* destFile){
 	double stepSide = 2 * M_PI / slices;
 	double stepUp = M_PI / stacks;
 	double b = 0;
+
+	float sizeW = (float)1 / slices;
+	float sizeH = (float)1 / stacks;
 
 	for (int i = 0; i < slices; i++){
 		a = i * stepSide;
@@ -212,6 +229,43 @@ void sphereHandler(double raio, int slices, int stacks, char* destFile){
 			s.append(p3);
             s.append(p4);
 		}
+
+		// normais
+
+		// textura
+
+		a = 0;
+		b = 0;
+
+		s.append("\n");
+
+		for (int i = 0; i < slices; i++) {
+			a = i * stepSide;
+			for (int j = 0; j < stacks; j++) {
+				b = j * stepUp;
+
+				double tx1 = i * sizeW;
+				double tx2 = (i + 1) * sizeW;
+
+				double ty1, ty2;
+
+				if (b < M_PI / 2) { // para dividir em parte de cima e baixo??
+					ty1 = 0.5 + j * sizeH;
+					ty2 = 0.5 + (j + 1) * sizeH;
+				}
+				else {
+					ty1 = 0.5 - j * sizeH;
+					ty2 = 0.5 - (j + 1) * sizeH;
+				}
+					
+				s.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+				s.append(to_string(tx1) + "," + to_string(ty2) + "\n");
+				s.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+
+				s.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+				s.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+				s.append(to_string(tx2) + "," + to_string(ty1) + "\n");
+			}
 	}
 
 	fileWriter(destFile, s);
@@ -331,6 +385,10 @@ void ringHandler(double r, double R, int slices, char* destFile) {
 		s.append(x2 + ",0," + z2 + "\n");
 		s.append(x4 + ",0," + z4 + "\n");
 	}
+
+	// normais
+
+	// textura
 
 	fileWriter(destFile, s);
 }
