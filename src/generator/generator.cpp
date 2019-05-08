@@ -229,43 +229,44 @@ void sphereHandler(double raio, int slices, int stacks, char* destFile){
 			s.append(p3);
             s.append(p4);
 		}
+	}
 
-		// normais
+	// normais
 
-		// textura
+	// textura
 
-		a = 0;
-		b = 0;
+	a = 0;
+	b = 0;
 
-		s.append("\n");
+	s.append("\n");
 
-		for (int i = 0; i < slices; i++) {
-			a = i * stepSide;
-			for (int j = 0; j < stacks; j++) {
-				b = j * stepUp;
+	for (int i = 0; i < slices; i++) {
+		a = i * stepSide;
+		for (int j = 0; j < stacks; j++) {
+			b = j * stepUp;
 
-				double tx1 = i * sizeW;
-				double tx2 = (i + 1) * sizeW;
+			double tx1 = i * sizeW;
+			double tx2 = (i + 1) * sizeW;
 
-				double ty1, ty2;
+			double ty1, ty2;
 
-				if (b < M_PI / 2) { // para dividir em parte de cima e baixo??
-					ty1 = 0.5 + j * sizeH;
-					ty2 = 0.5 + (j + 1) * sizeH;
-				}
-				else {
-					ty1 = 0.5 - j * sizeH;
-					ty2 = 0.5 - (j + 1) * sizeH;
-				}
-					
-				s.append(to_string(tx1) + "," + to_string(ty1) + "\n");
-				s.append(to_string(tx1) + "," + to_string(ty2) + "\n");
-				s.append(to_string(tx2) + "," + to_string(ty2) + "\n");
-
-				s.append(to_string(tx1) + "," + to_string(ty1) + "\n");
-				s.append(to_string(tx2) + "," + to_string(ty2) + "\n");
-				s.append(to_string(tx2) + "," + to_string(ty1) + "\n");
+			if (b < M_PI / 2) { // para dividir em parte de cima e baixo??
+				ty1 = 0.5 + j * sizeH;
+				ty2 = 0.5 + (j + 1) * sizeH;
 			}
+			else {
+				ty1 = 0.5 - j * sizeH;
+				ty2 = 0.5 - (j + 1) * sizeH;
+			}
+					
+			s.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+			s.append(to_string(tx1) + "," + to_string(ty2) + "\n");
+			s.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+
+			s.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+			s.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+			s.append(to_string(tx2) + "," + to_string(ty1) + "\n");
+		}
 	}
 
 	fileWriter(destFile, s);
