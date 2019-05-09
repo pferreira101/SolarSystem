@@ -8,7 +8,7 @@ string cur_dir;
 Função que interpreta um cen‡rio gr‡fico em XML
 */
 
-int readXML(const char *filename, vector<Group>* groups , vector<Light>* lights){
+int readXML(const char *filename, vector<Group>* groups , vector<Light*>* lights){
 	cur_dir = getDirectory(filename);	
 	XMLDocument doc;
 	XMLError error = doc.LoadFile(filename);
@@ -37,8 +37,8 @@ int readXML(const char *filename, vector<Group>* groups , vector<Light>* lights)
 	if(lights_xml != nullptr) {	
 		XMLElement *light_xml = lights_xml->FirstChildElement("light");
 		while (light_xml != nullptr) {
-			Light light = readLight(light_xml);
-			lights->push_back(light);
+			
+			(*lights).push_back(readLight(light_xml));
 
 			light_xml = light_xml->NextSiblingElement("light");
 		}	
@@ -175,7 +175,7 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 }
 
 
-Light readLight(XMLElement* light_element) {
+Light* readLight(XMLElement* light_element) {
 	string type = light_element->Attribute("type");
 	float *pos = (float*)malloc(sizeof(float) * 4); 
 	float *diff = (float*)malloc(sizeof(float) * 4); 
@@ -186,7 +186,7 @@ Light readLight(XMLElement* light_element) {
 	pos[0] = light_element->FloatAttribute("posX");
 	pos[1] = light_element->FloatAttribute("posY");
 	pos[2] = light_element->FloatAttribute("posZ");
-	pos[3] = 1;
+	pos[3] = 0;
 
 	/*
 	
@@ -195,16 +195,16 @@ Light readLight(XMLElement* light_element) {
 	*/
 
 	if (type.compare("DIRECTIONAL") == 0) {
-		pos[3] = 0;
+		//pos[3] = 0;
 
-		return *new LightDirectional(pos, diff, amb);
+		return new LightDirectional(pos, diff, amb);
 	}	
 	else if (type.compare("POINT") == 0) {
 		float attenuation;
 
 		attenuation = light_element->FloatAttribute("attenuation");
 
-		return *new LightPoint(pos, diff, amb, attenuation);
+		return new LightPoint(pos, diff, amb, attenuation);
 	}
 	else if (type.compare("SPOT") == 0){
 		float *dir = (float*)malloc(sizeof(float) * 3);
@@ -218,7 +218,7 @@ Light readLight(XMLElement* light_element) {
 		exp = light_element->FloatAttribute("exponent");
 
 
-		return *new LightSpot(pos, diff, amb, dir, angle, exp);
+		return new LightSpot(pos, diff, amb, dir, angle, exp);
 	}
 }
 

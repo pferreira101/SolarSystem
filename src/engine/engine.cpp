@@ -205,7 +205,7 @@ int mode = 0;
 Variável global com a lista de figuras a desenhar e luzes
 */
 vector<Group> groups;
-vector<Light> lights;
+vector<Light*> lights;
 
 /**
 Variável global para utilizar VBOs
@@ -537,35 +537,15 @@ void processMouseMotion(int xx, int yy) {
 
 void prepareLights() {	
 	int light_nr = 0;
-	for each (Light light in lights) {
+
+	for(Light* light : lights) {
 		glEnable(GL_LIGHT0 + light_nr);
 
-		light.toString();
-		light.turnOn(GL_LIGHT0 + light_nr);
+		light->toString();
+		light->turnOn(GL_LIGHT0 + light_nr);
 
-		light_nr++;
-
-		/*
-		int type = light.getType();
-
-		if (type == 0) {
-			LightDirectional ld = *static_cast<LightDirectional*>(&light);
-			ld.turnOn(light_nr);
-		}
-		else if (type == 1) {
-			LightPoint lp = *static_cast<LightPoint*>(&light);
-			lp.turnOn(light_nr);
-		}
-		else if (type == 2) {
-			LightSpot ls = *static_cast<LightSpot*>(&light);
-			ls.turnOn(light_nr);
-		}
-		*/
-		
+		light_nr++;	
 	}
-		
-	
-	
 }
 
 
