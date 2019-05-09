@@ -36,7 +36,7 @@ void prepareLights();
 
 #define _PI_ 3.14159
 GLuint vertexCount;
-GLuint *buffers;
+GLuint *buffers, *buffersN;
 void prepareCilinder(float height, float radius, int sides) {
 
 	float *v;
@@ -224,7 +224,9 @@ Função responsável por ativar e preencher o buffer associado a uma determinad
 */
 void prepareFigure(Figure f, int f_index) {
 	int vector_size = sizeof(float) * f.getNumPoints() * 3; // 3 floats per vertex
+	int normal_size = sizeof(float) * f.getNumNormals() * 3;
 	float* coord_vector = (float*)malloc(sizeof(float) * vector_size);
+	float* norm_vector = (float*)malloc(sizeof(float) * vector_size);
 	int i=0;
 
 	for(Point p : f.getPoints()){
@@ -232,11 +234,20 @@ void prepareFigure(Figure f, int f_index) {
 		coord_vector[i++] = p.getY();
 		coord_vector[i++] = p.getZ();
 	}
+
+	for (Point p : f.getNormals()) {
+		norm_vector[i++] = p.getX();
+		norm_vector[i++] = p.getY();
+		norm_vector[i++] = p.getZ();
+	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
 	glBufferData(GL_ARRAY_BUFFER,  vector_size, coord_vector, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, buffersN[f_index]);
+	glBufferData(GL_ARRAY_BUFFER, normal_size, norm_vector, GL_STATIC_DRAW);
 
 	free(coord_vector);
+	free(norm_vector);
 }
 
 /**
@@ -258,6 +269,9 @@ void prepareGroup(Group g){
 void prepareAllFigures(int n_figures){
 	buffers = (GLuint *) malloc(sizeof(GLuint) * n_figures);
 	glGenBuffers(n_figures, buffers); 
+
+	buffersN = (GLuint *)malloc(sizeof(GLuint) * n_figures);
+	glGenBuffers(n_figures, buffersN);
 
 	findex=0;
 	for(Group g : groups){
@@ -541,7 +555,7 @@ void prepareLights() {
 		glEnable(GL_LIGHT0 + light_nr);
 
 		light.toString();
-		light.turnOn(GL_LIGHT0 + light_nr);
+		//light.turnOn(GL_LIGHT0 + light_nr);
 
 		light_nr++;
 
