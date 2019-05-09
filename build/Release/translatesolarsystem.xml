@@ -1,4 +1,12 @@
 <scene>
+     <lights>
+        <light type="POINT" posX="0" posY="0" posZ="0" attenuation="0"/>
+		        <light type="POINT" posX="100" posY="0" posZ="0" attenuation="0"/>
+
+        <light type="DIRECTIONAL" posX="0.1" posY="0" posZ="1" />
+        <!--<light type="SPOT" posX="0" posY="0" posZ="2" dirX="0" dirY="0" dirZ="-1" angle="45" exponent="128"/>-->
+    </lights>
+    
     <group> <!-- Sol -->
         <scale X="80" Y="80" Z="80" />
         <models>        
@@ -6,21 +14,21 @@
         </models>
     </group>
     <group> <!-- Cometa -->
-            <rotate angle="-20" axisX="-1" />
-            <translate time="5" >
-             <point X="120" Y="0" Z="0" />
-             <point X="84.85" Y="0" Z="84.85" />
-             <point X="0" Y="0" Z="120" />
-             <point X="-84.85" Y="0" Z="84.85" />
-             
-             <point X="-120" Y="0" Z="0" />
-             <point X="-84.85" Y="0" Z="-84.85" />
-             <point X="0" Y="0" Z="-120" />
-             <point X="84.85" Y="0" Z="-84.85" />
-        </translate>
-        <models>        
-            <model file="teapot.3d" />
-        </models>
+		<rotate angle="-20" axisX="-1" />
+		<translate time="5" >
+			<point X="120" Y="0" Z="0" />
+			<point X="84.85" Y="0" Z="84.85" />
+			<point X="0" Y="0" Z="120" />
+			<point X="-84.85" Y="0" Z="84.85" />
+			
+			<point X="-120" Y="0" Z="0" />
+			<point X="-84.85" Y="0" Z="-84.85" />
+			<point X="0" Y="0" Z="-120" />
+			<point X="84.85" Y="0" Z="-84.85" />
+		</translate>
+		<models>        
+			<model file="sphere.3d" />
+		</models>
     </group>
     <group> <!-- Mercúrio -->
         <translate time="10" >
@@ -166,30 +174,7 @@
              <model file="sphere.3d" />
         </models>
     </group>
-    <group> <!-- Saturno -->
-        <translate time="20" >
-             <point X="261.11" Y="0" Z="0" />
-             <point X="184.63" Y="0" Z="184.63" />
-             <point X="0" Y="0" Z="261.11" />
-             <point X="-184.63" Y="0" Z="184.63" />
-             
-             <point X="-261.11" Y="0" Z="0" />
-             <point X="-184.63" Y="0" Z="-184.63" />
-             <point X="0" Y="0" Z="-261.11" />
-             <point X="184.63" Y="0" Z="-184.63" />
-            
-        </translate>
-        <scale X="23.87" Y="23.87" Z="23.87" />
-        <models>       
-             <model file="sphere.3d" />
-        </models>
-        <group>
-            <rotate angle="-20" axisX="-1" />
-            <models>       
-                 <model file="ring.3d" />
-            </models>
-        </group>
-    </group>
+   
     <group> <!-- Urano -->
         <translate time="22" >
              <point X="381.5" Y="0" Z="0" />

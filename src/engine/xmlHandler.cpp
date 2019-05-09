@@ -17,20 +17,7 @@ int readXML(const char *filename, vector<Group>* groups , vector<Light*>* lights
 	XMLNode *scene = doc.FirstChild();
 	if (scene == nullptr) return XML_ERROR_FILE_READ_ERROR;
 
-	// GROUPS
-	XMLElement *groups_xml = scene->FirstChildElement("group");
-	while (groups_xml != nullptr) {
-		vector<Operation*> ops;
-		vector<Figure> fig;
-		vector<Group> subGroups;
-		readGroup(groups_xml, &fig, &ops, &subGroups);
-		
-		Group group; 
-		group.set_values(fig, ops, subGroups);
-		groups->push_back(group);
-
-		groups_xml = groups_xml->NextSiblingElement("group");
-	}
+	
 
 	// LIGHTS
 	XMLElement *lights_xml = scene->FirstChildElement("lights");
@@ -42,6 +29,21 @@ int readXML(const char *filename, vector<Group>* groups , vector<Light*>* lights
 
 			light_xml = light_xml->NextSiblingElement("light");
 		}	
+	}
+
+	// GROUPS
+	XMLElement *groups_xml = scene->FirstChildElement("group");
+	while (groups_xml != nullptr) {
+		vector<Operation*> ops;
+		vector<Figure> fig;
+		vector<Group> subGroups;
+		readGroup(groups_xml, &fig, &ops, &subGroups);
+
+		Group group;
+		group.set_values(fig, ops, subGroups);
+		groups->push_back(group);
+
+		groups_xml = groups_xml->NextSiblingElement("group");
 	}
 
 	return XML_SUCCESS;

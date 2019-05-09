@@ -36,157 +36,11 @@ void prepareLights();
 
 #define _PI_ 3.14159
 GLuint vertexCount;
+
+/**
+Variável global para utilizar VBOs
+*/
 GLuint *buffers, *buffersN;
-void prepareCilinder(float height, float radius, int sides) {
-
-	float *v;
-	float *n;
-
-	v = (float *)malloc(sizeof(float) * 4 * 3 * 3 * sides);
-	n = (float *)malloc(sizeof(float) * 4 * 3 * 3 * sides);
-
-	int vertex = 0;
-	float delta = 2.0f * _PI_ / sides;
-
-	for (int i = 0; i < sides; ++i) {
-		// top
-		// central point
-		v[vertex * 3 + 0] = 0.0f;
-		v[vertex * 3 + 1] = height / 2.0f;
-		v[vertex * 3 + 2] = 0.0f;
-		n[vertex * 3 + 0] = 0.0f;
-		n[vertex * 3 + 1] = 1.0f;
-		n[vertex * 3 + 2] = 0.0f;
-
-		vertex++;
-		v[vertex * 3 + 0] = radius * sin(i * delta);
-		v[vertex * 3 + 1] = height / 2.0f;
-		v[vertex * 3 + 2] = radius * cos(i * delta);
-		n[vertex * 3 + 0] = 0.0f;
-		n[vertex * 3 + 1] = 1.0f;
-		n[vertex * 3 + 2] = 0.0f;
-
-		vertex++;
-		v[vertex * 3 + 0] = radius * sin((i + 1) * delta);
-		v[vertex * 3 + 1] = height / 2.0f;
-		v[vertex * 3 + 2] = radius * cos((i + 1) * delta);
-		n[vertex * 3 + 0] = 0.0f;
-		n[vertex * 3 + 1] = 1.0f;
-		n[vertex * 3 + 2] = 0.0f;
-
-		// body
-		// tri�ngulo 1
-		vertex++;
-		v[vertex * 3 + 0] = radius * sin((i + 1) * delta);
-		v[vertex * 3 + 1] = height / 2.0f;
-		v[vertex * 3 + 2] = radius * cos((i + 1) * delta);
-		n[vertex * 3 + 0] = sin((i + 1) * delta);
-		n[vertex * 3 + 1] = 0.0f;
-		n[vertex * 3 + 2] = cos((i + 1) * delta);
-
-		vertex++;
-		v[vertex * 3 + 0] = radius * sin(i * delta);
-		v[vertex * 3 + 1] = height / 2.0f;
-		v[vertex * 3 + 2] = radius * cos(i * delta);
-		n[vertex * 3 + 0] = sin(i * delta);
-		n[vertex * 3 + 1] = 0.0f;
-		n[vertex * 3 + 2] = cos(i * delta);
-
-
-		vertex++;
-		v[vertex * 3 + 0] = radius * sin(i * delta);
-		v[vertex * 3 + 1] = -height / 2.0f;
-		v[vertex * 3 + 2] = radius * cos(i * delta);
-		n[vertex * 3 + 0] = sin(i * delta);
-		n[vertex * 3 + 1] = 0.0f;
-		n[vertex * 3 + 2] = cos(i * delta);
-
-		// triangle 2
-		vertex++;
-		v[vertex * 3 + 0] = radius * sin((i + 1) * delta);
-		v[vertex * 3 + 1] = -height / 2.0f;
-		v[vertex * 3 + 2] = radius * cos((i + 1) * delta);
-		n[vertex * 3 + 0] = sin((i + 1) * delta);
-		n[vertex * 3 + 1] = 0.0f;
-		n[vertex * 3 + 2] = cos((i + 1) * delta);
-
-		vertex++;
-		v[vertex * 3 + 0] = radius * sin((i + 1) * delta);
-		v[vertex * 3 + 1] = height / 2.0f;
-		v[vertex * 3 + 2] = radius * cos((i + 1) * delta);
-		n[vertex * 3 + 0] = sin((i + 1) * delta);
-		n[vertex * 3 + 1] = 0.0f;
-		n[vertex * 3 + 2] = cos((i + 1) * delta);
-
-		vertex++;
-		v[vertex * 3 + 0] = radius * sin(i * delta);
-		v[vertex * 3 + 1] = -height / 2.0f;
-		v[vertex * 3 + 2] = radius * cos(i * delta);
-		n[vertex * 3 + 0] = sin(i * delta);
-		n[vertex * 3 + 1] = 0.0f;
-		n[vertex * 3 + 2] = cos(i * delta);
-
-		// base
-		// central point
-		vertex++;
-		v[vertex * 3 + 0] = 0.0f;
-		v[vertex * 3 + 1] = -height / 2.0f;
-		v[vertex * 3 + 2] = 0.0f;
-		n[vertex * 3 + 0] = 0.0f;
-		n[vertex * 3 + 1] = -1.0f;
-		n[vertex * 3 + 2] = 0.0f;
-
-		vertex++;
-		v[vertex * 3 + 0] = radius * sin((i + 1) * delta);
-		v[vertex * 3 + 1] = -height / 2.0f;
-		v[vertex * 3 + 2] = radius * cos((i + 1) * delta);
-		n[vertex * 3 + 0] = 0.0f;
-		n[vertex * 3 + 1] = -1.0f;
-		n[vertex * 3 + 2] = 0.0f;
-
-		vertex++;
-		v[vertex * 3 + 0] = radius * sin(i * delta);
-		v[vertex * 3 + 1] = -height / 2.0f;
-		v[vertex * 3 + 2] = radius * cos(i * delta);
-		n[vertex * 3 + 0] = 0.0f;
-		n[vertex * 3 + 1] = -1.0f;
-		n[vertex * 3 + 2] = 0.0f;
-
-		vertex++;
-	}
-
-	vertexCount = vertex;
-
-	glGenBuffers(2, buffers);
-
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexCount * 3, v, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexCount * 3, n, GL_STATIC_DRAW);
-
-	free(v);
-	free(n);
-}
-
-void drawCilinder() {
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-	glVertexPointer(3, GL_FLOAT, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-	glNormalPointer(GL_FLOAT, 0, 0);
-
-	float blue[4] = { 0.2f, 0.2f, 0.8f, 1.0f };
-	glMaterialfv(GL_FRONT, GL_SPECULAR, blue);
-	glMaterialf(GL_FRONT, GL_SHININESS, 128.0f);
-
-	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-}
-
-/****************************PARA TIRAR********************************/
-
 
 
 //########################################## Settings ##########################################
@@ -206,11 +60,6 @@ Variável global com a lista de figuras a desenhar e luzes
 */
 vector<Group> groups;
 vector<Light*> lights;
-
-/**
-Variável global para utilizar VBOs
-*/
-//GLuint *buffers;
 
 /**
 Variável global para indicar qual a figura que esta a ser processada (ajuda a contrucao e desenho por VBOS)
@@ -243,6 +92,7 @@ void prepareFigure(Figure f, int f_index) {
 	
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
 	glBufferData(GL_ARRAY_BUFFER,  vector_size, coord_vector, GL_STATIC_DRAW);
+
 	glBindBuffer(GL_ARRAY_BUFFER, buffersN[f_index]);
 	glBufferData(GL_ARRAY_BUFFER, normal_size, norm_vector, GL_STATIC_DRAW);
 
@@ -398,8 +248,6 @@ void renderScene(void) {
 	}
 
 	drawCoordinates();
-
-	drawCilinder();//////////////////////////
 
 	frame++;
 	time = glutGet(GLUT_ELAPSED_TIME);
@@ -558,7 +406,7 @@ void prepareLights() {
 	for(Light* light : lights) {
 		glEnable(GL_LIGHT0 + light_nr);
 
-		light->toString();
+		//light->toString();
 		light->turnOn(GL_LIGHT0 + light_nr);
 
 		light_nr++;	
@@ -606,14 +454,15 @@ int main(int argc, char **argv) {
 		for(Group g : groups){
 			total_n_figures += g.getNumFigures();
 		}
+		
+		printf("%d\n", total_n_figures);
+
 		prepareAllFigures(total_n_figures); 
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 
 		
-		prepareCilinder(2, 1, 16); //////////////////////
-
 		//  OpenGL settings
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);

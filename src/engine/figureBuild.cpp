@@ -30,51 +30,38 @@ vector<Point> getFilePoints(const string& name, std::vector<Point>* normals) {
 	while (!file.eof()) { // ler ficheiro completo
 		getline(file, point); // ler uma linha
         
-		while (point != "\n") {
-			if (!point.compare("")) break; // ultima linha do ficheiro Ž vazia, n‹o deve ser processada
-			string token;
-			float coord[3];
-			int i = 0;
+		while (point.compare("") != 0) {
+			//if (!point.compare("")) break; // ultima linha do ficheiro Ž vazia, n‹o deve ser processada
+			
+			float x, y, z;
 
-			int pos_start = 0, pos_end;
-
-			while (i < 3) {
-				pos_end = point.find(delimiter, pos_start);
-				token = point.substr(pos_start, pos_end - pos_start);
-				coord[i++] = stof(token);
-				pos_start = pos_end + delim_len;
-			}
+			sscanf(point.c_str(), "%f, %f, %f", &x, &y, &z);		
 
 			Point p;
-			p.set_values(coord[0], coord[1], coord[2]);
+			p.set_values(x, y, z);
 
 			points.push_back(p);//adicona novo elemento no fim do vector
+
+			getline(file, point);
 		}
 
-		while (point != "\n") {
-			if (!point.compare("")) break; // ultima linha do ficheiro Ž vazia, n‹o deve ser processada
-			string token;
-			float coord[3];
-			int i = 0;
+		getline(file, point);
+		while (point.compare("") != 0) {
+			//if (!point.compare("")) break; // ultima linha do ficheiro Ž vazia, n‹o deve ser processada
+			float x, y, z;
 
-			int pos_start = 0, pos_end;
-
-			while (i < 3) {
-				pos_end = point.find(delimiter, pos_start);
-				token = point.substr(pos_start, pos_end - pos_start);
-				coord[i++] = stof(token);
-				pos_start = pos_end + delim_len;
-			}
+			sscanf(point.c_str(), "%f, %f, %f", &x, &y, &z);
 
 			Point p;
-			p.set_values(coord[0], coord[1], coord[2]);
+			p.set_values(x, y, z);
 
 			(*normals).push_back(p);//adicona novo elemento no fim do vector
-		}
 
-		
-		
+			getline(file, point);
+		}
+	
 	}
 	file.close();
+
 	return points;
 }
