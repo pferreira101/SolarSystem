@@ -287,6 +287,9 @@ void drawFigure(Figure f, int f_index) {
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
 	glVertexPointer(3, GL_FLOAT, 0, 0);
 
+	glBindBuffer(GL_ARRAY_BUFFER, buffersN[f_index]);
+	glNormalPointer(GL_FLOAT, 0, 0);
+
 	glColor3f(0.49, 0.51, 0.53);
 	glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
 
