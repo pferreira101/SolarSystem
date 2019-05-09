@@ -49,10 +49,12 @@ Classe que guarda a lista de tri‰ngulos que comp›em uma figura
 */
 class Figure {
 	vector<Point> points;
+	vector<Point> normals;
 public:
 
-	void set_values(std::vector<Point> pts) {
+	void set_values(std::vector<Point> pts, std::vector<Point> nms) {
 		points = pts;
+		normals = nms;
 	}
 
 	int getNumPoints() {
@@ -61,6 +63,14 @@ public:
 
 	vector<Point> getPoints(){
 		return points;
+	}
+
+	int getNumNormals() {
+		return normals.size();
+	}
+
+	vector<Point> getNormals() {
+		return normals;
 	}
 };
 
