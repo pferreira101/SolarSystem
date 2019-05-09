@@ -31,6 +31,163 @@
 
 using namespace std;
 
+/****************************PARA TIRAR********************************/
+void prepareLights();
+
+#define _PI_ 3.14159
+GLuint vertexCount;
+GLuint *buffers;
+void prepareCilinder(float height, float radius, int sides) {
+
+	float *v;
+	float *n;
+
+	v = (float *)malloc(sizeof(float) * 4 * 3 * 3 * sides);
+	n = (float *)malloc(sizeof(float) * 4 * 3 * 3 * sides);
+
+	int vertex = 0;
+	float delta = 2.0f * _PI_ / sides;
+
+	for (int i = 0; i < sides; ++i) {
+		// top
+		// central point
+		v[vertex * 3 + 0] = 0.0f;
+		v[vertex * 3 + 1] = height / 2.0f;
+		v[vertex * 3 + 2] = 0.0f;
+		n[vertex * 3 + 0] = 0.0f;
+		n[vertex * 3 + 1] = 1.0f;
+		n[vertex * 3 + 2] = 0.0f;
+
+		vertex++;
+		v[vertex * 3 + 0] = radius * sin(i * delta);
+		v[vertex * 3 + 1] = height / 2.0f;
+		v[vertex * 3 + 2] = radius * cos(i * delta);
+		n[vertex * 3 + 0] = 0.0f;
+		n[vertex * 3 + 1] = 1.0f;
+		n[vertex * 3 + 2] = 0.0f;
+
+		vertex++;
+		v[vertex * 3 + 0] = radius * sin((i + 1) * delta);
+		v[vertex * 3 + 1] = height / 2.0f;
+		v[vertex * 3 + 2] = radius * cos((i + 1) * delta);
+		n[vertex * 3 + 0] = 0.0f;
+		n[vertex * 3 + 1] = 1.0f;
+		n[vertex * 3 + 2] = 0.0f;
+
+		// body
+		// tri�ngulo 1
+		vertex++;
+		v[vertex * 3 + 0] = radius * sin((i + 1) * delta);
+		v[vertex * 3 + 1] = height / 2.0f;
+		v[vertex * 3 + 2] = radius * cos((i + 1) * delta);
+		n[vertex * 3 + 0] = sin((i + 1) * delta);
+		n[vertex * 3 + 1] = 0.0f;
+		n[vertex * 3 + 2] = cos((i + 1) * delta);
+
+		vertex++;
+		v[vertex * 3 + 0] = radius * sin(i * delta);
+		v[vertex * 3 + 1] = height / 2.0f;
+		v[vertex * 3 + 2] = radius * cos(i * delta);
+		n[vertex * 3 + 0] = sin(i * delta);
+		n[vertex * 3 + 1] = 0.0f;
+		n[vertex * 3 + 2] = cos(i * delta);
+
+
+		vertex++;
+		v[vertex * 3 + 0] = radius * sin(i * delta);
+		v[vertex * 3 + 1] = -height / 2.0f;
+		v[vertex * 3 + 2] = radius * cos(i * delta);
+		n[vertex * 3 + 0] = sin(i * delta);
+		n[vertex * 3 + 1] = 0.0f;
+		n[vertex * 3 + 2] = cos(i * delta);
+
+		// triangle 2
+		vertex++;
+		v[vertex * 3 + 0] = radius * sin((i + 1) * delta);
+		v[vertex * 3 + 1] = -height / 2.0f;
+		v[vertex * 3 + 2] = radius * cos((i + 1) * delta);
+		n[vertex * 3 + 0] = sin((i + 1) * delta);
+		n[vertex * 3 + 1] = 0.0f;
+		n[vertex * 3 + 2] = cos((i + 1) * delta);
+
+		vertex++;
+		v[vertex * 3 + 0] = radius * sin((i + 1) * delta);
+		v[vertex * 3 + 1] = height / 2.0f;
+		v[vertex * 3 + 2] = radius * cos((i + 1) * delta);
+		n[vertex * 3 + 0] = sin((i + 1) * delta);
+		n[vertex * 3 + 1] = 0.0f;
+		n[vertex * 3 + 2] = cos((i + 1) * delta);
+
+		vertex++;
+		v[vertex * 3 + 0] = radius * sin(i * delta);
+		v[vertex * 3 + 1] = -height / 2.0f;
+		v[vertex * 3 + 2] = radius * cos(i * delta);
+		n[vertex * 3 + 0] = sin(i * delta);
+		n[vertex * 3 + 1] = 0.0f;
+		n[vertex * 3 + 2] = cos(i * delta);
+
+		// base
+		// central point
+		vertex++;
+		v[vertex * 3 + 0] = 0.0f;
+		v[vertex * 3 + 1] = -height / 2.0f;
+		v[vertex * 3 + 2] = 0.0f;
+		n[vertex * 3 + 0] = 0.0f;
+		n[vertex * 3 + 1] = -1.0f;
+		n[vertex * 3 + 2] = 0.0f;
+
+		vertex++;
+		v[vertex * 3 + 0] = radius * sin((i + 1) * delta);
+		v[vertex * 3 + 1] = -height / 2.0f;
+		v[vertex * 3 + 2] = radius * cos((i + 1) * delta);
+		n[vertex * 3 + 0] = 0.0f;
+		n[vertex * 3 + 1] = -1.0f;
+		n[vertex * 3 + 2] = 0.0f;
+
+		vertex++;
+		v[vertex * 3 + 0] = radius * sin(i * delta);
+		v[vertex * 3 + 1] = -height / 2.0f;
+		v[vertex * 3 + 2] = radius * cos(i * delta);
+		n[vertex * 3 + 0] = 0.0f;
+		n[vertex * 3 + 1] = -1.0f;
+		n[vertex * 3 + 2] = 0.0f;
+
+		vertex++;
+	}
+
+	vertexCount = vertex;
+
+	glGenBuffers(2, buffers);
+
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexCount * 3, v, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexCount * 3, n, GL_STATIC_DRAW);
+
+	free(v);
+	free(n);
+}
+
+void drawCilinder() {
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+	glVertexPointer(3, GL_FLOAT, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+	glNormalPointer(GL_FLOAT, 0, 0);
+
+	float blue[4] = { 0.2f, 0.2f, 0.8f, 1.0f };
+	glMaterialfv(GL_FRONT, GL_SPECULAR, blue);
+	glMaterialf(GL_FRONT, GL_SHININESS, 128.0f);
+
+	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+}
+
+/****************************PARA TIRAR********************************/
+
+
 
 //########################################## Settings ##########################################
 
@@ -41,7 +198,7 @@ int alpha = 180, beta = 0, r = 50;
 int timebase = 0, frame = 0;
 int mode = 0;
 
-//####################################### Variàveis globais ####################################
+//####################################### Variáveis globais ####################################
 
 
 /**
@@ -53,7 +210,7 @@ vector<Light> lights;
 /**
 Variável global para utilizar VBOs
 */
-GLuint *buffers;
+//GLuint *buffers;
 
 /**
 Variável global para indicar qual a figura que esta a ser processada (ajuda a contrucao e desenho por VBOS)
@@ -206,12 +363,15 @@ void renderScene(void) {
 	// clear buffers
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 
 	// set the camera
 	glLoadIdentity();
 	gluLookAt(camX, camY, camZ,
 		Lx, Ly, Lz,
 		0.0f, 1.0f, 0.0f);
+
+	prepareLights();
 
 	glColor3b(0, 5, 20);
 	
@@ -221,6 +381,8 @@ void renderScene(void) {
 	}
 
 	drawCoordinates();
+
+	drawCilinder();//////////////////////////
 
 	frame++;
 	time = glutGet(GLUT_ELAPSED_TIME);
@@ -374,39 +536,35 @@ void processMouseMotion(int xx, int yy) {
 
 
 void prepareLights() {	
-	glEnable(GL_LIGHTING);
 	int light_nr = 0;
+	for each (Light light in lights) {
+		glEnable(GL_LIGHT0 + light_nr);
 
-	for(vector<Light>::iterator it = lights.begin(); it != lights.end(); ++it, light_nr++) {
-		Light light = *it;
+		light.toString();
+		light.turnOn(GL_LIGHT0 + light_nr);
 
-		GLenum light_number = light.getNumber(light_nr);
-		glEnable(light_number);
+		light_nr++;
 
+		/*
 		int type = light.getType();
-		printf("TYPE = %d\n", type);
 
 		if (type == 0) {
 			LightDirectional ld = *static_cast<LightDirectional*>(&light);
-			ld.toString();
-
-			glLightfv(light_number, GL_POSITION, ld.getPos());
-			glLightfv(light_number, GL_AMBIENT, ld.getAmb());
-			glLightfv(light_number, GL_DIFFUSE, ld.getDiff());
+			ld.turnOn(light_nr);
 		}
 		else if (type == 1) {
 			LightPoint lp = *static_cast<LightPoint*>(&light);
-			lp.toString();
-
-			glLightfv(light_number, GL_POSITION, lp.getPos());
-			glLightfv(light_number, GL_AMBIENT, lp.getAmb());
-			glLightfv(light_number, GL_DIFFUSE, lp.getDiff());
+			lp.turnOn(light_nr);
 		}
 		else if (type == 2) {
+			LightSpot ls = *static_cast<LightSpot*>(&light);
+			ls.turnOn(light_nr);
+		}
+		*/
 		
-		}		
-
 	}
+		
+	
 	
 }
 
@@ -456,12 +614,14 @@ int main(int argc, char **argv) {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 
-		prepareLights();
+		
+		prepareCilinder(2, 1, 16); //////////////////////
 
 		//  OpenGL settings
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnable(GL_LIGHTING);
 
 		// enter GLUT's main cycle
 		glutMainLoop();

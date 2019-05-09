@@ -160,6 +160,41 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 			/*
 			const char* textureFile = nullptr;
 			textureFile = model->Attribute("texture");
+
+
+			// PODE TER MAIS QUE UM TIPO AO MM TEMPO (DIFF/SPEC/AMB/EMI) ??
+
+			float r = 0;
+			float g = 0;
+			float b = 0;
+			int diff, spec, emi, amb;
+
+			diff = model->QueryFloatAttribute("diffR",&r);
+			if (diff != XML_NO_ATTRIBUTE){
+				model->QueryFloatAttribute("diffG",&g);
+				model->QueryFloatAttribute("diffB",&b);
+			}
+
+			spec = model->QueryFloatAttribute("specR",%r);
+			if (spec != XML_NO_ATTRIBUTE){
+				model->QueryFloatAttribute("specG",&g);
+				model->QueryFloatAttribute("specB",&b);
+			}
+
+			emi = model->QueryFloatAttribute("emiR",&r);
+			if (emi != XML_NO_ATTRIBUTE) {
+				model->QueryFloatAttrubute("emiG",&g);
+				model->QueryFloatAttribute("emiB",&b);
+			}
+
+			amb = model->QueryFloatAttribute("ambR",&r);
+			if (amb != XML_NO_ATTRIBUTE) {
+				model->QueryFloatAttribute("ambG",&g);
+				model->QueryFloatAttribute("ambB",&b);
+			}
+			
+
+
 			*/
 
 			Figure f = getFigure(path);
@@ -177,42 +212,38 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 
 Light readLight(XMLElement* light_element) {
 	string type = light_element->Attribute("type");
-	float *pos = (float*)malloc(sizeof(float*) * 4); 
-	float *diff = (float*)malloc(sizeof(float*) * 4); 
+	float *pos = (float*)malloc(sizeof(float) * 4); 
+	float *diff = (float*)malloc(sizeof(float) * 4); 
 	diff[0] = diff[1] = diff[2] = diff[3] = 1.0f;
+	float *amb = (float*)malloc(sizeof(float) * 4);
+	amb[0] = amb[1] = amb[2] = amb[3] = 0.0f;
+
+	pos[0] = light_element->FloatAttribute("posX");
+	pos[1] = light_element->FloatAttribute("posY");
+	pos[2] = light_element->FloatAttribute("posZ");
+	pos[3] = 1;
+
+	/*
+	
+	restantes comuns (diff, amb) color??
+
+	*/
 
 	if (type.compare("DIRECTIONAL") == 0) {
-		float *amb = (float*)malloc(sizeof(float*) * 4);
-		amb[0] = amb[1] = amb[2] = amb[3] = 1.0f;
-
-		pos[0] = light_element->FloatAttribute("posX");
-		pos[1] = light_element->FloatAttribute("posY");
-		pos[2] = light_element->FloatAttribute("posZ");
 		pos[3] = 0;
 
-		return LightDirectional(0, pos, diff, amb);
+		return *new LightDirectional(pos, diff, amb);
 	}	
 	else if (type.compare("POINT") == 0) {
-		float *amb = (float*)malloc(sizeof(float*) * 4);
-		amb[0] = amb[1] = amb[2] = amb[3] = 1.0f;
 		float attenuation;
-
-		pos[0] = light_element->FloatAttribute("posX");
-		pos[1] = light_element->FloatAttribute("posY");
-		pos[2] = light_element->FloatAttribute("posZ");
-		pos[3] = 1;
 
 		attenuation = light_element->FloatAttribute("attenuation");
 
-		return LightPoint(1, pos, diff, amb, attenuation);
+		return *new LightPoint(pos, diff, amb, attenuation);
 	}
 	else if (type.compare("SPOT") == 0){
-		float dir[3], angle, exp;
-
-		pos[0] = light_element->FloatAttribute("posX");
-		pos[1] = light_element->FloatAttribute("posY");
-		pos[2] = light_element->FloatAttribute("posZ");
-		pos[3] = 1;
+		float *dir = (float*)malloc(sizeof(float) * 3);
+		float angle, exp;
 
 		dir[0] = light_element->FloatAttribute("dirX");
 		dir[1] = light_element->FloatAttribute("dirY");
@@ -221,7 +252,8 @@ Light readLight(XMLElement* light_element) {
 		angle = light_element->FloatAttribute("angle");
 		exp = light_element->FloatAttribute("exponent");
 
-		return LightSpot(2, pos, diff, dir, angle, exp);
+
+		return *new LightSpot(pos, diff, amb, dir, angle, exp);
 	}
 }
 
