@@ -6,6 +6,8 @@
 #include <GL/glut.h>
 #endif
 
+#include <IL/il.h>
+
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -40,7 +42,10 @@ GLuint vertexCount;
 /**
 Variável global para utilizar VBOs
 */
-GLuint *buffers, *buffersN;
+GLuint *buffers, *buffersN, *buffersT;
+GLuint *idTex;
+
+int loadTexture(std::string s);
 
 
 //########################################## Settings ##########################################
@@ -74,8 +79,10 @@ Função responsável por ativar e preencher o buffer associado a uma determinad
 void prepareFigure(Figure f, int f_index) {
 	int vector_size = sizeof(float) * f.getNumPoints() * 3; // 3 floats per vertex
 	int normal_size = sizeof(float) * f.getNumNormals() * 3;
+	int tex_size = sizeof(float) * f.getNumTextures() * 2;
 	float* coord_vector = (float*)malloc(sizeof(float) * vector_size);
 	float* norm_vector = (float*)malloc(sizeof(float) * vector_size);
+	float* tex_vector = (float*)malloc(sizeof(float) * vector_size);
 	int i=0;
 
 	for(Point p : f.getPoints()){
@@ -84,10 +91,17 @@ void prepareFigure(Figure f, int f_index) {
 		coord_vector[i++] = p.getZ();
 	}
 
+	i = 0;
 	for (Point p : f.getNormals()) {
 		norm_vector[i++] = p.getX();
 		norm_vector[i++] = p.getY();
 		norm_vector[i++] = p.getZ();
+	}
+
+	i = 0;
+	for (Point p : f.getTexture()) {
+		tex_vector[i++] = p.getX();
+		tex_vector[i++] = p.getY();
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
@@ -96,8 +110,15 @@ void prepareFigure(Figure f, int f_index) {
 	glBindBuffer(GL_ARRAY_BUFFER, buffersN[f_index]);
 	glBufferData(GL_ARRAY_BUFFER, normal_size, norm_vector, GL_STATIC_DRAW);
 
+	glBindBuffer(GL_ARRAY_BUFFER, buffersT[f_index]);
+	glBufferData(GL_ARRAY_BUFFER, tex_size, tex_vector, GL_STATIC_DRAW);
+
+	if (f.getTexPath().empty()) idTex[f_index] = -1;
+	else idTex[f_index] = loadTexture(f.getTexPath());
+
 	free(coord_vector);
 	free(norm_vector);
+	free(tex_vector);
 }
 
 /**
@@ -123,6 +144,11 @@ void prepareAllFigures(int n_figures){
 	buffersN = (GLuint *)malloc(sizeof(GLuint) * n_figures);
 	glGenBuffers(n_figures, buffersN);
 
+	buffersT = (GLuint *)malloc(sizeof(GLuint) * n_figures);
+	glGenBuffers(n_figures, buffersT);
+
+	idTex = (GLuint*)malloc(sizeof(GLuint) * n_figures);
+
 	findex=0;
 	for(Group g : groups){
 		prepareGroup(g);
@@ -140,8 +166,19 @@ void drawFigure(Figure f, int f_index) {
 	glBindBuffer(GL_ARRAY_BUFFER, buffersN[f_index]);
 	glNormalPointer(GL_FLOAT, 0, 0);
 
-	glColor3f(0.49, 0.51, 0.53);
-	glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
+	glBindBuffer(GL_ARRAY_BUFFER, buffersT[f_index]);
+	glTexCoordPointer(2, GL_FLOAT, 0, 0);
+
+	if (idTex[f_index] != -1) {
+		glBindTexture(GL_TEXTURE_2D, idTex[f_index]);
+		glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	else {
+		glColor3f(0.49, 0.51, 0.53);
+		glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
+	}
+	
 
 }
 
@@ -399,6 +436,8 @@ void processMouseMotion(int xx, int yy) {
 }
 
 
+//############ Funções responsáveis pelo processamento de luzes e texturas ##################
+
 
 void prepareLights() {	
 	int light_nr = 0;
@@ -411,6 +450,41 @@ void prepareLights() {
 
 		light_nr++;	
 	}
+}
+
+int loadTexture(std::string s) {
+
+	unsigned int t, tw, th;
+	unsigned char *texData;
+	unsigned int texID;
+
+	ilInit();
+	ilEnable(IL_ORIGIN_SET);
+	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+	ilGenImages(1, &t);
+	ilBindImage(t);
+	ilLoadImage((ILstring)s.c_str());
+	tw = ilGetInteger(IL_IMAGE_WIDTH);
+	th = ilGetInteger(IL_IMAGE_HEIGHT);
+	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+	texData = ilGetData();
+
+	glGenTextures(1, &texID);
+
+	glBindTexture(GL_TEXTURE_2D, texID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return texID;
+
 }
 
 

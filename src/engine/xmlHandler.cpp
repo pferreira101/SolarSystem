@@ -160,9 +160,6 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 			string path = cur_dir+fname;
 
 			/*
-			const char* textureFile = nullptr;
-			textureFile = model->Attribute("texture");
-
 
 			// PODE TER MAIS QUE UM TIPO AO MM TEMPO (DIFF/SPEC/AMB/EMI) ??
 
@@ -194,12 +191,22 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 				model->QueryFloatAttribute("ambG",&g);
 				model->QueryFloatAttribute("ambB",&b);
 			}
-			
-
 
 			*/
 
-			Figure f = getFigure(path);
+			const char* textureFile = nullptr;
+			textureFile = model->Attribute("texture");
+
+			Figure f;
+
+			if (textureFile != nullptr) {
+				string texPath = cur_dir + textureFile;
+
+				f = getFigure(path, texPath);
+			}
+
+			else f = getFigure(path, "");
+
 			(*fig).push_back(f);
 
 			model = model->NextSiblingElement("model");

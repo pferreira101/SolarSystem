@@ -17,10 +17,15 @@ if  (WIN32)
 	if (NOT EXISTS "${TOOLKITS_FOLDER}/glew/GL/glew.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/glew/glew32.lib")
 		message(ERROR ": GLEW not found")
 	endif (NOT EXISTS "${TOOLKITS_FOLDER}/glew/GL/glew.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/glew/glew32.lib")	
+
+	if (NOT EXISTS "${TOOLKITS_FOLDER}/devil/IL/il.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/devil/DevIL.lib")
+		message(ERROR ": DEVIL not found")
+	endif (NOT EXISTS "${TOOLKITS_FOLDER}/devil/IL/il.h" OR NOT EXISTS "${TOOLKITS_FOLDER}/devil/DevIL.lib")	
 	
 	include_directories(
 	  	${TOOLKITS_FOLDER}/glut 
 		${TOOLKITS_FOLDER}/glew
+		${TOOLKITS_FOLDER}/devil
 	)
 	
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT engine)
@@ -62,18 +67,21 @@ if  (WIN32)
 		engine 
 		${OPENGL_LIBRARIES} 
 		${TOOLKITS_FOLDER}/glut/glut32.lib 
-		${TOOLKITS_FOLDER}/glew/glew32.lib 
+		${TOOLKITS_FOLDER}/glew/glew32.lib
+		${TOOLKITS_FOLDER}/devil/DevIL.lib
 	)
-	if (EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll" AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll")
+	if (EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll" AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll" AND EXISTS "${TOOLKITS_FOLDER}/devil/devil.dll")
 		file(COPY ${TOOLKITS_FOLDER}/glew/glew32.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-  		file(COPY ${TOOLKITS_FOLDER}/glut/glut32.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)	
-	endif(EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll" AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll")
+  		file(COPY ${TOOLKITS_FOLDER}/glut/glut32.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
+  		file(COPY ${TOOLKITS_FOLDER}/devil/devil.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)		
+	endif(EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll" AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll" AND EXISTS "${TOOLKITS_FOLDER}/devil/devil.dll")
 
 else (WIN32)
 	target_link_libraries(
 		engine 
 		${OPENGL_LIBRARIES} 
 		${GLUT_LIBRARY} 
+		${IL_LIBRARIES}
 	)
 
 endif(WIN32)

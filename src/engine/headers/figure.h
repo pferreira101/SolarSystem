@@ -43,18 +43,22 @@ public:
 };
 
 
-
 /**
 Classe que guarda a lista de tri‰ngulos que comp›em uma figura
 */
 class Figure {
 	vector<Point> points;
 	vector<Point> normals;
+	vector<Point> texture;
+	string texPath;
+
 public:
 
-	void set_values(std::vector<Point> pts, std::vector<Point> nms) {
+	void set_values(std::vector<Point> pts, std::vector<Point> nms, std::vector<Point> txs, string path) {
 		points = pts;
 		normals = nms;
+		texture = txs;
+		texPath = path;
 	}
 
 	int getNumPoints() {
@@ -72,10 +76,23 @@ public:
 	vector<Point> getNormals() {
 		return normals;
 	}
+
+	int getNumTextures() {
+		return texture.size();
+	}
+
+	vector<Point> getTexture() {
+		return texture;
+	}
+
+	string getTexPath() {
+		return texPath;
+	}
+
 };
 
 
-Figure getFigure(const string& name);
+Figure getFigure(const string& name, string path);
 
 
 #endif

@@ -52,12 +52,12 @@ void planeHandler(double size, char* destFile){
 
 	// normais
 
-	n.append("0,1,0");
-	n.append("0,1,0");
-	n.append("0,1,0");
-	n.append("0,1,0");
-	n.append("0,1,0");
-	n.append("0,1,0");
+	n.append("0,1,0\n");
+	n.append("0,1,0\n");
+	n.append("0,1,0\n");
+	n.append("0,1,0\n");
+	n.append("0,1,0\n");
+	n.append("0,1,0\n");
 
 	s.append("\n" + n);
 
