@@ -33,7 +33,9 @@
 
 using namespace std;
 
-/****************************PARA TIRAR********************************/
+
+
+
 void prepareLights();
 
 #define _PI_ 3.14159
@@ -104,12 +106,15 @@ void prepareFigure(Figure f, int f_index) {
 		tex_vector[i++] = p.getY();
 	}
 	
+	//glGenBuffers(1, buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
 	glBufferData(GL_ARRAY_BUFFER,  vector_size, coord_vector, GL_STATIC_DRAW);
 
+	//glGenBuffers(1, buffersN);
 	glBindBuffer(GL_ARRAY_BUFFER, buffersN[f_index]);
 	glBufferData(GL_ARRAY_BUFFER, normal_size, norm_vector, GL_STATIC_DRAW);
 
+	//glGenBuffers(1, buffersT);
 	glBindBuffer(GL_ARRAY_BUFFER, buffersT[f_index]);
 	glBufferData(GL_ARRAY_BUFFER, tex_size, tex_vector, GL_STATIC_DRAW);
 
@@ -126,6 +131,7 @@ void prepareFigure(Figure f, int f_index) {
 */
 void prepareGroup(Group g){
 	for(Figure f : g.getFigures()){
+
 		prepareFigure(f,findex);
 		++findex;
 	}
@@ -175,7 +181,7 @@ void drawFigure(Figure f, int f_index) {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	else {
-		glColor3f(0.49, 0.51, 0.53);
+		glColor3f(0.3, 0.3, 0.53);
 		glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
 	}
 	
@@ -248,8 +254,12 @@ void renderGroup(Group g) {
         o->transformacao();
 	}
 	for (Figure f : figs) {
+		//glBindTexture(GL_TEXTURE_2D, idTex[findex]);		
 		drawFigure(f, findex);
-		++findex; //printf("%d\n",  findex;);
+		//glBindTexture(GL_TEXTURE_2D, 0);
+
+		++findex; 
+		printf("%d `**************************** \n",  findex);
 	}
 	for (Group g : subGroups) {
 		renderGroup(g);
@@ -277,6 +287,9 @@ void renderScene(void) {
 
 	prepareLights();
 
+	float white[4] = { 1,1,1,1 };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+
 	glColor3b(0, 5, 20);
 	
 	findex=0;
@@ -284,7 +297,7 @@ void renderScene(void) {
 		renderGroup(g);
 	}
 
-	drawCoordinates();
+	// drawCoordinates();
 
 	frame++;
 	time = glutGet(GLUT_ELAPSED_TIME);
@@ -535,6 +548,7 @@ int main(int argc, char **argv) {
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 		
 		//  OpenGL settings
@@ -542,6 +556,7 @@ int main(int argc, char **argv) {
 		glEnable(GL_CULL_FACE);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnable(GL_LIGHTING);
+		glEnable(GL_TEXTURE_2D);
 
 		// enter GLUT's main cycle
 		glutMainLoop();
