@@ -8,7 +8,7 @@
     <group> <!-- Sol -->
         <scale X="80" Y="80" Z="80" />
         <models>        
-            <model file="sphere.3d" texture="textures/sun.jpg"/>
+            <model file="sphere.3d" texture="sun.jpg"/>
         </models>
     </group>
     <group> <!-- Cometa -->
@@ -25,7 +25,7 @@
 			<point X="84.85" Y="0" Z="-84.85" />
 		</translate>
 		<models>        
-			<model file="sphere.3d" />
+			<model file="sphere.3d" texture="comet.jpg"/>
 		</models>
     </group>
     <group> <!-- Mercúrio -->
@@ -42,7 +42,7 @@
             
         </translate>
         <models>       
-             <model file="sphere.3d" texture="textures/mercury.jpg"/>
+             <model file="sphere.3d" texture="mercury.jpg"/>
         </models>
     </group>
     <group> <!-- Vénus -->
@@ -60,11 +60,11 @@
         </translate>
         <scale X="2.48" Y="2.48" Z="2.48" />
         <models>       
-             <model file="sphere.3d" texture="textures/venus.jpg"/>
+             <model file="sphere.3d" texture="venus.jpg"/>
         </models>
     </group>
     <group> <!-- Terra -->
-        <translate time="10.8" >
+        <translate time="1000" >
              <point X="98.49" Y="0" Z="0" />
              <point X="69.64" Y="0" Z="69.64" />
              <point X="0" Y="0" Z="98.49" />
@@ -78,7 +78,7 @@
         </translate>
         <scale X="2.61" Y="2.61" Z="2.61" />
         <models>       
-             <model file="sphere.3d" texture="textures/earth.jpg"/>
+             <model file="sphere.3d" texture="earth.jpg"/>
         </models>
         <group><!-- Lua -->
             <translate time="3" >
@@ -94,7 +94,7 @@
         	</translate>
             <scale X="0.27" Y="0.27" Z="0.27" />
             <models>       
-                 <model file="sphere.3d" />
+                 <model file="sphere.3d" texture="moon.jpg"/>
             </models>
         </group>
     </group>
@@ -113,7 +113,7 @@
         </translate>
         <scale X="1.39" Y="1.39" Z="1.39" />
         <models>       
-             <model file="sphere.3d" />
+             <model file="sphere.3d" texture="mars.jpg" />
         </models>
         <group><!-- Lua -->
             <translate time="3" >
@@ -130,7 +130,7 @@
             </translate>
             <scale X="0.2" Y="0.2" Z="0.2" />
             <models>       
-                 <model file="sphere.3d" />
+                 <model file="sphere.3d" texture="moon.jgp"/>
             </models>
         </group>
         <group><!-- Lua -->
@@ -149,7 +149,7 @@
             </translate>
             <scale X="0.12" Y="0.12" Z="0.12" />
             <models>       
-                 <model file="sphere.3d" />
+                 <model file="sphere.3d" texture="moon.jgp"/>
             </models>
         </group>
     </group>
@@ -168,7 +168,7 @@
         </translate>
         <scale X="28.66" Y="28.66" Z="28.66" />
         <models>       
-             <model file="sphere.3d" texture="textures/jupiter.jpg"/>
+             <model file="sphere.3d" texture="jupiter.jpg"/>
         </models>
     </group>
    
@@ -189,7 +189,7 @@
         </translate>
         <scale X="10.09" Y="10.09" Z="10.09" />
         <models>       
-             <model file="sphere.3d" texture="textures/uranus.jpg"/>
+             <model file="sphere.3d" texture="uranus.jpg"/>
         </models>
     </group>
     <group> <!-- Plutão -->
@@ -206,7 +206,7 @@
         </translate>
         <scale X="10.40" Y="10.40" Z="10.40" />
         <models>       
-             <model file="sphere.3d" texture="textures/plut.jpg"/>
+             <model file="sphere.3d" texture="pluto.jpg"/>
         </models>
     </group>
 </scene>

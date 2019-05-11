@@ -181,7 +181,7 @@ void drawFigure(Figure f, int f_index) {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	else {
-		glColor3f(0.3, 0.3, 0.53);
+		//glColor3f(0.3, 0.3, 0.53);
 		glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
 	}
 	
