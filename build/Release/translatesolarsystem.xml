@@ -64,7 +64,7 @@
         </models>
     </group>
     <group> <!-- Terra -->
-        <translate time="1000" >
+        <translate time="10.8" >
              <point X="98.49" Y="0" Z="0" />
              <point X="69.64" Y="0" Z="69.64" />
              <point X="0" Y="0" Z="98.49" />
