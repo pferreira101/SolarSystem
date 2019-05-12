@@ -42,6 +42,45 @@ public:
 	}
 };
 
+class Colour {
+	float r;
+	float g;
+	float b;
+	int type; // 0 - Diff, 1 - Spec, 2 - Emi, 3 - Amb
+
+public:
+	Colour() {
+		r = 0;
+		g = 0;
+		b = 0;
+		type = -1;
+	}
+	void set_rgb(float r1, float g1, float b1) {
+		r = r1;
+		g = g1;
+		b = b1;
+	}
+	void set_type(int t) {
+		type = t;
+	}
+
+	float getR() {
+		return r;
+	}
+
+	float getG() {
+		return g;
+	}
+
+	float getB() {
+		return b;
+	}
+
+	float getType() {
+		return type;
+	}
+
+};
 
 /**
 Classe que guarda a lista de tri‰ngulos que comp›em uma figura
@@ -51,6 +90,7 @@ class Figure {
 	vector<Point> normals;
 	vector<Point> texture;
 	string texPath;
+	vector<Colour> colours;
 
 public:
 
@@ -87,6 +127,14 @@ public:
 
 	string getTexPath() {
 		return texPath;
+	}
+
+	void set_colours(std::vector<Colour> clrs) {
+		colours = clrs;
+	}
+
+	std::vector<Colour> getColours() {
+		return colours;
 	}
 
 };

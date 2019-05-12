@@ -37,6 +37,7 @@ void planeHandler(double size, char* destFile){
 
     string s = "";
 	string n = "";
+	string t = "";
 
     string p1 = to_string(x2) + ",0," + to_string(z2) + "\n";
     string p2 = to_string(x2) + ",0," + to_string(z1) + "\n";
@@ -61,16 +62,17 @@ void planeHandler(double size, char* destFile){
 
 	s.append("\n" + n);
 
-
-
 	// textura
-	s.append("\n0,0\n");
-	s.append("1,0\n");
-	s.append("1,1\n");
-	s.append("0,0\n");
-	s.append("1,1\n");
-	s.append("1,0\n");
+
+	t.append("0,0\n");
+	t.append("0,1\n");
+	t.append("1,1\n");
+	t.append("0,0\n");
+	t.append("1,1\n");
+	t.append("1,0\n");
     
+	s.append("\n" + t);
+
 	fileWriter(destFile, s);
 }
 
@@ -268,6 +270,7 @@ string computeNormalsSphere(string s, double x1, double x2, double x3, double x4
 void sphereHandler(double raio, int slices, int stacks, char* destFile){
 	string s = "";
 	string n = "";
+	string t = "";
 	double a = 0;
 	double stepSide = 2 * M_PI / slices;
 	double stepUp = M_PI / stacks;
@@ -291,6 +294,11 @@ void sphereHandler(double raio, int slices, int stacks, char* destFile){
             double z2 = raio*sin(b + stepUp)*cos(a);
             double z3 = raio*sin(b + stepUp)*cos(a + stepSide);
             double z4 = raio*sin(b)*cos(a + stepSide);
+
+			double tx1 = i * sizeW;
+			double tx2 = (i + 1) * sizeW;
+			double ty1 = 1 - j * sizeH;
+			double ty2 = 1 - (j + 1) * sizeH;
             
             string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
             string p2 = to_string(x2) + "," + to_string(y2) + "," + to_string(z2) + "\n";
@@ -308,42 +316,23 @@ void sphereHandler(double raio, int slices, int stacks, char* destFile){
 
 			n = computeNormalsSphere(n, x1, x2, x3, x4, y1, y2, z1, z2, z3, z4);
 
+			t.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+			t.append(to_string(tx1) + "," + to_string(ty2) + "\n");
+			t.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+
+			t.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+			t.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+			t.append(to_string(tx2) + "," + to_string(ty1) + "\n");
+
 			
 		}
 	}
 
 	s.append("\n" + n);
-	// textura
-
-	a = 0;
-	b = 0;
-
-	s.append("\n");
-
-	for (int i = 0; i < slices; i++) {
-		for (int j = 0; j < stacks; j++) {
-
-			double tx1, tx2, ty1, ty2;
-
-			tx1 = i * sizeW;
-			tx2 = (i+1) * sizeW;
-
-			// para dividir em parte de cima e baixo??
-			ty1 = 1 - j * sizeH;
-			ty2 = 1 - (j + 1) * sizeH;
-					
-			s.append(to_string(tx1) + "," + to_string(ty1) + "\n");
-			s.append(to_string(tx1) + "," + to_string(ty2) + "\n");
-			s.append(to_string(tx2) + "," + to_string(ty2) + "\n");
-
-			s.append(to_string(tx1) + "," + to_string(ty1) + "\n");
-			s.append(to_string(tx2) + "," + to_string(ty2) + "\n");
-			s.append(to_string(tx2) + "," + to_string(ty1) + "\n");
-		}
-	}
+	s.append("\n" + t);
+	
 
 	fileWriter(destFile, s);
-
 }
 
 
@@ -473,8 +462,10 @@ void coneHandler(double raio, double altura, int slices, int stacks, char* destF
 void ringHandler(double r, double R, int slices, char* destFile) {
 	string s = "";
 	string n = "";
+	string t = "";
 	double a = 0;
 	double step = 2 * M_PI / slices;
+	float size = (float)1 / slices;
 
 	for (int i = 0; i < slices; i++, a+=step) {
 		string x1 = to_string(r * cos(a));
@@ -485,6 +476,11 @@ void ringHandler(double r, double R, int slices, char* destFile) {
 		string z3 = to_string(R * sin(a));
 		string x4 = to_string((R * cos(a + step)));
 		string z4 = to_string(R * sin(a + step));
+
+		string tx1 = to_string(i * size);
+		string tx2 = to_string((i + 1) * size);
+		string ty1 = to_string(0);
+		string ty2 = to_string(1);
 
 		// Draw top
 		s.append(x2 + ",0," + z2 + "\n");
@@ -505,6 +501,17 @@ void ringHandler(double r, double R, int slices, char* destFile) {
 		n.append("0,1,0");
 		n.append("0,1,0");
 
+		// texturas
+
+		t.append(tx2 + "," + ty2 + "\n");
+		t.append(tx1 + "," + ty2 + "\n");
+		t.append(tx1 + "," + ty1 + "\n");
+
+		t.append(tx1 + "," + ty1 + "\n");
+		t.append(tx2 + "," + ty1 + "\n");
+		t.append(tx2 + "," + ty2 + "\n");
+
+
 		// Draw bottom
 		s.append(x1 + ",0," + z1 + "\n");
 		s.append(x2 + ",0," + z2 + "\n");
@@ -523,41 +530,22 @@ void ringHandler(double r, double R, int slices, char* destFile) {
 		n.append("0,-1,0");
 		n.append("0,-1,0");
 		n.append("0,-1,0");
+
+		// texturas
+
+		t.append(tx1 + "," + ty2 + "\n");
+		t.append(tx2 + "," + ty2 + "\n");
+		t.append(tx1 + "," + ty1 + "\n");
+
+		t.append(tx1 + "," + ty1 + "\n");
+		t.append(tx2 + "," + ty2 + "\n");
+		t.append(tx2 + "," + ty1 + "\n");
+
+
 	}
 	
 	s.append("\n" + n);
-
-	// textura
-
-	s.append("\n");
-
-	float size = (float)1 / slices;
-
-	for (int i = 0; i < slices; i++) {
-		string tx1 = to_string(i * size);
-		string tx2 = to_string((i + 1) * size);
-		string ty1 = to_string(0);
-		string ty2 = to_string(1);
-
-		// top
-		s.append(tx2 + "," + ty2 + "\n");
-		s.append(tx1 + "," + ty2 + "\n");
-		s.append(tx1 + "," + ty1 + "\n");
-
-		s.append(tx1 + "," + ty1 + "\n");
-		s.append(tx2 + "," + ty1 + "\n");
-		s.append(tx2 + "," + ty2 + "\n");
-
-		// bottom
-		s.append(tx1 + "," + ty2 + "\n");
-		s.append(tx2 + "," + ty2 + "\n");
-		s.append(tx1 + "," + ty1 + "\n");
-
-		s.append(tx1 + "," + ty1 + "\n");
-		s.append(tx2 + "," + ty2 + "\n");
-		s.append(tx2 + "," + ty1 + "\n");
-		
-	}
+	s.append("\n" + t);
 
 
 	fileWriter(destFile, s);

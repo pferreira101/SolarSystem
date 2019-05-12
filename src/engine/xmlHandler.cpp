@@ -159,40 +159,51 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 			string fname(fileName);
 			string path = cur_dir+fname;
 
-			/*
-
-			// PODE TER MAIS QUE UM TIPO AO MM TEMPO (DIFF/SPEC/AMB/EMI) ??
-
 			float r = 0;
 			float g = 0;
 			float b = 0;
 			int diff, spec, emi, amb;
+			vector<Colour> colours;
 
 			diff = model->QueryFloatAttribute("diffR",&r);
 			if (diff != XML_NO_ATTRIBUTE){
 				model->QueryFloatAttribute("diffG",&g);
 				model->QueryFloatAttribute("diffB",&b);
+				Colour colour;
+				colour.set_rgb(r, g, b);
+				colour.set_type(0);
+				colours.push_back(colour);
 			}
 
-			spec = model->QueryFloatAttribute("specR",%r);
+			spec = model->QueryFloatAttribute("specR",&r);
 			if (spec != XML_NO_ATTRIBUTE){
 				model->QueryFloatAttribute("specG",&g);
 				model->QueryFloatAttribute("specB",&b);
+				Colour colour;
+				colour.set_rgb(r, g, b);
+				colour.set_type(1);
+				colours.push_back(colour);
 			}
 
 			emi = model->QueryFloatAttribute("emiR",&r);
 			if (emi != XML_NO_ATTRIBUTE) {
-				model->QueryFloatAttrubute("emiG",&g);
+				model->QueryFloatAttribute("emiG",&g);
 				model->QueryFloatAttribute("emiB",&b);
+				Colour colour;
+				colour.set_rgb(r, g, b);
+				colour.set_type(2);
+				colours.push_back(colour);
 			}
 
 			amb = model->QueryFloatAttribute("ambR",&r);
 			if (amb != XML_NO_ATTRIBUTE) {
 				model->QueryFloatAttribute("ambG",&g);
 				model->QueryFloatAttribute("ambB",&b);
+				Colour colour;
+				colour.set_rgb(r, g, b);
+				colour.set_type(3);
+				colours.push_back(colour);
 			}
-
-			*/
 
 			const char* textureFile = nullptr;
 			textureFile = model->Attribute("texture");
@@ -206,6 +217,8 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 			}
 
 			else f = getFigure(path, "");
+
+			f.set_colours(colours);
 
 			(*fig).push_back(f);
 

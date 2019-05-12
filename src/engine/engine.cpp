@@ -181,7 +181,13 @@ void drawFigure(Figure f, int f_index) {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	else {
-		//glColor3f(0.3, 0.3, 0.53);
+		for (Colour g : f.getColours()) {
+			float colour[4] = { g.getR(), g.getG(), g.getR(),1 };
+			if (g.getType()==0) glMaterialfv(GL_FRONT, GL_DIFFUSE, colour);
+			else if (g.getType()==1) glMaterialfv(GL_FRONT, GL_SPECULAR, colour);
+			else if (g.getType()==2) glMaterialfv(GL_FRONT, GL_EMISSION, colour);
+			else if (g.getType()==3) glMaterialfv(GL_FRONT, GL_AMBIENT, colour);
+		}
 		glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
 	}
 	
@@ -287,8 +293,8 @@ void renderScene(void) {
 
 	prepareLights();
 
-	float white[4] = { 1,1,1,1 };
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+	//float white[4] = { 1,1,1,1 };
+	//glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
 
 	glColor3b(0, 5, 20);
 	
