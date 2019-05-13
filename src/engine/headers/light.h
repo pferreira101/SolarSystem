@@ -3,6 +3,9 @@
 
 #include <string>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 class Light {
 	
 
@@ -101,4 +104,5 @@ public:
 	}
 };
 
+#pragma GCC diagnostic pop
 #endif

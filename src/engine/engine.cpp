@@ -1,12 +1,13 @@
 ﻿#include <stdlib.h>
 #ifdef __APPLE__
 #include <GLUT/glut.h>
+#include </usr/local/Cellar/devil/1.8.0_1/include/IL/il.h>
 #else
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <IL/il.h>
 #endif
 
-#include <IL/il.h>
 
 #include <stdio.h>
 #include <iostream>

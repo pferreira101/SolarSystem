@@ -35,12 +35,15 @@ else (WIN32)
 	include_directories(${GLUT_INCLUDE_DIR})
 	link_directories(${GLUT_LIBRARY_DIRS})
 	add_definitions(${GLUT_DEFINITIONS})
-	
 	if (NOT APPLE)
 		find_package(GLEW REQUIRED)
 		include_directories(${GLEW_INCLUDE_DIRS})
 		link_libraries(${GLEW_LIBRARIES})
 	endif(NOT APPLE)
+	
+	find_package(DevIL REQUIRED)
+	link_libraries(${IL_LIBRARIES} )
+	include_directories(ยง{IL_INCLUDE_DIR})
 	
 	if(NOT GLUT_FOUND)
 	   message(ERROR ": GLUT not found!")
@@ -81,7 +84,6 @@ else (WIN32)
 		engine 
 		${OPENGL_LIBRARIES} 
 		${GLUT_LIBRARY} 
-		${IL_LIBRARIES}
 	)
 
 endif(WIN32)

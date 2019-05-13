@@ -29,11 +29,11 @@ int fileWriter(string file, string content) {
 Função responsável por calcular os pontos dos dois triângulos que compõem
 uma figura do tipo 'plane'
 */
-void planeHandler(double size, char* destFile){
-    double x1 = size/2;
-    double x2 = -1*x1;
-    double z1 = size/2;
-    double z2 = -1*z1;
+void planeHandler(float size, char* destFile){
+    float x1 = size/2;
+    float x2 = -1*x1;
+    float z1 = size/2;
+    float z2 = -1*z1;
 
     string s = "";
 	string n = "";
@@ -80,13 +80,13 @@ void planeHandler(double size, char* destFile){
  Função responsável por calcular os pontos dos triângulos que compõem
  uma figura do tipo 'box', centrada na origem
  */
-void boxHandler(double x, double y, double z, int d, char* destFile){
+void boxHandler(float x, float y, float z, int d, char* destFile){
 	string s="";
 	string n = "";
-	double divY = (double) y / d;
-    double divZ = (double) z / d;
-    double divX = (double) x / d;
-    double x1, y1, z1, x2, y2, z2;
+	float divY = (float) y / d;
+    float divZ = (float) z / d;
+    float divX = (float) x / d;
+    float x1, y1, z1, x2, y2, z2;
 
     
     //pontos da base e do topo (diferem no valor y) (faces paralelas ao plano xOz)
@@ -241,7 +241,7 @@ void boxHandler(double x, double y, double z, int d, char* destFile){
 	fileWriter(destFile, s);
 }
 
-string computeNormalsSphere(string s, double x1, double x2, double x3, double x4, double y1, double y2, double z1, double z2, double z3, double z4) {
+string computeNormalsSphere(string s, float x1, float x2, float x3, float x4, float y1, float y2, float z1, float z2, float z3, float z4) {
 	string n = s;
 	
 	float n1[3] = { x1,y1,z1 };
@@ -267,14 +267,14 @@ string computeNormalsSphere(string s, double x1, double x2, double x3, double x4
  Função responsável por os pontos dos triângulos que compõem uma figura do tipo 'sphere', centrada
  na origem
  */
-void sphereHandler(double raio, int slices, int stacks, char* destFile){
+void sphereHandler(float raio, int slices, int stacks, char* destFile){
 	string s = "";
 	string n = "";
 	string t = "";
-	double a = 0;
-	double stepSide = 2 * M_PI / slices;
-	double stepUp = M_PI / stacks;
-	double b = 0;
+	float a = 0;
+	float stepSide = 2 * M_PI / slices;
+	float stepUp = M_PI / stacks;
+	float b = 0;
 
 	float sizeW = (float)1 / slices;
 	float sizeH = (float)1 / stacks;
@@ -284,21 +284,21 @@ void sphereHandler(double raio, int slices, int stacks, char* destFile){
 		for (int j = 0; j < stacks; j++){
 			b = j * stepUp;
             
-            double x1 = raio*sin(b)*sin(a);
-            double x2 = raio*sin(b + stepUp)*sin(a);
-            double x3 = raio*sin(b + stepUp)*sin(a + stepSide);
-            double x4 = raio*sin(b)*sin(a + stepSide);
-            double y1 = raio*cos(b);
-            double y2 = raio*cos(b + stepUp);
-            double z1 = raio*sin(b)*cos(a);
-            double z2 = raio*sin(b + stepUp)*cos(a);
-            double z3 = raio*sin(b + stepUp)*cos(a + stepSide);
-            double z4 = raio*sin(b)*cos(a + stepSide);
+            float x1 = raio*sin(b)*sin(a);
+            float x2 = raio*sin(b + stepUp)*sin(a);
+            float x3 = raio*sin(b + stepUp)*sin(a + stepSide);
+            float x4 = raio*sin(b)*sin(a + stepSide);
+            float y1 = raio*cos(b);
+            float y2 = raio*cos(b + stepUp);
+            float z1 = raio*sin(b)*cos(a);
+            float z2 = raio*sin(b + stepUp)*cos(a);
+            float z3 = raio*sin(b + stepUp)*cos(a + stepSide);
+            float z4 = raio*sin(b)*cos(a + stepSide);
 
-			double tx1 = i * sizeW;
-			double tx2 = (i + 1) * sizeW;
-			double ty1 = 1 - j * sizeH;
-			double ty2 = 1 - (j + 1) * sizeH;
+			float tx1 = i * sizeW;
+			float tx2 = (i + 1) * sizeW;
+			float ty1 = 1 - j * sizeH;
+			float ty2 = 1 - (j + 1) * sizeH;
             
             string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
             string p2 = to_string(x2) + "," + to_string(y2) + "," + to_string(z2) + "\n";
@@ -343,27 +343,27 @@ void sphereHandler(double raio, int slices, int stacks, char* destFile){
  Função auxiliar ao desenho de uma figura do tipo 'cone'. Calcula os pontos
  dos triângulos que compõem uma slice do cone.
  */
-string buildSlice(int stacks, double r, double h, string s, double a, double stepSide, double hips, string* normals) {
+string buildSlice(int stacks, float r, float h, string s, float a, float stepSide, float hips, string* normals) {
 	
-	double nX1, nZ1, nX2, nZ2;
-	double stepUp = (double)(h / stacks);
-	double stepInside = sqrt((hips*hips) - (stepUp*stepUp));
-	double height = 0;
+	float nX1, nZ1, nX2, nZ2;
+	float stepUp = (float)(h / stacks);
+	float stepInside = sqrt((hips*hips) - (stepUp*stepUp));
+	float height = 0;
     string p1;
     string p2;
     string p3;
     string p4;
     
-	double x1 = r * cos(a);
-	double x2 = (r - stepInside)*cos(a);
-	double x3 = (r - stepInside)*cos(a + stepSide);
-	double x4 = r * cos(a + stepSide);
-	double y1 = height;
-	double y2 = height + stepUp;
-	double z1 = r * sin(a);
-	double z2 = (r - stepInside)*sin(a);
-	double z3 = (r - stepInside)*sin(a + stepSide);
-	double z4 = r * sin(a + stepSide);
+	float x1 = r * cos(a);
+	float x2 = (r - stepInside)*cos(a);
+	float x3 = (r - stepInside)*cos(a + stepSide);
+	float x4 = r * cos(a + stepSide);
+	float y1 = height;
+	float y2 = height + stepUp;
+	float z1 = r * sin(a);
+	float z2 = (r - stepInside)*sin(a);
+	float z3 = (r - stepInside)*sin(a + stepSide);
+	float z4 = r * sin(a + stepSide);
 
 
 	for (int i = 0; i < stacks - 1; i++) {
@@ -425,12 +425,12 @@ string buildSlice(int stacks, double r, double h, string s, double a, double ste
 /**
  Função responsável por calcular os pontos que formam uma figura do tipo 'cone'.
  */
-void coneHandler(double raio, double altura, int slices, int stacks, char* destFile){
+void coneHandler(float raio, float altura, int slices, int stacks, char* destFile){
 	string s;
 	string n;
-	double a = 0;
-	double step = 2 * M_PI / slices;
-	double hip = sqrt((raio*raio) + (altura*altura));
+	float a = 0;
+	float step = 2 * M_PI / slices;
+	float hip = sqrt((raio*raio) + (altura*altura));
     
 	for (int i = 0; i < slices; i++) {
 		string x1 = to_string(raio*cos(a));
@@ -459,12 +459,12 @@ void coneHandler(double raio, double altura, int slices, int stacks, char* destF
 /**
  Função responsável por calcular os pontos que formam uma figura do tipo 'ring'.
  */
-void ringHandler(double r, double R, int slices, char* destFile) {
+void ringHandler(float r, float R, int slices, char* destFile) {
 	string s = "";
 	string n = "";
 	string t = "";
-	double a = 0;
-	double step = 2 * M_PI / slices;
+	float a = 0;
+	float step = 2 * M_PI / slices;
 	float size = (float)1 / slices;
 
 	for (int i = 0; i < slices; i++, a+=step) {

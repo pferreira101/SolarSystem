@@ -134,7 +134,7 @@ public:
 
 		glMultMatrixf(m);
 		
-		delete pts.first;
+		delete pts.first; 
 		delete pts.second;
 	}
 
