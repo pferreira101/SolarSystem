@@ -266,7 +266,6 @@ void renderGroup(Group g) {
 		//glBindTexture(GL_TEXTURE_2D, 0);
 
 		++findex; 
-		printf("%d `**************************** \n",  findex);
 	}
 	for (Group g : subGroups) {
 		renderGroup(g);
@@ -520,7 +519,6 @@ int main(int argc, char **argv) {
 	}
 
 	if (readXML(argv[1], &groups, &lights) == XML_SUCCESS){
-		printf("TAMANHO LUZES = %d\n", lights.size());
 		// init GLUT and the window
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -549,7 +547,6 @@ int main(int argc, char **argv) {
 			total_n_figures += g.getNumFigures();
 		}
 		
-		printf("%d\n", total_n_figures);
 
 		prepareAllFigures(total_n_figures); 
 

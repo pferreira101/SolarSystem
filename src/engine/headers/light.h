@@ -8,19 +8,19 @@
 
 class Light {
 	
-
-
 public:
 	float* pos;
 	float* diff;
 	float* amb;
+	float* spec;
 
 
 
-	Light(float* p, float* d, float* a) {
+	Light(float* p, float* d, float* a, float* s) {
 		pos = p;
 		diff = d;
 		amb = a;
+		spec = s;
 	}
 
 	virtual void turnOn(GLenum) {}
@@ -33,7 +33,7 @@ public:
 class LightDirectional : public Light {
 
 public:
-	LightDirectional(float* p, float* d, float* a) : Light(p, d, a) {
+	LightDirectional(float* pos, float* diff, float* amb, float* spec) : Light(pos, diff, amb, spec) {
 		
 	}
 	
@@ -44,6 +44,7 @@ public:
 		glLightfv(light, GL_POSITION, pos);
 		glLightfv(light, GL_AMBIENT, amb);
 		glLightfv(light, GL_DIFFUSE, diff);
+		glLightfv(light, GL_SPECULAR, spec);
 	}
 };
 
@@ -53,7 +54,7 @@ class LightPoint : public Light {
 
 
 public:
-	LightPoint(float* p, float* d, float* a, float at) : Light(p, d, a) {
+	LightPoint(float* pos, float* diff, float* amb, float* spec, float at) : Light(pos, diff, amb, spec) {
 		attenuation = at; // at é o fator, aplicar formula depois
 	}
 
@@ -62,7 +63,9 @@ public:
 		glLightfv(light, GL_POSITION, pos);
 		glLightfv(light, GL_AMBIENT, amb);
 		glLightfv(light, GL_DIFFUSE, diff);
-		//glLightfv(light, GL_QUADRATIC_ATTENUATION, &attenuation);
+		glLightfv(light, GL_SPECULAR, spec);
+
+		glLightfv(light, GL_LINEAR_ATTENUATION, &attenuation);
 	}
 
 	void toString() {
@@ -80,7 +83,7 @@ class LightSpot : public Light {
 	float cutoff_angle, spot_exponent;
 
 public:
-	LightSpot(float* p, float* d, float* a, float* dir, float angle, float exp) : Light(p, d, a) {
+	LightSpot(float* pos, float* diff, float* amb, float* spec, float* dir, float angle, float exp) : Light(pos, diff, amb, spec) {
 		spot_dir = dir;
 		cutoff_angle = angle;
 		spot_exponent = exp;
@@ -91,6 +94,8 @@ public:
 		glLightfv(light, GL_POSITION, pos);
 		glLightfv(light, GL_AMBIENT, amb);
 		glLightfv(light, GL_DIFFUSE, diff);
+		glLightfv(light, GL_SPECULAR, spec);
+
 		glLightfv(light, GL_SPOT_DIRECTION, spot_dir);
 		//glLightfv(light, GL_SPOT_CUTOFF, &cutoff_angle);
 		//glLightfv(light, GL_SPOT_EXPONENT, &spot_exponent);

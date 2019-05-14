@@ -234,48 +234,65 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 
 Light* readLight(XMLElement* light_element) {
 	string type = light_element->Attribute("type");
+
 	float *pos = (float*)malloc(sizeof(float) * 4); 
+	pos[0] = pos[1] = pos[2] = pos[3] = 0.0f;
+
 	float *diff = (float*)malloc(sizeof(float) * 4); 
 	diff[0] = diff[1] = diff[2] = diff[3] = 1.0f;
-	float *amb = (float*)malloc(sizeof(float) * 4);
-	amb[0] = amb[1] = amb[2] = amb[3] = 0.0f;
-
-	pos[0] = light_element->FloatAttribute("posX");
-	pos[1] = light_element->FloatAttribute("posY");
-	pos[2] = light_element->FloatAttribute("posZ");
-	pos[3] = 0;
-
-	/*
 	
-	restantes comuns (diff, amb) color??
+	float *amb = (float*)malloc(sizeof(float) * 4);
+	amb[0] = amb[1] = amb[2] = 0.4f; amb[3] = 1.0f;
 
-	*/
+	float *spec = (float*)malloc(sizeof(float) * 4);
+	spec[0] = spec[1] = spec[2] = 0.4f; spec[3] = 1.0f;
+
+
+	light_element->QueryFloatAttribute("posX", &pos[0]);
+	light_element->QueryFloatAttribute("posY", &pos[1]);	
+	light_element->QueryFloatAttribute("posZ", &pos[2]);
+	pos[3] = 1;
+
+	light_element->QueryFloatAttribute("diffR", &diff[0]);
+	light_element->QueryFloatAttribute("diffG", &diff[1]);	
+	light_element->QueryFloatAttribute("diffB", &diff[2]);
+
+	light_element->QueryFloatAttribute("ambR", &amb[0]);
+	light_element->QueryFloatAttribute("ambG", &amb[1]);
+	light_element->QueryFloatAttribute("ambB", &amb[2]);
+
+	light_element->QueryFloatAttribute("specR", &spec[0]);
+	light_element->QueryFloatAttribute("specG", &spec[1]);
+	light_element->QueryFloatAttribute("specB", &spec[2]);
+
 
 	if (type.compare("DIRECTIONAL") == 0) {
-		//pos[3] = 0;
+		pos[3] = 0;
 
-		return new LightDirectional(pos, diff, amb);
+		return new LightDirectional(pos, diff, amb, spec);
 	}	
 	else if (type.compare("POINT") == 0) {
-		float attenuation;
+		float attenuation = 0;
 
-		attenuation = light_element->FloatAttribute("attenuation");
+		light_element->QueryFloatAttribute("attenuation", &attenuation);
 
-		return new LightPoint(pos, diff, amb, attenuation);
+		return new LightPoint(pos, diff, amb, spec, attenuation);
 	}
 	else if (type.compare("SPOT") == 0){
 		float *dir = (float*)malloc(sizeof(float) * 3);
-		float angle, exp;
+		dir[0] = dir[1] = dir[2] = 0;
 
-		dir[0] = light_element->FloatAttribute("dirX");
-		dir[1] = light_element->FloatAttribute("dirY");
-		dir[2] = light_element->FloatAttribute("dirZ");
+		float angle = 45, exp;
 
-		angle = light_element->FloatAttribute("angle");
-		exp = light_element->FloatAttribute("exponent");
+		light_element->QueryFloatAttribute("dirX", &dir[0]);
+		light_element->QueryFloatAttribute("dirY", &dir[1]);
+		light_element->QueryFloatAttribute("dirZ", &dir[2]);
+
+		light_element->QueryFloatAttribute("angle", &angle);
+		light_element->QueryFloatAttribute("exponent", &exp);
 
 
-		return new LightSpot(pos, diff, amb, dir, angle, exp);
+		return new LightSpot(pos, diff, amb, spec, dir, angle, exp);
 	}
 }
 

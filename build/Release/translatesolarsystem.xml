@@ -1,8 +1,13 @@
 <scene>
     <lights>
-		<light type="POINT" posX="0" posY="100" posZ="0" attenuation="0"/>
-		<light type="DIRECTIONAL" posX="0" posY="0" posZ="1000" />
-        <!--<light type="SPOT" posX="0" posY="0" posZ="2" dirX="0" dirY="0" dirZ="-1" angle="45" exponent="128"/>-->
+		<light type="POINT" posX="80" posY="0" posZ="0" attenuation="0"/>
+        <light type="POINT" posX="-80" posY="0" posZ="0" attenuation="0"/>
+        <light type="POINT" posX="0" posY="0" posZ="80" attenuation="0"/>
+        <light type="POINT" posX="0" posY="0" posZ="-80" attenuation="0"/>
+        <light type="POINT" posX="0" posY="80" posZ="0" attenuation="0"/>
+        <light type="POINT" posX="0" posY="-80" posZ="0" attenuation="0"/>
+		<!--<light type="DIRECTIONAL" posX="0" posY="0" posZ="1000" /> -->
+        <!--<light type="SPOT" posX="0" posY="0" posZ="2" dirX="0" dirY="0" dirZ="-1" angle="45" exponent="128"/> -->
     </lights>
     
     <group> <!-- Sol -->
