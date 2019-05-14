@@ -35,7 +35,7 @@ void planeHandler(float size, char* destFile){
     float z1 = size/2;
     float z2 = -1*z1;
 
-    string s = "";
+    string s = "0\n";
 	string n = "";
 	string t = "";
 
@@ -81,7 +81,7 @@ void planeHandler(float size, char* destFile){
  uma figura do tipo 'box', centrada na origem
  */
 void boxHandler(float x, float y, float z, int d, char* destFile){
-	string s="";
+	string s="1\n";
 	string n = "";
 	float divY = (float) y / d;
     float divZ = (float) z / d;
@@ -268,7 +268,7 @@ string computeNormalsSphere(string s, float x1, float x2, float x3, float x4, fl
  na origem
  */
 void sphereHandler(float raio, int slices, int stacks, char* destFile){
-	string s = "";
+	string s = "2\n";
 	string n = "";
 	string t = "";
 	float a = 0;
@@ -426,7 +426,7 @@ string buildSlice(int stacks, float r, float h, string s, float a, float stepSid
  Função responsável por calcular os pontos que formam uma figura do tipo 'cone'.
  */
 void coneHandler(float raio, float altura, int slices, int stacks, char* destFile){
-	string s;
+	string s = "3\n";
 	string n;
 	float a = 0;
 	float step = 2 * M_PI / slices;
@@ -439,7 +439,7 @@ void coneHandler(float raio, float altura, int slices, int stacks, char* destFil
 		string z2 = to_string(raio * sin(a + step));
         
 		a += step;
-		s = buildSlice(stacks, raio, altura, s, a, step, hip / stacks, &n);
+		s.append( buildSlice(stacks, raio, altura, s, a, step, hip / stacks, &n));
 		
         // desenhar a base do cone
         s.append("0,0,0\n");
@@ -460,7 +460,7 @@ void coneHandler(float raio, float altura, int slices, int stacks, char* destFil
  Função responsável por calcular os pontos que formam uma figura do tipo 'ring'.
  */
 void ringHandler(float r, float R, int slices, char* destFile) {
-	string s = "";
+	string s = "4\n";
 	string n = "";
 	string t = "";
 	float a = 0;

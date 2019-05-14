@@ -86,6 +86,8 @@ public:
 Classe que guarda a lista de tri‰ngulos que comp›em uma figura
 */
 class Figure {
+	int  figure_type; // 1 - sphere
+	float radius;
 	vector<Point> points;
 	vector<Point> normals;
 	vector<Point> texture;
@@ -93,13 +95,23 @@ class Figure {
 	vector<Colour> colours;
 
 public:
+	static const int FSPHERE = 2;
 
-	void set_values(std::vector<Point> pts, std::vector<Point> nms, std::vector<Point> txs, string path) {
+	void set_values(int type, std::vector<Point> pts, std::vector<Point> nms, std::vector<Point> txs, string path) {
+		figure_type = type;
 		points = pts;
 		normals = nms;
 		texture = txs;
 		texPath = path;
 	}
+
+	int getFigType(){
+		return figure_type;
+	}
+	
+	float getRadius(){
+        	return radius;
+    }
 
 	int getNumPoints() {
 		return points.size();

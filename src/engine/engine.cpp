@@ -163,10 +163,23 @@ void prepareAllFigures(int n_figures){
 
 }
 
+bool sphereInFrustum(float* center, float radius){
+	return true;
+}
+
+
 /**
  Função que, dada a posicao do buffer associado a uma determinada figura, efetua o seu desenho
 */
-void drawFigure(Figure f, int f_index) {
+void drawFigure(Figure f, int f_index, float* center, float scale) {
+	if(f.getFigType()== Figure::FSPHERE){ // se for uma esfera...
+		float radius = scale * f.getRadius();
+		printf("reconheceu esfera\n");
+   		if(!sphereInFrustum(center, radius))
+   			return ; // do not draw sphere
+	}
+	else printf("reconheceu outro solido\n");
+
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
 	glVertexPointer(3, GL_FLOAT, 0, 0);
 
@@ -250,7 +263,13 @@ void drawCoordinates() {
 //###################################### Render Scene ##########################################
 
 
-void renderGroup(Group g) {
+void renderGroup(Group g, float* center,  float scale) {
+	float current_scale = scale;
+	float* current_center = (float*) malloc(sizeof(float)*3);
+	current_center[0] = center[0];
+	current_center[1] = center[1];
+	current_center[2] = center[2];
+
 	vector<Operation*> ops = g.getOperations();
 	vector<Figure> figs = g.getFigures();
 	vector<Group> subGroups = g.getSubGroups();
@@ -259,16 +278,33 @@ void renderGroup(Group g) {
 
     for (Operation* o : ops) {
         o->transformacao();
+        if(Scale* s = dynamic_cast<Scale*>(o)) {
+   			current_scale *= s->getScale();
+		}
+		if(Translate* t = dynamic_cast<Translate*>(o)) {
+   			float* t_position = t->getPosition();
+   			current_center[0] += t_position[0];
+			current_center[1] += t_position[1];
+			current_center[2] += t_position[2];
+		}
+		if(DynamicTranslate* dt = dynamic_cast<DynamicTranslate*>(o)) {
+   			float* t_position = dt->getPosition();
+   			current_center[0] += t_position[0];
+			current_center[1] += t_position[1];
+			current_center[2] += t_position[2];
+		}
 	}
+	printf("Scaling = %f\n", current_scale);
+	printf("Center %f %f %f\n",current_center[0],current_center[1],current_center[2] );
 	for (Figure f : figs) {
 		//glBindTexture(GL_TEXTURE_2D, idTex[findex]);		
-		drawFigure(f, findex);
+		drawFigure(f, findex, current_center, current_scale);
 		//glBindTexture(GL_TEXTURE_2D, 0);
 
 		++findex; 
 	}
 	for (Group g : subGroups) {
-		renderGroup(g);
+		renderGroup(g, current_center, current_scale);
 	}
 
 	glPopMatrix();
@@ -299,8 +335,9 @@ void renderScene(void) {
 	glColor3b(0, 5, 20);
 	
 	findex=0;
+	float center[3] = {0.0f,0.0f,0.0f};
 	for (Group g : groups) {		
-		renderGroup(g);
+		renderGroup(g, center, 1);
 	}
 
 	// drawCoordinates();
