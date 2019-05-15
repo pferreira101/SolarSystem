@@ -201,7 +201,7 @@ void drawFigure(Figure f, int f_index, float* center, float scale) {
 	}
 	else {
 		for (Colour g : f.getColours()) {
-			float colour[4] = { g.getR(), g.getG(), g.getR(),1 };
+			float colour[4] = { g.getR(), g.getG(), g.getB(),1 };
 			if (g.getType()==0) glMaterialfv(GL_FRONT, GL_DIFFUSE, colour);
 			else if (g.getType()==1) glMaterialfv(GL_FRONT, GL_SPECULAR, colour);
 			else if (g.getType()==2) glMaterialfv(GL_FRONT, GL_EMISSION, colour);
@@ -210,6 +210,17 @@ void drawFigure(Figure f, int f_index, float* center, float scale) {
 		glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
 	}
 	
+	// RESET
+
+	float amb[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	float diff[4] = { 0.8f, 0.8f, 0.8f, 1.0f };
+	float spec[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float emi[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+	glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diff);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
+	glMaterialfv(GL_FRONT, GL_EMISSION, emi);
 
 }
 

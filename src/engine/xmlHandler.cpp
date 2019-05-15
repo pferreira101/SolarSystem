@@ -170,12 +170,12 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 			float b = 0;
 			int diff, spec, emi, amb;
 			vector<Colour> colours;
+			Colour colour;
 
 			diff = model->QueryFloatAttribute("diffR",&r);
 			if (diff != XML_NO_ATTRIBUTE){
 				model->QueryFloatAttribute("diffG",&g);
 				model->QueryFloatAttribute("diffB",&b);
-				Colour colour;
 				colour.set_rgb(r, g, b);
 				colour.set_type(0);
 				colours.push_back(colour);
@@ -185,7 +185,6 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 			if (spec != XML_NO_ATTRIBUTE){
 				model->QueryFloatAttribute("specG",&g);
 				model->QueryFloatAttribute("specB",&b);
-				Colour colour;
 				colour.set_rgb(r, g, b);
 				colour.set_type(1);
 				colours.push_back(colour);
@@ -195,7 +194,6 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 			if (emi != XML_NO_ATTRIBUTE) {
 				model->QueryFloatAttribute("emiG",&g);
 				model->QueryFloatAttribute("emiB",&b);
-				Colour colour;
 				colour.set_rgb(r, g, b);
 				colour.set_type(2);
 				colours.push_back(colour);
@@ -205,7 +203,6 @@ int readModels(XMLElement* models, vector<Figure>* fig){
 			if (amb != XML_NO_ATTRIBUTE) {
 				model->QueryFloatAttribute("ambG",&g);
 				model->QueryFloatAttribute("ambB",&b);
-				Colour colour;
 				colour.set_rgb(r, g, b);
 				colour.set_type(3);
 				colours.push_back(colour);
