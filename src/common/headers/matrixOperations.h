@@ -11,5 +11,6 @@ void multVectorMatrix(float *v, float *m, float *res);
 void multMatrixMatrix(float *m1, float *m2, float *res);
 void buildRotTransMatrix(float *x, float *y, float *z, float *pos, float *m);
 void multLVectorCVector(float *lv, float *cv, float *res);
+void normalizePlane(float *p);
 
 #endif

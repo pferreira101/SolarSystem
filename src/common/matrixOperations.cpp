@@ -1,5 +1,5 @@
 #include <matrixOperations.h>
-
+#include <stdio.h>
 void cross(float *a, float *b, float *res) {
 
 	res[0] = a[1] * b[2] - a[2] * b[1];
@@ -7,13 +7,22 @@ void cross(float *a, float *b, float *res) {
 	res[2] = a[0] * b[1] - a[1] * b[0];
 }
 
+void normalizePlane(float *p){
+	float l = length(p);
+	normalize(p);
+	if(l != 0) p[3] = p[3]/l; // divide d
+}
+
 
 void normalize(float *a) {
 
 	float l = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
-	a[0] = a[0] / l;
-	a[1] = a[1] / l;
-	a[2] = a[2] / l;
+
+	if(l != 0){
+		a[0] = a[0] / l;
+		a[1] = a[1] / l;
+		a[2] = a[2] / l;
+ 	} 
 }
 
 
