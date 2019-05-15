@@ -197,7 +197,7 @@
         <group>
             <rotate angle="-20" axisX="-1" />
             <models>       
-                 <model file="ring.3d" ambR="1" ambG="0" ambB="0"/>
+                 <model file="ring.3d" texture="saturnring.jpg"/>
             </models>
         </group>
     </group>
@@ -219,12 +219,16 @@
         <models>       
              <model file="sphere.3d" texture="uranus.jpg"/>
         </models>
+        <group>
+            <rotate angle="-90" axisX="-1" />
+            <models>       
+                 <model file="ring.3d" texture="uranusring.jpg"/>
+            </models>
+        </group>
     </group>
 
-    <!-- FALTA Neptuno -->
-
-    <group> <!-- Plutão -->
-        <translate time="22" >
+    <group> <!-- Neptuno -->
+        <translate time="24" >
 			<point X="499.69" Y="0" Z="0" />
 			<point X="353.33" Y="0" Z="353.33" />
 			<point X="0" Y="0" Z="499.69" />
@@ -235,9 +239,9 @@
 			<point X="0" Y="0" Z="-499.69" />
 			<point X="353.33" Y="0" Z="-353.33" />           
         </translate>
-        <scale X="10.40" Y="10.40" Z="10.40" />
+        <scale X="10.08" Y="10.08" Z="10.08" />
         <models>       
-             <model file="sphere.3d" texture="pluto.jpg"/>
+             <model file="sphere.3d" texture="neptune.jpg"/>
         </models>
     </group>
 </scene>
