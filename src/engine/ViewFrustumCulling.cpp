@@ -1,95 +1,77 @@
 #include <ViewFrustumCulling.h>
 #include <stdio.h>
 
-int sphereInFrustum(float* a, float* center, float radius){
-	/*
-	float near[4] = {a[8] + a[12], 
-					 a[9] + a[13],
-					 a[10] + a[14],
-					 a[11] + a[15]
-					};
+float** getFrustumPlanes(float* a){
+	float ** planes = (float **) malloc(sizeof(float*)*6);
+	for(int i=0; i<6; i++){
+		planes[i] = (float*) malloc(sizeof(float)*4);
+	}
 
-	float far[4] = {-a[8] + a[12], 
-					-a[9] + a[13],
-					-a[10] + a[14],
-					-a[11] + a[15]};
+	//near
+	planes[0][0] = a[2] + a[3];
+	planes[0][1] = a[6] + a[7];
+	planes[0][2] = a[10] + a[11];
+	planes[0][3] = a[14] + a[15];
 
-	float bottom[4] = {a[4] + a[12], 
-					   a[5] + a[13],
-					   a[6] + a[14],
-					   a[7] + a[15]};
+	//far
+	planes[1][0] = -a[2] + a[3];
+	planes[1][1] = -a[6] + a[7];
+	planes[1][2] = -a[10] + a[11];
+	planes[1][3] = -a[14] + a[15];
 
- 	float top[4] = {-a[4] + a[12], 
-					-a[5] + a[13],
-					-a[6] + a[14],
-					-a[7] + a[15]};
+	//bottom
+	planes[2][0] = a[1] + a[3];
+	planes[2][1] = a[5] + a[7];
+	planes[2][2] = a[9] + a[11];
+	planes[2][3] = a[13] + a[15];
 
-	float left[4] = {a[0] + a[12], 
-					 a[1] + a[13],
-					 a[2] + a[14],
-					 a[3] + a[15]};
+	//top
+	planes[3][0] = -a[1] + a[3];
+	planes[3][1] = -a[5] + a[7];
+	planes[3][2] = -a[9] + a[11];
+	planes[3][3] = -a[13] + a[15];
 
-	float right[4] = {-a[0] + a[12], 
-					 -a[1] + a[13],
-					 -a[2] + a[14],
-					 -a[3] + a[15]};
-	*/
+	//left
+	planes[4][0] = a[0] + a[3];
+	planes[4][1] = a[4] + a[7];
+	planes[4][2] = a[8] + a[11];
+	planes[4][3] = a[12] + a[15];
 
-	float near[4] = {a[2] + a[3], 
-					 a[6] + a[7],
-					 a[10] + a[11],
-					 a[14] + a[15]
-					};
+	//right
+	planes[5][0] = -a[0] + a[3];
+	planes[5][1] = -a[4] + a[7];
+	planes[5][2] = -a[8] + a[11];
+	planes[5][3] = -a[12] + a[15];
 
-	float far[4] = {-a[2] + a[3], 
-					-a[6] + a[7],
-					-a[10] + a[11],
-					-a[14] + a[15]};
-
-	float bottom[4] = {a[1] + a[3], 
-					   a[5] + a[7],
-					   a[9] + a[11],
-					   a[13] + a[15]};
-
- 	float top[4] = {-a[1] + a[3], 
-					-a[5] + a[7],
-					-a[9] + a[11],
-					-a[13] + a[15]};
-
-	float left[4] = {a[0] + a[3], 
-					 a[4] + a[7],
-					 a[8] + a[11],
-					 a[12] + a[15]};
-
-	float right[4] = {-a[0] + a[3], 
-					 -a[4] + a[7],
-					 -a[8] + a[11],
-					 -a[12] + a[15]};	
 					 		 
 
-	printf("NEAR %f, %f, %f, %f,\n",near[0],near[1],near[2],near[3]);
-	printf("FAR %f, %f, %f, %f,\n",far[0],far[1],far[2],far[3]);
-	printf("BOTTOM %f, %f, %f, %f,\n",bottom[0],bottom[1],bottom[2],bottom[3]);
-	printf("TOP %f, %f, %f, %f,\n",top[0],top[1],top[2],top[3]);
-	printf("LEFT %f, %f, %f, %f,\n",left[0],left[1],left[2],left[3]);
-	printf("RIGHT %f, %f, %f, %f,\n",right[0],right[1],right[2],right[3]);
+	printf("NEAR %f, %f, %f, %f,\n",planes[0][1],planes[0][2],planes[0][3],planes[0][4]);
+	printf("FAR %f, %f, %f, %f,\n",planes[1][1],planes[1][2],planes[1][3],planes[1][4]);
+	printf("BOTTOM %f, %f, %f, %f,\n",planes[2][1],planes[2][2],planes[2][3],planes[2][4]);
+	printf("TOP %f, %f, %f, %f,\n",planes[3][1],planes[3][2],planes[3][3],planes[3][4]);
+	printf("LEFT %f, %f, %f, %f,\n",planes[4][1],planes[4][2],planes[4][3],planes[4][4]);
+	printf("RIGHT %f, %f, %f, %f,\n",planes[5][1],planes[5][2],planes[5][3],planes[5][4]);
 	
 	
-	normalizePlane(near);
-	normalizePlane(far);
-	normalizePlane(bottom);
-	normalizePlane(top);
-	normalizePlane(left);
-	normalizePlane(right);
-	
-	printf("NORMALIZED NEAR %f, %f, %f, %f,\n",near[0],near[1],near[2],near[3]);
-	printf("NORMALIZED FAR %f, %f, %f, %f,\n",far[0],far[1],far[2],far[3]);
-	printf("NORMALIZED BOTTOM %f, %f, %f, %f,\n",bottom[0],bottom[1],bottom[2],bottom[3]);
-	printf("NORMALIZED TOP %f, %f, %f, %f,\n",top[0],top[1],top[2],top[3]);
-	printf("NORMALIZED LEFT %f, %f, %f, %f,\n",left[0],left[1],left[2],left[3]);
-	printf("NORMALIZED RIGHT %f, %f, %f, %f,\n",right[0],right[1],right[2],right[3]);
+	normalizePlane(planes[0]);
+	normalizePlane(planes[1]);
+	normalizePlane(planes[2]);
+	normalizePlane(planes[3]);
+	normalizePlane(planes[4]);
+	normalizePlane(planes[5]);
 
-	float* planes[6] = {near, far, bottom, top, left, right};			
+	printf("NORMALIZED NEAR %f, %f, %f, %f,\n",planes[0][1],planes[0][2],planes[0][3],planes[0][4]);
+	printf("NORMALIZED FAR %f, %f, %f, %f,\n",planes[1][1],planes[1][2],planes[1][3],planes[1][4]);
+	printf("NORMALIZED BOTTOM %f, %f, %f, %f,\n",planes[2][1],planes[2][2],planes[2][3],planes[2][4]);
+	printf("NORMALIZED TOP %f, %f, %f, %f,\n",planes[3][1],planes[3][2],planes[3][3],planes[3][4]);
+	printf("NORMALIZED LEFT %f, %f, %f, %f,\n",planes[4][1],planes[4][2],planes[4][3],planes[4][4]);
+	printf("NORMALIZED RIGHT %f, %f, %f, %f,\n",planes[5][1],planes[5][2],planes[5][3],planes[5][4]);
+
+	return planes;		
+}
+
+int sphereInFrustum(float** planes, float* center, float radius){
+	
 	float dist;
 	int result = 1;
 	for(int i=0; i < 6; i++) {

@@ -169,20 +169,14 @@ void prepareAllFigures(int n_figures){
 /**
  Função que, dada a posicao do buffer associado a uma determinada figura, efetua o seu desenho
 */
-void drawFigure(Figure f, int f_index, float* mpMatrix, float* center, float scale) {
+void drawFigure(Figure f, int f_index, float** fPlanes, float* center, float scale) {
 	printf("A desenhar figura centrada em (%f, %f, %f) com scale %f\n", center[0],center[1],center[2],scale);
-	printf("MATRIX MP = [");
-	for(int i=0;i<16;i++){
-		printf(" %f,", mpMatrix[i]);
-		if(i == 3 || i == 7 || i == 11 ) printf("\n");
-	}
-	printf("]\n");
 	if(f.getFigType() == Figure::FSPHERE){ // se for uma esfera...
 		float radius = scale * f.getRadius();
 		printf("reconheceu esfera RAIO= %f, RAIO COM SCALE=%f \n",scale, scale); // meter raio na esfera
 
 		if(!cullingOFF){
-   			if(!sphereInFrustum(mpMatrix, center, scale))
+   			if(!sphereInFrustum(fPlanes, center, scale))
    				return ; // do not draw sphere
    		}
 	}
@@ -306,10 +300,26 @@ void renderGroup(Group g, float* center,  float scale) {
 
 	float * mp = computeMPMatrix();
 
+	printf("MATRIX MP = [");
+	for(int i=0;i<16;i++){
+		printf(" %f,", mp[i]);
+		if(i == 3 || i == 7 || i == 11 ) printf("\n");
+	}
+	printf("]\n");
+
+	float ** planes = getFrustumPlanes(mp);
+	free(mp);
+
 	for (Figure f : figs) {	
-		drawFigure(f, findex, mp, current_center, current_scale);
+		drawFigure(f, findex, planes, current_center, current_scale);
 		++findex; 
 	}
+	
+	for(int i=0; i<6;i++){
+		free(planes[i]);
+	}
+	free(planes);
+
 	for (Group g : subGroups) {
 		renderGroup(g, current_center, current_scale);
 	}
@@ -366,12 +376,11 @@ void renderScene(void) {
 //################# Cálculo matriz a utilizar para definir planos do frustum ###################
 
 float* computeMPMatrix(){
-	float m[16],p[16], res[16];
+	float * res = (float*) malloc(sizeof(float) * 16);
+	float m[16],p[16];
 
 	glGetFloatv(GL_PROJECTION_MATRIX,p);
 	glGetFloatv(GL_MODELVIEW_MATRIX,m);
-
-	//multMatrixMatrix(p, m,res); 
 
 	glPushMatrix();
 
