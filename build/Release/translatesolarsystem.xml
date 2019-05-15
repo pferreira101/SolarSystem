@@ -1,5 +1,6 @@
 <scene>
     <camera x="0" y="50" z="200"/>
+    
     <lights>
 		<light type="POINT" posX="41" posY="0" posZ="0" attenuation="0"/>
         <light type="POINT" posX="-41" posY="0" posZ="0" attenuation="0"/>
