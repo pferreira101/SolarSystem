@@ -15,7 +15,7 @@
     <group> <!-- Sol -->
         <scale X="60" Y="60" Z="60" />
         <models>        
-            <model file="sphere.3d" texture="sun.jpg"/>
+            <model file="sphere.3d" texture="sun.jpg" emiR="0.94" emiG="1" emiB="0"/>
         </models>
     </group>
     <group> <!-- Cometa -->
