@@ -24,9 +24,6 @@ public:
 	}
 
 	virtual void turnOn(GLenum) {}
-	virtual void toString() {}
-
-
 };
 
 
@@ -36,8 +33,6 @@ public:
 	LightDirectional(float* pos, float* diff, float* amb, float* spec) : Light(pos, diff, amb, spec) {
 		
 	}
-	
-
 
 	void turnOn(GLenum light) {
 
@@ -52,10 +47,9 @@ public:
 class LightPoint : public Light {
 	float attenuation;
 
-
 public:
 	LightPoint(float* pos, float* diff, float* amb, float* spec, float at) : Light(pos, diff, amb, spec) {
-		attenuation = at; // at é o fator, aplicar formula depois
+		attenuation = at;
 	}
 
 	void turnOn(GLenum light) {
@@ -67,14 +61,6 @@ public:
 
 		glLightfv(light, GL_LINEAR_ATTENUATION, &attenuation);
 	}
-
-	void toString() {
-		printf("POINT: \n");
-		printf("\t POS: (%f, %f, %f, %f) \n", pos[0], pos[1], pos[2], pos[3]);
-		printf("\t ATTENUATION: %f \n", attenuation);
-
-	}
-
 };
 
 
@@ -83,7 +69,8 @@ class LightSpot : public Light {
 	float cutoff_angle, spot_exponent;
 
 public:
-	LightSpot(float* pos, float* diff, float* amb, float* spec, float* dir, float angle, float exp) : Light(pos, diff, amb, spec) {
+	LightSpot(float* pos, float* diff, float* amb, 
+		      float* spec, float* dir, float angle, float exp) : Light(pos, diff, amb, spec) {
 		spot_dir = dir;
 		cutoff_angle = angle;
 		spot_exponent = exp;
@@ -97,15 +84,8 @@ public:
 		glLightfv(light, GL_SPECULAR, spec);
 
 		glLightfv(light, GL_SPOT_DIRECTION, spot_dir);
-		//glLightfv(light, GL_SPOT_CUTOFF, &cutoff_angle);
-		//glLightfv(light, GL_SPOT_EXPONENT, &spot_exponent);
-	}
-
-	void toString() {
-		printf("SPOT: \n");
-		printf("\t POS: (%f, %f, %f, %f) \n", pos[0], pos[1], pos[2], pos[3]);
-		printf("\t DIR: (%f, %f, %f) \n", spot_dir[0], spot_dir[1], spot_dir[2]);
-		printf("\t ANGLE: %f \n", cutoff_angle);
+		glLightfv(light, GL_SPOT_CUTOFF, &cutoff_angle);
+		glLightfv(light, GL_SPOT_EXPONENT, &spot_exponent);
 	}
 };
 

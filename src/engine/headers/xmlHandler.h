@@ -16,7 +16,7 @@
 using namespace std;
 using namespace tinyxml2;
 
-int readXML(const char *filename, vector<Group>* groups, vector<Light*>* lights);
+int readXML(const char *filename, vector<Group>* groups, vector<Light*>* lights, float* cam);
 int readGroup(XMLElement* element, vector<Figure> *fig, vector<Operation*>*ops, vector<Group> *subGroups);
 int readModels(XMLElement * models, vector<Figure>* fig);
 Light* readLight(XMLElement* light_element);
