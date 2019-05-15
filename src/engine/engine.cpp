@@ -178,9 +178,8 @@ void drawFigure(Figure f, int f_index, float* center, float scale) {
 		float radius = scale * f.getRadius();
 		printf("reconheceu esfera RAIO= %f, RAIO COM SCALE=%f \n",scale, scale); // meter raio na esfera
 
-		if(!cullingOFF){
-   			if(!sphereInFrustum(planes, center, scale))
-   				return ; // do not draw sphere
+		if(!cullingOFF && !sphereInFrustum(planes, center, scale)){
+   			return ; // do not draw sphere
    		}
 	}
 	else printf("reconheceu outro solido\n");
@@ -295,21 +294,23 @@ void renderGroup(Group g, float* center,  float scale) {
 
     for (Operation* o : ops) {
         o->transformacao();
-        if(Scale* s = dynamic_cast<Scale*>(o)) {
-   			current_scale *= s->getScale();
-		}
-		if(Translate* t = dynamic_cast<Translate*>(o)) {
-   			float* t_position = t->getPosition();
-   			current_center[0] += t_position[0];
-			current_center[1] += t_position[1];
-			current_center[2] += t_position[2];
-		}
-		if(DynamicTranslate* dt = dynamic_cast<DynamicTranslate*>(o)) {
-   			float* t_position = dt->getPosition();
-   			current_center[0] += t_position[0];
-			current_center[1] += t_position[1];
-			current_center[2] += t_position[2];
-		}
+		if (!cullingOFF) {
+			if (Scale* s = dynamic_cast<Scale*>(o)) {
+				current_scale *= s->getScale();
+			}
+			if (Translate* t = dynamic_cast<Translate*>(o)) {
+				float* t_position = t->getPosition();
+				current_center[0] += t_position[0];
+				current_center[1] += t_position[1];
+				current_center[2] += t_position[2];
+			}
+			if (DynamicTranslate* dt = dynamic_cast<DynamicTranslate*>(o)) {
+				float* t_position = dt->getPosition();
+				current_center[0] += t_position[0];
+				current_center[1] += t_position[1];
+				current_center[2] += t_position[2];
+			}
+		}       
 	}
 
 	for (Figure f : figs) {	
@@ -384,16 +385,19 @@ void renderScene(void) {
 
 	glColor3b(0, 5, 20);
 
-	float * mp = computeMPMatrix();
-	printf("MATRIX MP = [");
-	for(int i=0;i<16;i++){
-		printf(" %f,", mp[i]);
-		if(i == 3 || i == 7 || i == 11 ) printf("\n");
-	}
-	printf("]\n");
+	if (!cullingOFF) {
+		float * mp = computeMPMatrix();
+		printf("MATRIX MP = [");
+		for (int i = 0; i < 16; i++) {
+			printf(" %f,", mp[i]);
+			if (i == 3 || i == 7 || i == 11) printf("\n");
+		}
+		printf("]\n");
 
-	planes = getFrustumPlanes(mp);
-	free(mp);
+		planes = getFrustumPlanes(mp);
+		free(mp);
+	}
+	
 	
 	findex=0;
 	float center[3] = {0.0f,0.0f,0.0f};
@@ -401,10 +405,13 @@ void renderScene(void) {
 		renderGroup(g, center, 1);
 	}
 
-	for(int i=0; i<6;i++){
-		free(planes[i]);
+	if (!cullingOFF) {
+		for (int i = 0; i < 6; i++) {
+			free(planes[i]);
+		}
+		free(planes);
 	}
-	free(planes);
+	
 
 	// drawCoordinates();
 
