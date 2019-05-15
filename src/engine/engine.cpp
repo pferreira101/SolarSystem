@@ -372,8 +372,8 @@ float* computeMPMatrix(){
 	glGetFloatv(GL_PROJECTION_MATRIX,p);
 	glGetFloatv(GL_MODELVIEW_MATRIX,m);
 
-	multMatrixMatrix(p, m,res); 
-	/*
+	//multMatrixMatrix(p, m,res); 
+
 	glPushMatrix();
 
 	glLoadMatrixf(p);
@@ -381,7 +381,7 @@ float* computeMPMatrix(){
 	glGetFloatv(GL_MODELVIEW_MATRIX, res);
 
 	glPopMatrix();
-	*/
+
 
 	return res;
 }
