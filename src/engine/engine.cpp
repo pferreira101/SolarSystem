@@ -36,8 +36,6 @@
 using namespace std;
 
 
-
-
 void prepareLights();
 float* computeMPMatrix();
 
@@ -61,6 +59,8 @@ int alpha = 180, beta = 0, r = 50;
 int timebase = 0, frame = 0;
 int mode = 0;
 bool cullingOFF;
+float height = 800;
+float width = 800;
 //####################################### Variáveis globais ####################################
 
 /** 
@@ -313,6 +313,40 @@ void renderGroup(Group g, float* center,  float scale) {
 	glPopMatrix();
 }
 
+
+/* ###################### TEXTO ######################### */
+
+
+void renderText(float x, float y, void *font, string s) {
+	glWindowPos2d(x, y);
+	for (int i=0; s[i] != '\0'; i++) {
+		glutBitmapCharacter(font, s[i]);
+	}
+
+}
+
+void showInfo() {
+	glColor3f(1, 1, 1);
+
+	string mode_str = "Mode: ";
+	if (mode == 0) mode_str.append(" Fill");
+	else if (mode == 1) mode_str.append("Line");
+	else mode_str.append("Point");
+
+	string frustum_str = "Frustum: ";
+	if (cullingOFF == true) frustum_str.append("Off");
+	else frustum_str.append("On");
+
+	renderText(10, 24, GLUT_BITMAP_HELVETICA_12, mode_str);
+	renderText(10, 10, GLUT_BITMAP_HELVETICA_12, frustum_str);
+}
+
+
+
+
+/***************/
+
+
 void renderScene(void) {
 	float fps;
 	int time;
@@ -329,6 +363,8 @@ void renderScene(void) {
 	gluLookAt(cam[0], cam[1], cam[2],
 		Lx, Ly, Lz,
 		0.0f, 1.0f, 0.0f);
+
+	showInfo();
 
 	prepareLights();
 
@@ -592,6 +628,7 @@ int loadTexture(std::string s) {
 //########################################### MAIN #############################################
 
 
+
 int main(int argc, char **argv) {
 
 	if (argc == 1) {
@@ -604,7 +641,7 @@ int main(int argc, char **argv) {
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 		glutInitWindowPosition(100, 100);
-		glutInitWindowSize(800, 800);
+		glutInitWindowSize(height, width);
 		glutCreateWindow("solar-system");
 
 		// Required callback registry 
