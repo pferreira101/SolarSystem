@@ -16,14 +16,25 @@
 
 class Translate : public Operation {
     float x, y, z;
+    float position[3];
+
     
     public:
         Translate(double xx, double yy, double zz) {
 			x = xx;
 			y = yy;
 			z = zz;
+			position[0] = xx; position[1] = yy; position[2] = zz;
         }
-    
+
+        void print(){
+            printf("Translate - %f %f %f\n",x,y,z);
+    	}
+    	
+    	float* getPosition(){
+    		return position;
+    	}
+
         void transformacao(){
 
             glTranslatef(x, y, z);
@@ -37,6 +48,7 @@ class DynamicTranslate : public Operation {
 	vector<Point> points;
 	int n_points;
 	float vector_y[3] = {0,1,0};
+	float position[3];
 
 public:
 	DynamicTranslate(double t, vector<Point> pts) {
@@ -44,6 +56,14 @@ public:
 		points = pts;
 		n_points = pts.size();
 	}
+
+	void print(){
+            printf("DynamicTranslate - %f %f %f\n",position[0],position[1],position[2] );
+    }
+
+    float* getPosition(){
+    	return position;
+    }
 
 	void transformacao() {
 		drawCurve();
@@ -117,6 +137,8 @@ public:
 
 		Point pos = *pts.first;
 		float pos_aux[3] = {pos.getX(), pos.getY(), pos.getZ()};
+		// atualizar posicao para ser possivel saber onde estará o centro da figura
+		position[0] = pos.getX(); position[1] = pos.getY(); position[2] = pos.getZ();
 
 		Point deriv = *pts.second;
 		float deriv_aux[3] = {deriv.getX(), deriv.getY(), deriv.getZ()};

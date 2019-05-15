@@ -23,6 +23,7 @@
 #include <hash.h>
 #include <figure.h>
 #include <xmlHandler.h>
+#include <ViewFrustumCulling.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -38,6 +39,7 @@ using namespace std;
 
 
 void prepareLights();
+float* computeMPMatrix();
 
 #define _PI_ 3.14159
 GLuint vertexCount;
@@ -58,7 +60,7 @@ int startX, startY, tracking = 0;
 int alpha = 180, beta = 0, r = 50;
 int timebase = 0, frame = 0;
 int mode = 0;
-
+bool cullingOFF;
 //####################################### Variáveis globais ####################################
 
 
@@ -162,10 +164,30 @@ void prepareAllFigures(int n_figures){
 
 }
 
+
+
 /**
  Função que, dada a posicao do buffer associado a uma determinada figura, efetua o seu desenho
 */
-void drawFigure(Figure f, int f_index) {
+void drawFigure(Figure f, int f_index, float* mpMatrix, float* center, float scale) {
+	printf("A desenhar figura centrada em (%f, %f, %f) com scale %f\n", center[0],center[1],center[2],scale);
+	printf("MATRIX MP = [");
+	for(int i=0;i<16;i++){
+		printf(" %f,", mpMatrix[i]);
+		if(i == 3 || i == 7 || i == 11 ) printf("\n");
+	}
+	printf("]\n");
+	if(f.getFigType() == Figure::FSPHERE){ // se for uma esfera...
+		float radius = scale * f.getRadius();
+		printf("reconheceu esfera RAIO= %f, RAIO COM SCALE=%f \n",scale, scale); // meter raio na esfera
+
+		if(!cullingOFF){
+   			if(!sphereInFrustum(mpMatrix, center, scale))
+   				return ; // do not draw sphere
+   		}
+	}
+	else printf("reconheceu outro solido\n");
+
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
 	glVertexPointer(3, GL_FLOAT, 0, 0);
 
@@ -249,25 +271,47 @@ void drawCoordinates() {
 //###################################### Render Scene ##########################################
 
 
-void renderGroup(Group g) {
+void renderGroup(Group g, float* center,  float scale) {
+	float current_scale = scale;
+	float* current_center = (float*) malloc(sizeof(float)*3);
+	current_center[0] = center[0];
+	current_center[1] = center[1];
+	current_center[2] = center[2];
+
 	vector<Operation*> ops = g.getOperations();
 	vector<Figure> figs = g.getFigures();
 	vector<Group> subGroups = g.getSubGroups();
+
 
 	glPushMatrix();
 
     for (Operation* o : ops) {
         o->transformacao();
+        if(Scale* s = dynamic_cast<Scale*>(o)) {
+   			current_scale *= s->getScale();
+		}
+		if(Translate* t = dynamic_cast<Translate*>(o)) {
+   			float* t_position = t->getPosition();
+   			current_center[0] += t_position[0];
+			current_center[1] += t_position[1];
+			current_center[2] += t_position[2];
+		}
+		if(DynamicTranslate* dt = dynamic_cast<DynamicTranslate*>(o)) {
+   			float* t_position = dt->getPosition();
+   			current_center[0] += t_position[0];
+			current_center[1] += t_position[1];
+			current_center[2] += t_position[2];
+		}
 	}
-	for (Figure f : figs) {
-		//glBindTexture(GL_TEXTURE_2D, idTex[findex]);		
-		drawFigure(f, findex);
-		//glBindTexture(GL_TEXTURE_2D, 0);
 
+	float * mp = computeMPMatrix();
+
+	for (Figure f : figs) {	
+		drawFigure(f, findex, mp, current_center, current_scale);
 		++findex; 
 	}
 	for (Group g : subGroups) {
-		renderGroup(g);
+		renderGroup(g, current_center, current_scale);
 	}
 
 	glPopMatrix();
@@ -298,8 +342,9 @@ void renderScene(void) {
 	glColor3b(0, 5, 20);
 	
 	findex=0;
+	float center[3] = {0.0f,0.0f,0.0f};
 	for (Group g : groups) {		
-		renderGroup(g);
+		renderGroup(g, center, 1);
 	}
 
 	// drawCoordinates();
@@ -318,6 +363,28 @@ void renderScene(void) {
 	glutSwapBuffers();
 }
 
+//################# Cálculo matriz a utilizar para definir planos do frustum ###################
+
+float* computeMPMatrix(){
+	float m[16],p[16], res[16];
+
+	glGetFloatv(GL_PROJECTION_MATRIX,p);
+	glGetFloatv(GL_MODELVIEW_MATRIX,m);
+
+	multMatrixMatrix(p, m,res); 
+	/*
+	glPushMatrix();
+
+	glLoadMatrixf(p);
+	glMultMatrixf(m);
+	glGetFloatv(GL_MODELVIEW_MATRIX, res);
+
+	glPopMatrix();
+	*/
+
+	return res;
+}
+
 //############ Funções responsáveis pelo processamento de açoes do utilizador ##################
 
 void processKeys(unsigned char key, int xx, int yy) {
@@ -329,6 +396,10 @@ void processKeys(unsigned char key, int xx, int yy) {
 
 	float k;
 	float dx, dy, dz;
+
+	if( key == 'f'){
+		cullingOFF = !cullingOFF;
+	}
 	
 
 	if (key == 'w' || key == 's') {

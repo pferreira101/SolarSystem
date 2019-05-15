@@ -62,7 +62,7 @@ endif(NOT OPENGL_FOUND)
 
 include_directories(./engine/headers ./common ./common/headers)
 add_definitions(-std=c++11 -Wall)
-add_executable(engine engine/engine.cpp engine/tinyxml2.cpp common/hash.cpp engine/figureBuild.cpp engine/xmlHandler.cpp common/matrixOperations.cpp)
+add_executable(engine engine/engine.cpp engine/tinyxml2.cpp common/hash.cpp engine/figureBuild.cpp engine/xmlHandler.cpp common/matrixOperations.cpp engine/ViewFrustumCulling.cpp)
 add_executable(generator generator/generator.cpp common/hash.cpp common/matrixOperations.cpp)
 
 if  (WIN32)
