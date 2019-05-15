@@ -267,7 +267,7 @@ string computeNormalsSphere(string s, float x1, float x2, float x3, float x4, fl
  Função responsável por os pontos dos triângulos que compõem uma figura do tipo 'sphere', centrada
  na origem
  */
-void sphereHandler(float raio, int slices, int stacks, char* destFile){
+void sphereHandler(float raio, int slices, int stacks, int upsidedown, char* destFile){
 	string s = "2\n";
 	string n = "";
 	string t = "";
@@ -278,6 +278,7 @@ void sphereHandler(float raio, int slices, int stacks, char* destFile){
 
 	float sizeW = (float)1 / slices;
 	float sizeH = (float)1 / stacks;
+
 
 	for (int i = 0; i < slices; i++){
 		a = i * stepSide;
@@ -295,34 +296,61 @@ void sphereHandler(float raio, int slices, int stacks, char* destFile){
             float z3 = raio*sin(b + stepUp)*cos(a + stepSide);
             float z4 = raio*sin(b)*cos(a + stepSide);
 
-			float tx1 = i * sizeW;
-			float tx2 = (i + 1) * sizeW;
-			float ty1 = 1 - j * sizeH;
-			float ty2 = 1 - (j + 1) * sizeH;
-            
+		
             string p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
             string p2 = to_string(x2) + "," + to_string(y2) + "," + to_string(z2) + "\n";
             string p3 = to_string(x3) + "," + to_string(y2) + "," + to_string(z3) + "\n";
             string p4 = to_string(x4) + "," + to_string(y1) + "," + to_string(z4) + "\n";
-		
-			s.append(p1);
-			s.append(p2);
-			s.append(p3);
+			
+			float tx1 = i * sizeW;
+			float tx2 = (i + 1) * sizeW;
+			float ty1 = 1 - j * sizeH;
+			float ty2 = 1 - (j + 1) * sizeH;
+
+			if (!upsidedown) {
+				s.append(p1);
+				s.append(p2);
+				s.append(p3);
+
+
+				s.append(p1);
+				s.append(p3);
+				s.append(p4);
+
+				n = computeNormalsSphere(n, x1, x2, x3, x4, y1, y2, z1, z2, z3, z4);
+
+				t.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+				t.append(to_string(tx1) + "," + to_string(ty2) + "\n");
+				t.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+
+				t.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+				t.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+				t.append(to_string(tx2) + "," + to_string(ty1) + "\n");
+			}
+			else {
+				s.append(p1);
+				s.append(p3);
+				s.append(p2);
+
+				s.append(p1);
+				s.append(p4);
+				s.append(p3);
+
+				n = computeNormalsSphere(n, -x1, -x2, -x3, -x4, -y1, -y2, -z1, -z2, -z3, -z4);
+
+				t.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+				t.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+				t.append(to_string(tx1) + "," + to_string(ty2) + "\n");
+
+				t.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+				t.append(to_string(tx2) + "," + to_string(ty1) + "\n");
+				t.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+			}
+			
+			
+
 
 			
-			s.append(p1);
-			s.append(p3);
-            s.append(p4);
-
-			n = computeNormalsSphere(n, x1, x2, x3, x4, y1, y2, z1, z2, z3, z4);
-
-			t.append(to_string(tx1) + "," + to_string(ty1) + "\n");
-			t.append(to_string(tx1) + "," + to_string(ty2) + "\n");
-			t.append(to_string(tx2) + "," + to_string(ty2) + "\n");
-
-			t.append(to_string(tx1) + "," + to_string(ty1) + "\n");
-			t.append(to_string(tx2) + "," + to_string(ty2) + "\n");
-			t.append(to_string(tx2) + "," + to_string(ty1) + "\n");
 
 			
 		}
@@ -722,22 +750,22 @@ int patchHandler(char* patch_file, int tesselationLevel, char *dest_file) {
 void help() {
 	string s;
 	s.append("+---------------------------------------------------+\n" +
-		string("|                        HELP                       |\n") + // nao sei porque mas estava a dar erro nesta linha e assim com "string" nao da... tudo dentro do printf não dava tambem
-		"+---------------------------------------------------+\n" +
-		"| Primitive |               Parameters              |\n" +
-		"+-----------+---------------------------------------+\n" +
-		"| box       | edge output                           |\n" +
-		"+-----------+---------------------------------------+\n" +
-		"| plane     | x z [divisons] output                 |\n" +
-		"+-----------+---------------------------------------+\n" +
-		"| sphere    | radius slices stacks output           |\n" +
-		"+-----------+---------------------------------------+\n" +
-		"| cone      | radius height slices stacks output    |\n" +
-		"+-----------+---------------------------------------+\n" +
-		"| ring      | innerRadius outerRadius slices output |\n" +
-		"+-----------+---------------------------------------+\n" +
-		"| patch     | patchFile tesselation output          |\n" +
-		"+-----------+---------------------------------------+\n");
+		string("|                        HELP                        |\n") + // nao sei porque mas estava a dar erro nesta linha e assim com "string" nao da... tudo dentro do printf não dava tambem
+		"+----------------------------------------------------+\n" +
+		"| Primitive |               Parameters               |\n" +
+		"+-----------+----------------------------------------+\n" +
+		"| box       | edge output                            |\n" +
+		"+-----------+----------------------------------------+\n" +
+		"| plane     | x z [divisons] output                  |\n" +
+		"+-----------+----------------------------------------+\n" +
+		"| sphere    | radius slices stacks upsidedown output |\n" +
+		"+-----------+----------------------------------------+\n" +
+		"| cone      | radius height slices stacks output     |\n" +
+		"+-----------+----------------------------------------+\n" +
+		"| ring      | innerRadius outerRadius slices output  |\n" +
+		"+-----------+----------------------------------------+\n" +
+		"| patch     | patchFile tesselation output           |\n" +
+		"+-----------+----------------------------------------+\n");
 	printf("%s\n", s.c_str());
 }
 
@@ -767,7 +795,7 @@ int main(int argc, char** argv){
         	break;
 
     	case SPHERE:
-       	 	if(argc == 6) sphereHandler(atof(argv[2]), atoi(argv[3]), atoi(argv[4]), argv[5]);
+       	 	if(argc == 7) sphereHandler(atof(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), argv[6]);
        	 	else error_flag = 1;
         	break;
 

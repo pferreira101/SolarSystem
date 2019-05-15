@@ -6,8 +6,8 @@
         <light type="POINT" posX="-41" posY="0" posZ="0" attenuation="0"/>
         <light type="POINT" posX="0" posY="0" posZ="41" attenuation="0"/>
         <light type="POINT" posX="0" posY="0" posZ="-41" attenuation="0"/>
-        <light type="POINT" posX="0" posY="41" posZ="0" attenuation="0"/>
-        <light type="POINT" posX="0" posY="-41" posZ="0" attenuation="0"/>
+        <!--<light type="POINT" posX="0" posY="41" posZ="0" attenuation="0"/>
+        <light type="POINT" posX="0" posY="-41" posZ="0" attenuation="0"/>-->
 		<!--<light type="DIRECTIONAL" posX="0" posY="0" posZ="1000" /> -->
         <!--<light type="SPOT" posX="0" posY="0" posZ="2" dirX="0" dirY="0" dirZ="-1" angle="45" exponent="128"/> -->
     </lights>
@@ -214,6 +214,12 @@
         <scale X="10.40" Y="10.40" Z="10.40" />
         <models>       
              <model file="sphere.3d" texture="pluto.jpg"/>
+        </models>
+    </group>
+    <group>        
+        <scale X="550" Y="550" Z="550" />
+        <models>       
+             <model file="downsphere.3d" texture="space.jpg"/>
         </models>
     </group>
 </scene>
