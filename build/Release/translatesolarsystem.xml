@@ -178,7 +178,29 @@
         </models>
     </group>
    
-	<!-- FALTA NEPTUNO -->
+	<group> <!-- Saturno -->
+        <translate time="20">
+        	<point X="261.11" Y="0" Z="0"/>
+        	<point X="184.63" Y="0" Z="184.63"/>
+        	<point X="0" Y="0" Z="261.11"/>
+        	<point X="-184.63" Y="0" Z="184.63"/>
+
+        	<point X="-261.11" Y="0" Z="0"/>
+        	<point X="-184.63" Y="0" Z="-184.63"/>
+        	<point X="0" Y="0" Z="-261.11"/>
+        	<point X="184.63" Y="0" Z="-184.63"/>
+        </translate>
+        <scale X="23.87" Y="23.87" Z="23.87" />
+        <models>       
+             <model file="sphere.3d" texture="saturn.jpg"/>
+        </models>
+        <group>
+            <rotate angle="-20" axisX="-1" />
+            <models>       
+                 <model file="ring.3d" ambR="1" ambG="0" ambB="0"/>
+            </models>
+        </group>
+    </group>
 
     <group> <!-- Urano -->
         <translate time="22" >
@@ -198,6 +220,9 @@
              <model file="sphere.3d" texture="uranus.jpg"/>
         </models>
     </group>
+
+    <!-- FALTA Neptuno -->
+
     <group> <!-- Plutão -->
         <translate time="22" >
 			<point X="499.69" Y="0" Z="0" />
