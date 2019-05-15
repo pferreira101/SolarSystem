@@ -8,7 +8,7 @@ string cur_dir;
 Função que interpreta um cen‡rio gr‡fico em XML
 */
 
-int readXML(const char *filename, vector<Group>* groups , vector<Light*>* lights){
+int readXML(const char *filename, vector<Group>* groups , vector<Light*>* lights, float* cam){
 	cur_dir = getDirectory(filename);	
 	XMLDocument doc;
 	XMLError error = doc.LoadFile(filename);
@@ -17,7 +17,13 @@ int readXML(const char *filename, vector<Group>* groups , vector<Light*>* lights
 	XMLNode *scene = doc.FirstChild();
 	if (scene == nullptr) return XML_ERROR_FILE_READ_ERROR;
 
-	
+	// CAMERA
+	XMLElement *cam_xml = scene->FirstChildElement("camera");
+	if (cam_xml != nullptr) {
+		cam_xml->QueryFloatAttribute("x", &cam[0]);
+		cam_xml->QueryFloatAttribute("y", &cam[1]);
+		cam_xml->QueryFloatAttribute("z", &cam[2]);
+	}
 
 	// LIGHTS
 	XMLElement *lights_xml = scene->FirstChildElement("lights");
@@ -242,10 +248,10 @@ Light* readLight(XMLElement* light_element) {
 	diff[0] = diff[1] = diff[2] = diff[3] = 1.0f;
 	
 	float *amb = (float*)malloc(sizeof(float) * 4);
-	amb[0] = amb[1] = amb[2] = 0.4f; amb[3] = 1.0f;
+	amb[0] = amb[1] = amb[2] = 0.5f; amb[3] = 1.0f;
 
 	float *spec = (float*)malloc(sizeof(float) * 4);
-	spec[0] = spec[1] = spec[2] = 0.4f; spec[3] = 1.0f;
+	spec[0] = spec[1] = spec[2] = 0.0f; spec[3] = 1.0f;
 
 
 	light_element->QueryFloatAttribute("posX", &pos[0]);

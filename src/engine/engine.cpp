@@ -54,8 +54,7 @@ int loadTexture(std::string s);
 
 
 //########################################## Settings ##########################################
-
-float camX = 0; float camY = 0; float camZ = 200;
+float cam[3] = {0, 0, 0};
 float Lx = 0; float Ly = 0; float Lz = 0;
 int startX, startY, tracking = 0;
 int alpha = 180, beta = 0, r = 50;
@@ -331,7 +330,7 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-	gluLookAt(camX, camY, camZ,
+	gluLookAt(cam[0], cam[1], cam[2],
 		Lx, Ly, Lz,
 		0.0f, 1.0f, 0.0f);
 
@@ -409,13 +408,13 @@ void processKeys(unsigned char key, int xx, int yy) {
 		if (key == 's')
 			k = -0.2;
 
-		dx = Lx - camX;
-		dy = Ly - camY;
-		dz = Lz - camZ;
+		dx = Lx - cam[0];
+		dy = Ly - cam[1];
+		dz = Lz - cam[2];
 
-		camX = camX + k * dx;
-		camY = camY + k * dy;
-		camZ = camZ + k * dz;
+		cam[0] = cam[0] + k * dx;
+		cam[1] = cam[1] + k * dy;
+		cam[2] = cam[2] + k * dz;
 
 		Lx = Lx + k * dx;
 		Ly = Ly + k * dy;
@@ -429,17 +428,17 @@ void processKeys(unsigned char key, int xx, int yy) {
 			k = -0.2;		
 		}
 
-		dx = Lx - camX;
-		dy = Ly - camY;
-		dz = Lz - camZ;
+		dx = Lx - cam[0];
+		dy = Ly - cam[1];
+		dz = Lz - cam[2];
 		float upX = 0;
 		float upY = 1;
 		float upZ = 0;
 		float rx = dy*upZ-dz*upY;
 		float rz = dx*upY-dy*upX;
 
-		camX = camX + k * rx;
-		camZ = camZ + k * rz;
+		cam[0] = cam[0] + k * rx;
+		cam[2] = cam[2] + k * rz;
 
 		Lx = Lx + k * rx;
 		Lz = Lz + k * rz;		
@@ -518,9 +517,9 @@ void processMouseMotion(int xx, int yy) {
 	}
 
 
-	Lx = camX + rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
-	Lz = camZ + rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
-	Ly = camY + rAux * sin(betaAux * 3.14 / 180.0);
+	Lx = cam[0] + rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
+	Lz = cam[2] + rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
+	Ly = cam[1] + rAux * sin(betaAux * 3.14 / 180.0);
 
 
 }
@@ -589,7 +588,7 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	if (readXML(argv[1], &groups, &lights) == XML_SUCCESS){
+	if (readXML(argv[1], &groups, &lights, cam) == XML_SUCCESS){
 		// init GLUT and the window
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
