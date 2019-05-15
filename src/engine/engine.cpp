@@ -193,22 +193,32 @@ void drawFigure(Figure f, int f_index, float* center, float scale) {
 	glBindBuffer(GL_ARRAY_BUFFER, buffersT[f_index]);
 	glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
+	for (Colour g : f.getColours()) {
+		float colour[4] = { g.getR(), g.getG(), g.getB(),1 };
+		if (g.getType()==0) glMaterialfv(GL_FRONT, GL_DIFFUSE, colour);
+		else if (g.getType()==1) glMaterialfv(GL_FRONT, GL_SPECULAR, colour);
+		else if (g.getType()==2) glMaterialfv(GL_FRONT, GL_EMISSION, colour);
+		else if (g.getType()==3) glMaterialfv(GL_FRONT, GL_AMBIENT, colour);
+	}
+	
 	if (idTex[f_index] != -1) {
 		glBindTexture(GL_TEXTURE_2D, idTex[f_index]);
 		glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	else {
-		for (Colour g : f.getColours()) {
-			float colour[4] = { g.getR(), g.getG(), g.getR(),1 };
-			if (g.getType()==0) glMaterialfv(GL_FRONT, GL_DIFFUSE, colour);
-			else if (g.getType()==1) glMaterialfv(GL_FRONT, GL_SPECULAR, colour);
-			else if (g.getType()==2) glMaterialfv(GL_FRONT, GL_EMISSION, colour);
-			else if (g.getType()==3) glMaterialfv(GL_FRONT, GL_AMBIENT, colour);
-		}
-		glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
-	}
+	else glDrawArrays(GL_TRIANGLES, 0, f.getNumPoints());
 	
+	// RESET
+
+	float amb[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	float diff[4] = { 0.8f, 0.8f, 0.8f, 1.0f };
+	float spec[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float emi[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+	glMaterialfv(GL_FRONT, GL_AMBIENT, amb);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diff);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
+	glMaterialfv(GL_FRONT, GL_EMISSION, emi);
 
 }
 
@@ -369,8 +379,6 @@ void renderScene(void) {
 
 	prepareLights();
 
-	//float white[4] = { 1,1,1,1 };
-	//glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
 
 	glColor3b(0, 5, 20);
 

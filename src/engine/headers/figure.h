@@ -60,6 +60,7 @@ public:
 		g = g1;
 		b = b1;
 	}
+	
 	void set_type(int t) {
 		type = t;
 	}
