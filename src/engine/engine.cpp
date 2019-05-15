@@ -588,7 +588,6 @@ void prepareLights() {
 	for(Light* light : lights) {
 		glEnable(GL_LIGHT0 + light_nr);
 
-		//light->toString();
 		light->turnOn(GL_LIGHT0 + light_nr);
 
 		light_nr++;	
@@ -686,6 +685,7 @@ int main(int argc, char **argv) {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_NORMALIZE);
 
 		// enter GLUT's main cycle
 		glutMainLoop();

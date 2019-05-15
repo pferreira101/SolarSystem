@@ -530,13 +530,13 @@ void ringHandler(float r, float R, int slices, char* destFile) {
 
 		// normais
 
-		n.append("0,1,0\n");
-		n.append("0,1,0\n");
-		n.append("0,1,0\n");
+		n.append("0,-1,0\n");
+		n.append("0,-1,0\n");
+		n.append("0,-1,0\n");
 
-		n.append("0,1,0\n");
-		n.append("0,1,0\n");
-		n.append("0,1,0\n");
+		n.append("0,-1,0\n");
+		n.append("0,-1,0\n");
+		n.append("0,-1,0\n");
 
 		// texturas
 
@@ -560,13 +560,13 @@ void ringHandler(float r, float R, int slices, char* destFile) {
 
 		// normais
 
-		n.append("0,-1,0\n");
-		n.append("0,-1,0\n");
-		n.append("0,-1,0\n");
+		n.append("0,1,0\n");
+		n.append("0,1,0\n");
+		n.append("0,1,0\n");
 
-		n.append("0,-1,0\n");
-		n.append("0,-1,0\n");
-		n.append("0,-1,0\n");
+		n.append("0,1,0\n");
+		n.append("0,1,0\n");
+		n.append("0,1,0\n");
 
 		// texturas
 

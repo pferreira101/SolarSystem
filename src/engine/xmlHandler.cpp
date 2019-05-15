@@ -248,7 +248,7 @@ Light* readLight(XMLElement* light_element) {
 	diff[0] = diff[1] = diff[2] = diff[3] = 1.0f;
 	
 	float *amb = (float*)malloc(sizeof(float) * 4);
-	amb[0] = amb[1] = amb[2] = 0.8f; amb[3] = 1.0f;
+	amb[0] = amb[1] = amb[2] = 0.2f; amb[3] = 1.0f;
 
 	float *spec = (float*)malloc(sizeof(float) * 4);
 	spec[0] = spec[1] = spec[2] = 0.0f; spec[3] = 1.0f;
