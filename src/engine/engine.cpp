@@ -63,13 +63,16 @@ int mode = 0;
 bool cullingOFF;
 //####################################### Variáveis globais ####################################
 
+/** 
+Frustum planes for current frame
+*/
+float** planes;
 
 /**
 Variável global com a lista de figuras a desenhar e luzes
 */
 vector<Group> groups;
 vector<Light*> lights;
-
 /**
 Variável global para indicar qual a figura que esta a ser processada (ajuda a contrucao e desenho por VBOS)
 */
@@ -169,14 +172,14 @@ void prepareAllFigures(int n_figures){
 /**
  Função que, dada a posicao do buffer associado a uma determinada figura, efetua o seu desenho
 */
-void drawFigure(Figure f, int f_index, float** fPlanes, float* center, float scale) {
+void drawFigure(Figure f, int f_index, float* center, float scale) {
 	printf("A desenhar figura centrada em (%f, %f, %f) com scale %f\n", center[0],center[1],center[2],scale);
 	if(f.getFigType() == Figure::FSPHERE){ // se for uma esfera...
 		float radius = scale * f.getRadius();
 		printf("reconheceu esfera RAIO= %f, RAIO COM SCALE=%f \n",scale, scale); // meter raio na esfera
 
 		if(!cullingOFF){
-   			if(!sphereInFrustum(fPlanes, center, scale))
+   			if(!sphereInFrustum(planes, center, scale))
    				return ; // do not draw sphere
    		}
 	}
@@ -298,27 +301,10 @@ void renderGroup(Group g, float* center,  float scale) {
 		}
 	}
 
-	float * mp = computeMPMatrix();
-
-	printf("MATRIX MP = [");
-	for(int i=0;i<16;i++){
-		printf(" %f,", mp[i]);
-		if(i == 3 || i == 7 || i == 11 ) printf("\n");
-	}
-	printf("]\n");
-
-	float ** planes = getFrustumPlanes(mp);
-	free(mp);
-
 	for (Figure f : figs) {	
-		drawFigure(f, findex, planes, current_center, current_scale);
+		drawFigure(f, findex, current_center, current_scale);
 		++findex; 
 	}
-	
-	for(int i=0; i<6;i++){
-		free(planes[i]);
-	}
-	free(planes);
 
 	for (Group g : subGroups) {
 		renderGroup(g, current_center, current_scale);
@@ -350,12 +336,28 @@ void renderScene(void) {
 	//glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
 
 	glColor3b(0, 5, 20);
+
+	float * mp = computeMPMatrix();
+	printf("MATRIX MP = [");
+	for(int i=0;i<16;i++){
+		printf(" %f,", mp[i]);
+		if(i == 3 || i == 7 || i == 11 ) printf("\n");
+	}
+	printf("]\n");
+
+	planes = getFrustumPlanes(mp);
+	free(mp);
 	
 	findex=0;
 	float center[3] = {0.0f,0.0f,0.0f};
 	for (Group g : groups) {		
 		renderGroup(g, center, 1);
 	}
+
+	for(int i=0; i<6;i++){
+		free(planes[i]);
+	}
+	free(planes);
 
 	// drawCoordinates();
 
