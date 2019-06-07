@@ -374,6 +374,8 @@ void sphereHandler(float raio, int slices, int stacks, int upsidedown, char* des
 string buildSlice(int stacks, float r, float h, string s, float a, float stepSide, float hips, string* normals) {
 	
 	float nX1, nZ1, nX2, nZ2;
+	nX1 = nZ1 = nX2 = nZ2 = 0.0f;
+
 	float stepUp = (float)(h / stacks);
 	float stepInside = sqrt((hips*hips) - (stepUp*stepUp));
 	float height = 0;
@@ -615,7 +617,6 @@ int bezierPatchParser(char *patch) {
 	getline(file, line);
 	nr_patches = atoi((char*)line.c_str());
 	if (nr_patches < 1) return -1;
-	printf("Numero de patches = %d\n", nr_patches);
 
 	// Preenche array dos indices de cada patch
 	patch_indices = (int**)malloc(sizeof(int*) * nr_patches); 
@@ -634,7 +635,6 @@ int bezierPatchParser(char *patch) {
 	getline(file, line);
 	nr_pts_ctrl = atoi((char*)line.c_str());
 	if (nr_pts_ctrl < 1) return -1;
-	printf("Numero de pontos de controlo = %d\n", nr_pts_ctrl);
 
 
 	// Preenche o array dos pontos de controlo

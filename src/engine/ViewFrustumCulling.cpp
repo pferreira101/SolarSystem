@@ -43,15 +43,6 @@ float** getFrustumPlanes(float* a){
 	planes[5][2] = -a[8] + a[11];
 	planes[5][3] = -a[12] + a[15];
 
-					 		 
-
-	printf("NEAR %f, %f, %f, %f,\n",planes[0][1],planes[0][2],planes[0][3],planes[0][4]);
-	printf("FAR %f, %f, %f, %f,\n",planes[1][1],planes[1][2],planes[1][3],planes[1][4]);
-	printf("BOTTOM %f, %f, %f, %f,\n",planes[2][1],planes[2][2],planes[2][3],planes[2][4]);
-	printf("TOP %f, %f, %f, %f,\n",planes[3][1],planes[3][2],planes[3][3],planes[3][4]);
-	printf("LEFT %f, %f, %f, %f,\n",planes[4][1],planes[4][2],planes[4][3],planes[4][4]);
-	printf("RIGHT %f, %f, %f, %f,\n",planes[5][1],planes[5][2],planes[5][3],planes[5][4]);
-	
 	
 	normalizePlane(planes[0]);
 	normalizePlane(planes[1]);
@@ -59,13 +50,6 @@ float** getFrustumPlanes(float* a){
 	normalizePlane(planes[3]);
 	normalizePlane(planes[4]);
 	normalizePlane(planes[5]);
-
-	printf("NORMALIZED NEAR %f, %f, %f, %f,\n",planes[0][1],planes[0][2],planes[0][3],planes[0][4]);
-	printf("NORMALIZED FAR %f, %f, %f, %f,\n",planes[1][1],planes[1][2],planes[1][3],planes[1][4]);
-	printf("NORMALIZED BOTTOM %f, %f, %f, %f,\n",planes[2][1],planes[2][2],planes[2][3],planes[2][4]);
-	printf("NORMALIZED TOP %f, %f, %f, %f,\n",planes[3][1],planes[3][2],planes[3][3],planes[3][4]);
-	printf("NORMALIZED LEFT %f, %f, %f, %f,\n",planes[4][1],planes[4][2],planes[4][3],planes[4][4]);
-	printf("NORMALIZED RIGHT %f, %f, %f, %f,\n",planes[5][1],planes[5][2],planes[5][3],planes[5][4]);
 
 	return planes;		
 }
@@ -82,12 +66,6 @@ int sphereInFrustum(float** planes, float* center, float radius){
 			result = 2;
 	}
 
-	if(result == 0)
-		printf("a esfera encontra-se fora\n");
-	if(result == 1)
-		printf("a esfera encontra-se dentro\n");
-	if(result == 2)
-		printf("a esfera encontra-se ????\n");
 	return result;
 }
 

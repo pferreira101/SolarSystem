@@ -2,14 +2,7 @@
     <camera x="0" y="50" z="200"/>
     
     <lights>
-		<light type="POINT" posX="41" posY="0" posZ="0" attenuation="0"/>
-        <light type="POINT" posX="-41" posY="0" posZ="0" attenuation="0"/>
-        <light type="POINT" posX="0" posY="0" posZ="41" attenuation="0"/>
-        <light type="POINT" posX="0" posY="0" posZ="-41" attenuation="0"/>
-        <!--<light type="POINT" posX="0" posY="41" posZ="0" attenuation="0"/>
-        <light type="POINT" posX="0" posY="-41" posZ="0" attenuation="0"/>-->
-		<!--<light type="DIRECTIONAL" posX="0" posY="0" posZ="1000" /> -->
-        <!--<light type="SPOT" posX="0" posY="0" posZ="2" dirX="0" dirY="0" dirZ="-1" angle="45" exponent="128"/> -->
+		<light type="POINT" posX="0" posY="0" posZ="0" attenuation="0"/>
     </lights>
     
     <group> <!-- Sol -->

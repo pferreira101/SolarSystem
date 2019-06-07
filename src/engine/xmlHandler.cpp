@@ -29,12 +29,16 @@ int readXML(const char *filename, vector<Group>* groups , vector<Light*>* lights
 	XMLElement *lights_xml = scene->FirstChildElement("lights");
 	if(lights_xml != nullptr) {	
 		XMLElement *light_xml = lights_xml->FirstChildElement("light");
-		while (light_xml != nullptr) {
+		int nr_lights = 0;
+		while (light_xml != nullptr && nr_lights<8) {
 			
 			(*lights).push_back(readLight(light_xml));
 
 			light_xml = light_xml->NextSiblingElement("light");
+
+			nr_lights++;
 		}	
+		if (nr_lights == 8) printf("Número de luzes máximo excedido");
 	}
 
 	// GROUPS

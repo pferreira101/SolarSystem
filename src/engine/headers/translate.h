@@ -161,6 +161,7 @@ public:
 	}
 
 	void drawCurve() {
+		glDisable(GL_LIGHTING);
 		int num_segmentos = 150;
 		float inc = (float )1 / num_segmentos;
 		float t = 0;
@@ -175,6 +176,7 @@ public:
 			delete pts.second;
 		}
 		glEnd();
+		glEnable(GL_LIGHTING);
 
 	}
 

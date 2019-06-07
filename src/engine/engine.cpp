@@ -173,16 +173,13 @@ void prepareAllFigures(int n_figures){
  Função que, dada a posicao do buffer associado a uma determinada figura, efetua o seu desenho
 */
 void drawFigure(Figure f, int f_index, float* center, float scale) {
-	printf("A desenhar figura centrada em (%f, %f, %f) com scale %f\n", center[0],center[1],center[2],scale);
 	if(f.getFigType() == Figure::FSPHERE){ // se for uma esfera...
 		float radius = scale * f.getRadius();
-		printf("reconheceu esfera RAIO= %f, RAIO COM SCALE=%f \n",scale, scale); // meter raio na esfera
 
 		if(!cullingOFF && !sphereInFrustum(planes, center, scale)){
    			return ; // do not draw sphere
    		}
 	}
-	else printf("reconheceu outro solido\n");
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[f_index]);
 	glVertexPointer(3, GL_FLOAT, 0, 0);
@@ -384,12 +381,6 @@ void renderScene(void) {
 
 	if (!cullingOFF) {
 		float * mp = computeMPMatrix();
-		printf("MATRIX MP = [");
-		for (int i = 0; i < 16; i++) {
-			printf(" %f,", mp[i]);
-			if (i == 3 || i == 7 || i == 11) printf("\n");
-		}
-		printf("]\n");
 
 		planes = getFrustumPlanes(mp);
 		free(mp);
@@ -418,7 +409,7 @@ void renderScene(void) {
 		fps = frame * 1000.0 / (time - timebase);
 		timebase = time;
 		frame = 0;
-		sprintf(s, "FPS: %f6.2", fps);
+		sprintf(s, "FPS: %f6", fps);
 		glutSetWindowTitle(s);
 	}
 
