@@ -83,6 +83,7 @@ void planeHandler(float size, char* destFile){
 void boxHandler(float x, float y, float z, int d, char* destFile){
 	string s="1\n";
 	string n = "";
+	string t = "";
 	float divY = (float) y / d;
     float divZ = (float) z / d;
     float divX = (float) x / d;
@@ -125,6 +126,13 @@ void boxHandler(float x, float y, float z, int d, char* destFile){
 				n.append(n1);
 				n.append(n1);
 				n.append(n1);
+
+				t.append("0,0\n");
+				t.append("0,0\n");				
+				t.append("0,0\n");				
+				t.append("0,0\n");				
+				t.append("0,0\n");				
+				t.append("0,0\n");
 
             }
     
@@ -176,6 +184,13 @@ void boxHandler(float x, float y, float z, int d, char* destFile){
 				n.append(n1);
 				n.append(n1);
 
+				t.append("0,0\n");
+				t.append("0,0\n");
+				t.append("0,0\n");
+				t.append("0,0\n");
+				t.append("0,0\n");
+				t.append("0,0\n");
+
             }
             z1*=-1; // recuperar valores originais
             x1*=-1;
@@ -224,6 +239,13 @@ void boxHandler(float x, float y, float z, int d, char* destFile){
 				n.append(n1);
 				n.append(n1);
 				n.append(n1);
+
+				t.append("0,0\n");
+				t.append("0,0\n");
+				t.append("0,0\n");
+				t.append("0,0\n");
+				t.append("0,0\n");
+				t.append("0,0\n");
             }
             z1*=-1; // recuperar valores originais
             z2*=-1;
@@ -234,6 +256,7 @@ void boxHandler(float x, float y, float z, int d, char* destFile){
 
 
 	s.append("\n" + n);
+	s.append("\n" + t);
 	
 
 	// textura
@@ -371,7 +394,7 @@ void sphereHandler(float raio, int slices, int stacks, int upsidedown, char* des
  Função auxiliar ao desenho de uma figura do tipo 'cone'. Calcula os pontos
  dos triângulos que compõem uma slice do cone.
  */
-string buildSlice(int stacks, float r, float h, string s, float a, float stepSide, float hips, string* normals) {
+string buildSlice(int stacks, float r, float h, string *s, float a, float stepSide, float hips, string* normals, string* texture) {
 	
 	float nX1, nZ1, nX2, nZ2;
 	nX1 = nZ1 = nX2 = nZ2 = 0.0f;
@@ -384,38 +407,43 @@ string buildSlice(int stacks, float r, float h, string s, float a, float stepSid
     string p3;
     string p4;
     
-	float x1 = r * cos(a);
-	float x2 = (r - stepInside)*cos(a);
-	float x3 = (r - stepInside)*cos(a + stepSide);
-	float x4 = r * cos(a + stepSide);
-	float y1 = height;
-	float y2 = height + stepUp;
-	float z1 = r * sin(a);
-	float z2 = (r - stepInside)*sin(a);
-	float z3 = (r - stepInside)*sin(a + stepSide);
-	float z4 = r * sin(a + stepSide);
-
+	
+	float tx2, ty2, tx3, ty3;
 
 	for (int i = 0; i < stacks - 1; i++) {
-        
+		
+		
+		float x1 = r * cos(a);
+		float x2 = (r - stepInside)*cos(a);
+		float x3 = (r - stepInside)*cos(a + stepSide);
+		float x4 = r * cos(a + stepSide);
+		float y1 = height;
+		float y2 = height + stepUp;
+		float z1 = r * sin(a);
+		float z2 = (r - stepInside)*sin(a);
+		float z3 = (r - stepInside)*sin(a + stepSide);
+		float z4 = r * sin(a + stepSide);
+
+
+
         p1 = to_string(x1) + "," + to_string(y1) + "," + to_string(z1) + "\n";
         p2 = to_string(x2) + "," + to_string(y2) + "," + to_string(z2) + "\n";
         p3 = to_string(x3) + "," + to_string(y2) + "," + to_string(z3) + "\n";
         p4 = to_string(x4) + "," + to_string(y1) + "," + to_string(z4) + "\n";
         
-        s.append(p1);
-        s.append(p2);
-        s.append(p3);
+        (*s).append(p1);
+        (*s).append(p2);
+        (*s).append(p3);
 
 
-        s.append(p3);
-        s.append(p4);
-        s.append(p1);
+        (*s).append(p3);
+        (*s).append(p4);
+        (*s).append(p1);
 
 	
 		nX1 = h * cos(a);
 		nZ1 = h * sin(a);
-		nX2= h * cos(a+stepSide);
+		nX2 = h * cos(a+stepSide);
 		nZ2 = h * sin(a+stepSide);
 
 		float n1[3] = { nX1,r,nZ1 }; 
@@ -423,41 +451,62 @@ string buildSlice(int stacks, float r, float h, string s, float a, float stepSid
 
 		normalize(n1);
 		normalize(n2);
-		(*normals).append(to_string(n1[0]) + "," + to_string(n1[1]) + "," + to_string(n1[2]));
-		(*normals).append(to_string(n1[0]) + "," + to_string(n1[1]) + "," + to_string(n1[2]));
-		(*normals).append(to_string(n2[0]) + "," + to_string(n2[1]) + "," + to_string(n2[2]));
+		(*normals).append(to_string(n1[0]) + "," + to_string(n1[1]) + "," + to_string(n1[2]) + "\n");
+		(*normals).append(to_string(n1[0]) + "," + to_string(n1[1]) + "," + to_string(n1[2]) + "\n");
+		(*normals).append(to_string(n2[0]) + "," + to_string(n2[1]) + "," + to_string(n2[2]) + "\n");
 		
-		(*normals).append(to_string(n2[0]) + "," + to_string(n2[1]) + "," + to_string(n2[2]));
-		(*normals).append(to_string(n2[0]) + "," + to_string(n2[1]) + "," + to_string(n2[2]));
-		(*normals).append(to_string(n1[0]) + "," + to_string(n1[1]) + "," + to_string(n1[2]));
+		(*normals).append(to_string(n2[0]) + "," + to_string(n2[1]) + "," + to_string(n2[2]) + "\n");
+		(*normals).append(to_string(n2[0]) + "," + to_string(n2[1]) + "," + to_string(n2[2]) + "\n");
+		(*normals).append(to_string(n1[0]) + "," + to_string(n1[1]) + "," + to_string(n1[2]) + "\n");
 
+		float tx1 = ((height/h)) * ((cos(a)+1)/2);
+		float ty1 = ((height/h)) * ((sin(a)+1)/2);
+		tx2 = ((height+stepUp)/h) * ((cos(a)+1)/2);
+		ty2 = ((height+stepUp)/h) * ((sin(a)+1)/2);
+		tx3 = ((height+stepUp)/h) * ((cos(a+stepSide)+1)/2);
+		ty3 = ((height+stepUp)/h) * ((sin(a+stepSide)+1)/2);
+		float tx4 = (height/h) * ((cos(a+stepSide)+1)/2);
+		float ty4 = ( height/h) * ((sin(a+stepSide)+1)/2);
 
+		(*texture).append(to_string(tx1) + "," + to_string(ty1) + "\n");
+		(*texture).append(to_string(tx2) + "," + to_string(ty2) + "\n");
+		(*texture).append(to_string(tx3) + "," + to_string(ty3) + "\n");
+
+		(*texture).append(to_string(tx3) + "," + to_string(ty3) + "\n");
+		(*texture).append(to_string(tx4) + "," + to_string(ty4) + "\n");
+		(*texture).append(to_string(tx1) + "," + to_string(ty1) + "\n");
+		
 		height += stepUp;
 		r -= stepInside;
 
 	}
 
     // "cobertura" do cone
-	s.append("0," + to_string(h) + ",0\n");
-    s.append(p3);
-    s.append(p2);
+	(*s).append("0," + to_string(h) + ",0\n");
+    (*s).append(p3);
+    (*s).append(p2);
     
 
 	float n1[3] = { nX1,r,nZ1 };
 	float n2[3] = { nX2,r,nZ2 };
 	
 	(*normals).append("0,1,0\n");
-	(*normals).append(to_string(n2[0]) + "," + to_string(n2[1]) + "," + to_string(n2[2]));
-	(*normals).append(to_string(n1[0]) + "," + to_string(n1[1]) + "," + to_string(n1[2])); \
+	(*normals).append(to_string(n2[0]) + "," + to_string(n2[1]) + "," + to_string(n2[2]) + "\n");
+	(*normals).append(to_string(n1[0]) + "," + to_string(n1[1]) + "," + to_string(n1[2]) + "\n");
 
-	return s;
+	(*texture).append("0.5,0.5\n");
+	(*texture).append(to_string(tx3) + "," + to_string(ty3) + "\n");
+	(*texture).append(to_string(tx2) + "," + to_string(ty2) + "\n");
+
+	return *s;
 }
 /**
  Função responsável por calcular os pontos que formam uma figura do tipo 'cone'.
  */
 void coneHandler(float raio, float altura, int slices, int stacks, char* destFile){
 	string s = "3\n";
-	string n = "";
+	string n;
+	string t;
 	float a = 0;
 	float step = 2 * M_PI / slices;
 	float hip = sqrt((raio*raio) + (altura*altura));
@@ -474,7 +523,7 @@ void coneHandler(float raio, float altura, int slices, int stacks, char* destFil
 		string t4 = to_string(0.5 + sin(i+1)*step);
         
 		a += step;
-		s.append( buildSlice(stacks, raio, altura, s, a, step, hip / stacks, &n));
+		buildSlice(stacks, raio, altura, &s, a, step, hip / stacks, &n, &t);
 		
         // desenhar a base do cone
         s.append("0,0,0\n");
@@ -485,11 +534,20 @@ void coneHandler(float raio, float altura, int slices, int stacks, char* destFil
 		n.append("0,-1,0\n");
 		n.append("0,-1,0\n");
 
+		float tx1 = (cos(a)+1)/2;
+		float ty1 = 1-(sin(a)+1)/2;
+	
+		float tx2 = (cos(a+step)+1)/2;
+		float ty2 = 1-(1+sin(a+step))/2;
 
+
+		t.append("0.5,0.5\n");
+		t.append(to_string(tx1) + "," + to_string(ty1) + "\n");
+		t.append(to_string(tx2) + "," + to_string(ty2) + "\n");
+		
 	}	
 
-	s.append("\n" + n);
-
+	s.append("\n" + n + "\n" + t);
 	fileWriter(destFile, s);
 } 
 

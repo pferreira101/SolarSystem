@@ -289,7 +289,7 @@ Light* readLight(XMLElement* light_element) {
 		float *dir = (float*)malloc(sizeof(float) * 3);
 		dir[0] = dir[1] = dir[2] = 0;
 
-		float angle = 45, exp;
+		float angle, exp;
 
 		light_element->QueryFloatAttribute("dirX", &dir[0]);
 		light_element->QueryFloatAttribute("dirY", &dir[1]);

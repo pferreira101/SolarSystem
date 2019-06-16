@@ -60,8 +60,10 @@ int sphereInFrustum(float** planes, float* center, float radius){
 	int result = 1;
 	for(int i=0; i < 6; i++) {
 		dist = distance(planes[i], center);
-		if (dist < -radius)
+		if (dist < -radius) {
 			return 0;
+
+		}
 		else if (dist < radius)
 			result = 2;
 	}

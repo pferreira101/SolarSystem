@@ -130,7 +130,7 @@
             </translate>
             <scale X="0.2" Y="0.2" Z="0.2" />
             <models>       
-                 <model file="sphere.3d" texture="moon.jgp"/>
+                 <model file="sphere.3d" texture="moon.jpg"/>
             </models>
         </group>
         <group><!-- Lua -->
@@ -149,7 +149,7 @@
             </translate>
             <scale X="0.12" Y="0.12" Z="0.12" />
             <models>       
-                 <model file="sphere.3d" texture="moon.jgp"/>
+                 <model file="sphere.3d" texture="moon.jpg"/>
             </models>
         </group>
     </group>
